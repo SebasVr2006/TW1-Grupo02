@@ -37,19 +37,56 @@ header h1 {
 }
 
 footer {
-  box-sizing: border-box;
   display: flex;
   position: fixed;
   flex-direction: row;
-  bottom: 0;
+  justify-content: center;
+  align-items: center;
+  font-size: 120%;
+  background-color: white;
   left: 0;
   right: 0;
+  bottom: 0;
   border-top: 0.1vh solid black;
-  padding: 1rem;
-  height: 15vh;
+}
+
+.info-footer {
+  display: flex;
+  justify-content: center;
   align-items: center;
+  flex-direction: column;
+  width: 50%;
+  font-size: 120%;
+  line-height: 110%;
 }
 
 .info-footer ul {
   list-style: none;
+  font-size: 75%;
+  padding-top: 1vh;
+}
+
+.info-footer h3 {
+  margin-right: 8%;
+  font-size: 140%;
+  text-decoration: underline;
+  margin-bottom: 1px;
+}
+
+.redes {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 2%;
+  line-height: 2%;
+  width: 50%;
+  font-size: 140%;
+}
+
+.redesbox {
+  display: flex;
+  flex-direction: row;
+  height: 5rem;
+  margin-top: 1vh;
 }
