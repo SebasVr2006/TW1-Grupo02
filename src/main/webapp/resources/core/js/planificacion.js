@@ -77,14 +77,14 @@ botonContinuar.addEventListener("click", function () {
             <h4>Destinos</h4>
             <ul>
                 ${destinos.map(function (destino) {
-                    return `
+        return `
                         <li>
                             ${destino.destino} -
                             ${destino.fechaInicio} -
                             ${destino.duracion} días
                         </li>
                     `;
-                }).join("")}
+    }).join("")}
             </ul>
 
             <h4>Viajeros</h4>
@@ -96,7 +96,7 @@ botonContinuar.addEventListener("click", function () {
             <p>Intereses: ${intereses.length > 0 ? intereses.join(", ") : "Ninguno"}</p>
     `;
 
-     fetch("/spring/planificacion", {
+    fetch("/spring/planificacion", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
