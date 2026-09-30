@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Planificar viaje</title>
+
+    <!-- PARA SPRING / LOCALHOST -->
+    
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/planificacion.css}">
+
+
+    <!-- PARA ABRIR DIRECTAMENTE DESDE VS CODE -->
+    <!--
+    <link rel="stylesheet" href="../../../resources/core/css/main.css">
+    <link rel="stylesheet" href="../../../resources/core/css/planificacion.css">
+    -->
+
+</head>
+
+<body>
+
+<header>
+    <h1>FlyNow</h1>
+
+    <nav class="menu">
+        <ul class="lista_header">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Iniciar Sesión</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+
+    <h2>Planificá tu viaje</h2>
+
+    <section class="destinos">
+
+        <h3>Destinos</h3>
+
+        <div class="destino">
+            <h4>Destino 1</h4>
+
+            <label for="destino">Destino:</label>
+            <input type="text" id="destino" name="destino">
+
+            <label for="fechaInicio">Fecha de inicio:</label>
+            <input type="date" id="fechaInicio" name="fechaInicio">
+
+            <label for="duracion">Duración:</label>
+            <input type="number" id="duracion" name="duracion" min="1">
+
+            <span>días</span>
+        </div>
+
+        <button type="button" id="agregarDestino">
+            + Agregar destino
+        </button>
+
+    </section>
+
+
+    <section class="viajeros">
+
+        <h3>Cantidad de viajeros</h3>
+
+        <label for="adultos">Adultos:</label>
+        <input type="number" id="adultos" name="adultos" min="1" value="1">
+
+        <label for="ninos">Niños:</label>
+        <input type="number" id="ninos" name="ninos" min="0" value="0">
+
+    </section>
+
+
+    <section class="preferencias">
+
+        <h3>Preferencias</h3>
+
+        <label for="alojamiento">Tipo de alojamiento:</label>
+
+        <select id="alojamiento" name="alojamiento">
+            <option value="">Seleccionar</option>
+            <option value="hotel">Hotel</option>
+            <option value="departamento">Departamento</option>
+            <option value="hostel">Hostel</option>
+        </select>
+
+
+        <p>Intereses:</p>
+
+        <label>
+            <input type="checkbox" name="intereses" value="playa">
+            Playa
+        </label>
+
+        <label>
+            <input type="checkbox" name="intereses" value="cultura">
+            Cultura
+        </label>
+
+        <label>
+            <input type="checkbox" name="intereses" value="gastronomia">
+            Gastronomía
+        </label>
+
+        <label>
+            <input type="checkbox" name="intereses" value="naturaleza">
+            Naturaleza
+        </label>
+
+    </section>
+
+
+    <button type="button" class="boton" id="continuar">
+        Continuar
+    </button>
+
+    <div id="resumenPlanificacion"></div>
+
+</main>
+
+<footer>
+    <div class="info-footer">
+        <h3>FlyNow:</h3>
+        <ul>
+            <li>Sobre nosotros</li>
+            <li>Preguntas frecuentes</li>
+            <li>Políticas de privacidad</li>
+        </ul>
+    </div>
+
+    <div class="redes">
+        <div class="encabredes">
+            <p class="encontrar">Podés encontrarnos en:</p>
+        </div>
+
+        <div class="redesbox">
+            <!-- Acá podemos reutilizar los íconos del home después -->
+        </div>
+    </div>
+</footer>
+
+<!-- PARA SPRING / LOCALHOST -->
+
+<script th:src="@{/js/planificacion.js}"></script>
+
+
+<!-- PARA ABRIR DIRECTAMENTE DESDE VS CODE -->
+<!--
+<script src="../../../resources/core/js/planificacion.js"></script>
+-->
+
+</body>
+</html>
