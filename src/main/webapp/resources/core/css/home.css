@@ -1,0 +1,33 @@
+main {
+    min-height: 62vh;
+    margin-top: 3rem;
+    width: 90%;
+    margin-left: 5%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 0.1vh solid rgb(230, 230, 230);
+}
+
+.inicio-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5rem;
+    padding: 5%;
+}
+
+.texto-home .boton{
+    display: flex;
+    margin-top: 2vh;
+    justify-content: center;
+    width: 12vh;
+}
+
+.imagen_home {
+    border-radius: 1vh;
+}
