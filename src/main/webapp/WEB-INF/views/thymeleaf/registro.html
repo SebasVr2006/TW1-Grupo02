@@ -1,43 +1,47 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <title>Registro</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <!--- link rel="stylesheet" th:href="@{/css/main.css}" --->
 </head>
 
-
 <body>
-
 <header>
-    <h1>FlyNow</h1>
-    <nav class="menu">
-        <ul class="lista_header">
-            <li><a th:href="@{/home}">Home</a></li>
-            <li><a th:href="@{/login}">Iniciar Sesión</a></li>
-        </ul>
-    </nav>
+  <h1>FlyNow</h1>
+  <nav class="menu">
+    <ul class="lista_header">
+      <li><a th:href="@{/home}">Home</a></li>
+      <li><a th:href="@{/login}">Iniciar Sesión</a></li>
+    </ul>
+  </nav>
 </header>
 
-<main>
-    <section class="inicio-info">
-        <div class="texto-home">
-            <h1>Tu proximo destino esta mas cerca de lo que imaginas</h1>
-            <p>Compra vuelos, encontrá las mejores tarifas y viví experiencias inolvidables en cualquier parte del
-                mundo</p>
-            <a class="boton" href="#">Busca tu vuelo</a>
+<main class="main-login ">
+    <form class="login-form" id="register-form">
+
+        <label for="usuario">Usuario</label>
+        <input id="usuario" type="text" name="usuario" placeholder="Usuario">
+
+        <label for="E-Mail">E-Mail</label>
+        <input id="E-Mail" type="email" name="E-Mail" placeholder="E-Mail">
+
+        <label for="DNI">DNI</label>
+        <input id="DNI" type="number" name="DNI" placeholder="DNI">
+
+        <label for="contrasena">Contraseña</label>
+        <input id="contrasena" type="password" name="contrasena" placeholder="Contraseña">
+
+        <label for="confirmar-contrasena">Confirmar contraseña</label>
+        <input id="confirmar-contrasena" type="password" name="confirmar-contrasena" placeholder="Confirmar contraseña">
+        <div class="botones">
+            <button class="boton" type="submit">Aceptar</button>
+            <button class="boton" type="reset">Cancelar</button>
         </div>
-
-        <figure class="imagen_home">
-            <img th:src="@{/images/imagen-home.jpg}"
-                 alt="imagen-home" class="imagen_home">
-        </figure>
-
-    </section>
+    </form>
 </main>
 
 <footer>
@@ -70,7 +74,6 @@
 
     </div>
 </footer>
-
 </body>
 
 </html>
