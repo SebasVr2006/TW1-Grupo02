@@ -8,7 +8,7 @@
     <title>Planificar viaje</title>
 
     <!-- PARA SPRING / LOCALHOST -->
-    
+
     <link rel="stylesheet" th:href="@{/css/main.css}">
     <link rel="stylesheet" th:href="@{/css/planificacion.css}">
 
@@ -23,16 +23,7 @@
 
 <body>
 
-<header>
-    <h1>FlyNow</h1>
-
-    <nav class="menu">
-        <ul class="lista_header">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Iniciar Sesión</a></li>
-        </ul>
-    </nav>
-</header>
+<header th:replace="~{fragments/layout :: header}"></header>
 
 <main>
 
@@ -124,26 +115,7 @@
 
 </main>
 
-<footer>
-    <div class="info-footer">
-        <h3>FlyNow:</h3>
-        <ul>
-            <li>Sobre nosotros</li>
-            <li>Preguntas frecuentes</li>
-            <li>Políticas de privacidad</li>
-        </ul>
-    </div>
-
-    <div class="redes">
-        <div class="encabredes">
-            <p class="encontrar">Podés encontrarnos en:</p>
-        </div>
-
-        <div class="redesbox">
-            <!-- Acá podemos reutilizar los íconos del home después -->
-        </div>
-    </div>
-</footer>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
 
 <!-- PARA SPRING / LOCALHOST -->
 
