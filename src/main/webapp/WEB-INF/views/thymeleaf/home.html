@@ -24,40 +24,90 @@
 </header>
 
 
-    <main>
+<main>
 
     <section class="inicio-info">
 
         <div class="texto-home">
 
-            <h1>Tu proximo destino esta mas cerca de lo que imaginas</h1>
+            <h1>Armá tu paquete de viaje a medida</h1>
 
-            <p>Compra vuelos, encontrá las mejores tarifas y viví experiencias inolvidables en cualquier parte del mundo</p>
+            <p>Ingresá tus destinos, fechas y preferencias para generar un itinerario completo con vuelo, alojamiento y
+                actividades.</p>
 
-            <a class="boton" th:href="@{/planificacion}">Buscá tu vuelo</a>
+            <a class="boton" th:href="@{/planificacion}">Armar mi viaje</a>
 
         </div>
 
         <figure class="imagen_home">
-
-            <img src="../../../images/depositphotos_40827443-stock-photo-travel-the-world-concept.jpg"
+            <img th:src="@{/assets/images/imagen-home.jpg}"
                  alt="imagen-home" class="imagen_home">
-
         </figure>
+
+    </section>
+
+    <section class="por-que-elegirnos">
+
+        <div>
+            <h2 class="subtitulo">¿Por qué planificar tu viaje con nosotros?</h2>
+        </div>
+
+        <div class="razones">
+
+            <div class="beneficio">
+                <figure class="contenedor_iconos">
+                    <img th:src="@{/assets/icons/ticket-outline.svg}" alt="icono" class="icon">
+                </figure>
+
+                <div>
+                    <h3>Todo en un solo lugar</h3>
+                    <p>Combinamos vuelos, alojamientos y actividades en un único paquete para que no pierdas tiempo.</p>
+                </div>
+
+            </div>
+
+            <div class="beneficio">
+                <figure class="contenedor_iconos">
+                    <img th:src="@{/assets/icons/world.svg}" alt="icono" class="icon">
+                </figure>
+
+                <div>
+                    <h3>Itinerarios a tu medida</h3>
+                    <p>Seleccioná uno o más destinos, indicá la duración y adaptamos el viaje a tus preferencias.</p>
+                </div>
+
+            </div>
+
+            <div class="beneficio">
+
+                <figure class="contenedor_iconos">
+                    <img th:src="@{/assets/icons/security.svg}" alt="icono" class="icon">
+                </figure>
+
+                <div>
+                    <h3>Reserva rápida y clara</h3>
+                    <p>Consultá el precio total en tiempo real y confirmá tu pre-reserva al instante.</p>
+                </div>
+
+            </div>
+
+            <div class="beneficio">
+                <figure class="contenedor_iconos">
+                    <img th:src="@{/assets/icons/headphones.svg}" alt="icono" class="icon">
+                </figure>
+
+                <div>
+                    <h3>Control de tu itinerario</h3>
+                    <p>Accedé y consultá tus reservas e itinerarios guardados en cualquier momento.</p>
+                </div>
+            </div>
+
+        </div>
 
     </section>
 
 </main>
 
-        </div>
-
-        <figure class="imagen_home">
-            <img th:src="@{/images/imagen-home.jpg}"
-                 alt="imagen-home" class="imagen_home">
-        </figure>
-
-    </section>
-</main>
 
 <footer>
     <div class="info-footer">

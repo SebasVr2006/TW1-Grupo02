@@ -1,131 +1,137 @@
 * {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 header {
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6vh;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  background-color: rgb(0, 19, 126);
-  color: white;
-  border-radius: 0.5rem;
-  margin: 0.3rem;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    background-color: rgb(0, 19, 126);
+    color: white;
+    border-radius: 0.5rem;
+    margin: 0.3rem;
 }
 
 header h1 {
-  margin-left: 1rem;
+    margin-left: 1rem;
 }
 
 .lista_header {
-  display: flex;
-  flex-direction: row;
-  list-style: none;
-  gap: 1rem;
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    gap: 1rem;
 }
 
 .lista_header a {
-  
-  color: white;
+
+    color: white;
 }
 
 main {
+    flex: 1;
     min-height: 55vh;
     height: fit-content;
     width: 90%;
-    margin-top: 2vh;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 2vh auto 3vh;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     background-color: #fff;
+    color: rgb(0, 19, 126);
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     border: 0.1vh solid rgb(230, 230, 230);
 }
 
 .menu {
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 1rem;
 }
 
 footer {
-  display: flex;
-  position: fixed;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  min-height: 10rem;
-  font-size: 120%;
-  background-color: rgb(0, 19, 126);
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-top: 0.1vh solid black;
-  color: white;
+    display: flex;
+    position: static;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    min-height: 10rem;
+    font-size: 120%;
+    background-color: rgb(0, 19, 126);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: 0.1vh solid black;
+    color: white;
 }
 
 .info-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 50%;
-  font-size: 120%;
-  line-height: 110%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 50%;
+    font-size: 120%;
+    line-height: 110%;
 }
 
 .info-footer ul {
-  list-style: none;
-  font-size: 75%;
-  padding-top: 1vh;
+    list-style: none;
+    font-size: 75%;
+    padding-top: 1vh;
 }
 
 .info-footer h3 {
-  margin-right: 8%;
-  font-size: 140%;
-  text-decoration: underline;
-  margin-bottom: 1px;
+    margin-right: 8%;
+    font-size: 140%;
+    text-decoration: underline;
+    margin-bottom: 1px;
 }
 
 .redes {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-top: 2%;
-  line-height: 2%;
-  width: 50%;
-  font-size: 140%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 2%;
+    line-height: 2%;
+    width: 50%;
+    font-size: 140%;
 }
 
 .redesbox {
-  display: flex;
-  flex-direction: row;
-  margin-top: 1rem;
-  height: 6.8rem;
+    display: flex;
+    flex-direction: row;
+    margin-top: 1rem;
+    height: 6.8rem;
 }
 
 .iconored {
-  fill: white;
+    fill: white;
 }
 
 .boton {
-  background-color: rgb(1, 1, 141);
-  color: white;
-  border: none;
-  border-radius: 0.3rem;
-  padding: 0.5rem;
+    background-color: rgb(1, 1, 141);
+    color: white;
+    border: none;
+    border-radius: 0.3rem;
+    padding: 0.5rem;
 }

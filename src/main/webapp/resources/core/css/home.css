@@ -6,13 +6,74 @@
     padding: 5%;
 }
 
-.texto-home .boton{
+.texto-home .boton {
     display: flex;
     margin-top: 2vh;
     justify-content: center;
-    width: 12vh;
+    min-width: 15vh;
+    width: fit-content;
+    color: white;
+}
+
+.texto-home p {
+    margin: 1.5vh 0;
+}
+
+.texto-home {
+    font-size: 90%;
 }
 
 .imagen_home {
     border-radius: 1vh;
+}
+
+.por-que-elegiros {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding: 5%;
+
+}
+
+.por-que-elegirnos h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.razones {
+    display: flex;
+    gap: 20px;
+    margin: 3%;
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+    color: rgb(1, 1, 141);
+}
+
+.contenedor_iconos {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    background-color: #e7eefb;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+
+}
+
+.beneficio {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.beneficio h3 {
+    margin-top: 0.2rem;
 }
