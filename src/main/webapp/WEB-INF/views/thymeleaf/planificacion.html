@@ -37,13 +37,13 @@
             <h4>Destino 1</h4>
 
             <label for="destino">Destino:</label>
-            <input type="text" id="destino" name="destino">
+            <input type="text" id="destino" name="destino" required>
 
             <label for="fechaInicio">Fecha de inicio:</label>
-            <input type="date" id="fechaInicio" name="fechaInicio">
+            <input type="date" id="fechaInicio" name="fechaInicio" required>
 
             <label for="duracion">Duración:</label>
-            <input type="number" id="duracion" name="duracion" min="1">
+            <input type="number" id="duracion" name="duracion" min="1" required>
 
             <span>días</span>
         </div>
@@ -60,10 +60,12 @@
         <h3>Cantidad de viajeros</h3>
 
         <label for="adultos">Adultos:</label>
-        <input type="number" id="adultos" name="adultos" min="1" value="1">
+        <input type="number" id="adultos" name="adultos"
+               min="1" value="1" required>
 
         <label for="ninos">Niños:</label>
-        <input type="number" id="ninos" name="ninos" min="0" value="0">
+        <input type="number" id="ninos" name="ninos"
+               min="0" value="0" required>
 
     </section>
 
@@ -74,7 +76,7 @@
 
         <label for="alojamiento">Tipo de alojamiento:</label>
 
-        <select id="alojamiento" name="alojamiento">
+        <select id="alojamiento" name="alojamiento" required>
             <option value="">Seleccionar</option>
             <option value="hotel">Hotel</option>
             <option value="departamento">Departamento</option>
