@@ -15,13 +15,13 @@ botonAgregar.addEventListener("click", function () {
         <h4>Destino ${numeroDestino}</h4>
 
         <label>Destino:</label>
-        <input type="text" name="destino">
+        <input type="text" name="destino" required>
 
         <label>Fecha de inicio:</label>
-        <input type="date" name="fechaInicio">
+        <input type="date" name="fechaInicio" required>
 
         <label>Duración:</label>
-        <input type="number" name="duracion" min="1">
+        <input type="number" name="duracion" min="1" required>
 
         <span>días</span>
     `;
@@ -32,6 +32,31 @@ botonAgregar.addEventListener("click", function () {
 const botonContinuar = document.getElementById("continuar");
 
 botonContinuar.addEventListener("click", function () {
+
+
+  console.log("VALIDACION NUEVA EJECUTADA");
+
+  const camposObligatorios = document.querySelectorAll(
+      ".destino input[required], #adultos, #ninos, #alojamiento"
+  );
+
+  console.log("Campos encontrados:", camposObligatorios.length);
+
+  for (const campo of camposObligatorios) {
+    console.log(
+        campo.name || campo.id,
+        "valor:",
+        campo.value,
+        "válido:",
+        campo.checkValidity()
+    );
+
+    if (!campo.checkValidity()) {
+      campo.reportValidity();
+      return;
+    }
+  }
+
 
   const adultos = document.getElementById("adultos").value;
   const ninos = document.getElementById("ninos").value;
@@ -47,9 +72,9 @@ botonContinuar.addEventListener("click", function () {
     const duracion = destino.querySelector("input[name=\"duracion\"]").value;
 
     destinos.push({
-      destino: nombre,
+      nombre: nombre,
       fechaInicio: fecha,
-      duracion: duracion
+      duracion: Number(duracion)
     });
   });
 
@@ -79,7 +104,7 @@ botonContinuar.addEventListener("click", function () {
                 ${destinos.map(function (destino) {
     return `
                         <li>
-                            ${destino.destino} -
+                            ${destino.nombre} -
                             ${destino.fechaInicio} -
                             ${destino.duracion} días
                         </li>
@@ -103,8 +128,8 @@ botonContinuar.addEventListener("click", function () {
     },
     body: JSON.stringify({
       destinos: destinos,
-      adultos: adultos,
-      ninos: ninos,
+      adultos: Number(adultos),
+      ninos: Number(ninos),
       alojamiento: alojamiento,
       intereses: intereses
     })
