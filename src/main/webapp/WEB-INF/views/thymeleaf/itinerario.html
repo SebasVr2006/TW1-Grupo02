@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegí tu itinerario | FlyNow</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main>
+    <h2>Personalizá tu itinerario</h2>
+    <p>Elegí un hotel para cada destino y las actividades que quieras realizar.</p>
+
+    <section th:if="${#lists.isEmpty(opcionesItinerario)}">
+        <h3>No encontramos opciones para tus destinos</h3>
+        <p>Revisá los destinos ingresados en tu planificación.</p>
+        <a th:href="@{/planificacion}">Volver a planificar</a>
+    </section>
+
+    <form th:if="${!#lists.isEmpty(opcionesItinerario)}"
+          th:action="@{/itinerario}"
+          th:object="${seleccionItinerario}"
+          method="post"
+          accept-charset="UTF-8">
+
+        <section th:each="opcion, iteracion : ${opcionesItinerario}">
+
+            <input type="hidden"
+                   th:name="|destinosSeleccionados[${iteracion.index}].nombreDestino|"
+                   th:value="${opcion.ciudad}">
+
+            <h3>
+                <span th:text="${iteracion.count}"></span>.
+                <span th:text="${opcion.ciudad}"></span> -
+                <span th:text="${opcion.pais}"></span>
+            </h3>
+
+            <section>
+                <h4>Elegí un hotel</h4>
+                <ul>
+                    <li th:each="hotel : ${opcion.hoteles}">
+                        <label>
+                            <input type="radio"
+                                   th:name="|destinosSeleccionados[${iteracion.index}].hotelSeleccionado|"
+                                   th:value="${hotel.nombre}"
+                                   required>
+                            <strong th:text="${hotel.nombre}"></strong> -
+                            Precio por noche:
+                            <span th:text="${hotel.precioPorNoche}"></span>
+                        </label>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h4>Elegí las actividades que te interesen</h4>
+                <ul>
+                    <li th:each="actividad : ${opcion.actividades}">
+                        <label>
+                            <input type="checkbox"
+                                   th:name="|destinosSeleccionados[${iteracion.index}].actividadesSeleccionadas|"
+                                   th:value="${actividad.nombre}">
+                            <strong th:text="${actividad.nombre}"></strong> -
+                            Precio:
+                            <span th:text="${actividad.precio}"></span>
+                        </label>
+                    </li>
+                </ul>
+            </section>
+
+            <hr>
+        </section>
+
+        <button type="submit" class="boton">
+            Ver resumen del itinerario
+        </button>
+    </form>
+
+    <p>
+        <a th:href="@{/resumen-planificacion}">
+            Volver al resumen de planificación
+        </a>
+    </p>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
