@@ -22,47 +22,55 @@ public class ServicioLoginTest {
 
   @Test
   public void consultarUsuarioDeberiaLlamarAlRepositorio() {
-    // preparacion
+    // Preparación
     String email = "test@test.com";
     String password = "password";
     Usuario usuarioEsperado = new Usuario();
+
     when(this.repositorioUsuarioMock.buscarUsuario(email, password)).thenReturn(usuarioEsperado);
 
-    // ejecucion
+    // Ejecución
     Usuario usuarioObtenido = this.servicioLogin.consultarUsuario(email, password);
 
-    // validacion
+    // Validación
     assertThat(usuarioObtenido, equalTo(usuarioEsperado));
     verify(this.repositorioUsuarioMock, times(1)).buscarUsuario(email, password);
   }
 
   @Test
   public void registrarUsuarioSiNoExisteDeberiaGuardarlo() throws UsuarioExistente {
-    // preparacion
+    // Preparación
     Usuario usuario = new Usuario();
     usuario.setEmail("nuevo@test.com");
     usuario.setPassword("123");
-    when(this.repositorioUsuarioMock.buscarUsuario(usuario.getEmail(), usuario.getPassword()))
-      .thenReturn(null);
 
-    // ejecucion
+    when(this.repositorioUsuarioMock.buscar(usuario.getEmail())).thenReturn(null);
+
+    // Ejecución
     this.servicioLogin.registrar(usuario);
 
-    // validacion
+    // Validación
+    verify(this.repositorioUsuarioMock, times(1)).buscar(usuario.getEmail());
     verify(this.repositorioUsuarioMock, times(1)).guardar(usuario);
   }
 
   @Test
   public void registrarUsuarioSiExisteDeberiaLanzarExcepcion() {
-    // preparacion
+    // Preparación
     Usuario usuario = new Usuario();
     usuario.setEmail("existe@test.com");
-    usuario.setPassword("123");
-    when(this.repositorioUsuarioMock.buscarUsuario(usuario.getEmail(), usuario.getPassword()))
-      .thenReturn(new Usuario());
+    usuario.setPassword("otra-password");
 
-    // ejecucion y validacion
+    Usuario usuarioExistente = new Usuario();
+    usuarioExistente.setEmail("existe@test.com");
+    usuarioExistente.setPassword("password-anterior");
+
+    when(this.repositorioUsuarioMock.buscar(usuario.getEmail())).thenReturn(usuarioExistente);
+
+    // Ejecución y validación
     assertThrows(UsuarioExistente.class, () -> this.servicioLogin.registrar(usuario));
-    verify(this.repositorioUsuarioMock, times(0)).guardar(usuario);
+
+    verify(this.repositorioUsuarioMock, times(1)).buscar(usuario.getEmail());
+    verify(this.repositorioUsuarioMock, never()).guardar(usuario);
   }
 }

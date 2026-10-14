@@ -13,23 +13,46 @@
 
 <header th:replace="~{fragments/layout :: header}"></header>
 
-<main class="main-login ">
-    <form class="login-form" id="register-form">
+<main class="main-login">
+    <form class="login-form"
+          id="register-form"
+          th:action="@{/registro}"
+          th:object="${datosLogin}"
+          method="post">
+
+        <p th:if="${mensajeError != null}"
+           th:text="${mensajeError}"
+           class="mensaje-error"
+           role="alert"></p>
 
         <label for="usuario">Usuario</label>
-        <input id="usuario" type="text" name="usuario" placeholder="Usuario">
+        <input id="usuario"
+               type="text"
+               th:field="*{nombreUsuario}"
+               placeholder="Usuario"
+               required>
 
-        <label for="E-Mail">E-Mail</label>
-        <input id="E-Mail" type="email" name="E-Mail" placeholder="E-Mail">
-
-        <label for="DNI">DNI</label>
-        <input id="DNI" type="number" name="DNI" placeholder="DNI">
+        <label for="email">E-Mail</label>
+        <input id="email"
+               type="email"
+               th:field="*{email}"
+               placeholder="E-Mail"
+               required>
 
         <label for="contrasena">Contraseña</label>
-        <input id="contrasena" type="password" name="contrasena" placeholder="Contraseña">
+        <input id="contrasena"
+               type="password"
+               th:field="*{password}"
+               placeholder="Contraseña"
+               required>
 
         <label for="confirmar-contrasena">Confirmar contraseña</label>
-        <input id="confirmar-contrasena" type="password" name="confirmar-contrasena" placeholder="Confirmar contraseña">
+        <input id="confirmar-contrasena"
+               type="password"
+               th:field="*{confirmarPassword}"
+               placeholder="Confirmar contraseña"
+               required>
+
         <div class="botones">
             <button class="boton" type="submit">Aceptar</button>
             <button class="boton" type="reset">Cancelar</button>
@@ -38,6 +61,6 @@
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
-</body>
 
+</body>
 </html>

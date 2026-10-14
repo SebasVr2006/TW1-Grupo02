@@ -14,13 +14,30 @@
 <header th:replace="~{fragments/layout :: header}"></header>
 
 <main class="main-login">
-    <form class="login-form" id="login-form">
+    <form class="login-form"
+          id="login-form"
+          th:action="@{/login}"
+          th:object="${datosLogin}"
+          method="post">
 
-        <label for="E-Mail">E-Mail</label>
-        <input id="E-Mail" type="email" name="E-Mail" placeholder="E-Mail">
+        <p th:if="${mensajeError != null}"
+           th:text="${mensajeError}"
+           class="mensaje-error"
+           role="alert"></p>
+
+        <label for="email">E-Mail</label>
+        <input id="email"
+               type="email"
+               th:field="*{email}"
+               placeholder="E-Mail"
+               required>
 
         <label for="contrasena">Contraseña</label>
-        <input id="contrasena" type="password" name="contrasena" placeholder="Contraseña">
+        <input id="contrasena"
+               type="password"
+               th:field="*{password}"
+               placeholder="Contraseña"
+               required>
 
         <div class="botones">
             <button class="boton" type="submit">Aceptar</button>
@@ -31,11 +48,9 @@
     <div class="registro-container">
         <p>¿No tienes una cuenta? <a th:href="@{/registro}">Registrate.</a></p>
     </div>
-
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 
 </body>
-
 </html>
