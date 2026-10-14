@@ -10,10 +10,11 @@ public class OpcionDestino {
   private final List<Actividad> actividades;
 
   public OpcionDestino(
-      String ciudad,
-      String pais,
-      List<Hotel> hoteles,
-      List<Actividad> actividades) {
+    String ciudad,
+    String pais,
+    List<Hotel> hoteles,
+    List<Actividad> actividades
+  ) {
     this.ciudad = ciudad;
     this.pais = pais;
     this.hoteles = hoteles;
