@@ -4,8 +4,18 @@
 <body>
     <header th:fragment="header">
         <h1>FlyNow</h1>
+        <input type="checkbox" id="toggle-barra" class="toggle-barra" aria-hidden="true">
+        <aside class="barra-lateral" aria-label="Menú lateral">
+            <h2>Mi cuenta</h2>
+            <ul>
+                <li><a th:href="@{/mis-reservas}">Ver mis reservas</a></li>
+                <li><a th:href="@{/planificacion}">Planificar un viaje</a></li>
+            </ul>
+        </aside>
+        <label for="toggle-barra" class="fondo-barra"></label>
         <nav class="menu">
             <ul class="lista_header">
+                <li><label for="toggle-barra" class="boton-barra">&#9776; Menú</label></li>
                 <li><a th:href="@{/home}">Home</a></li>
                 <li><a th:href="@{/login}">Iniciar Sesión</a></li>
             </ul>

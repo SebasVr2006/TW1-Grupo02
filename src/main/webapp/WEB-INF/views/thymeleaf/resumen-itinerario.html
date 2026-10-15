@@ -14,7 +14,8 @@
 
 <main>
     <h2>Resumen de tu itinerario</h2>
-    <p>Revisá los hoteles, las actividades y los costos antes de continuar al pago.</p>
+    <p>Revisá los hoteles, las actividades y los costos antes de confirmar tu reserva.</p>
+    <p class="mensaje-error" th:if="${error}" th:text="${error}"></p>
 
     <section th:each="destino : ${resumenItinerario.destinos}">
         <h3 th:text="|${destino.nombreDestino} - ${destino.nombrePais}|"></h3>
@@ -55,6 +56,10 @@
             <strong th:text="${resumenItinerario.total}"></strong>
         </p>
     </section>
+
+    <form th:action="@{/reservas/confirmar}" method="post">
+        <button type="submit" class="boton-confirmar">Confirmar reserva</button>
+    </form>
 
     <a th:href="@{/itinerario}">Volver a elegir opciones</a>
     <a th:href="@{/resumen-planificacion}">Volver a la planificación</a>
