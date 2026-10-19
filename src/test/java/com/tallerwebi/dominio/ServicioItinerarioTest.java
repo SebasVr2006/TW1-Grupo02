@@ -1,50 +1,81 @@
 package com.tallerwebi.dominio;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ServicioItinerarioTest {
+class ServicioItinerarioTest {
 
-  private ServicioItinerario servicioItinerario;
+  private RepositorioItinerario repositorioItinerario;
+  private ServicioItinerarioImpl servicioItinerario;
+  private DestinoDisponible buenosAires;
 
   @BeforeEach
-  public void init() {
-    this.servicioItinerario = new ServicioItinerarioImpl();
+  void setUp() {
+    repositorioItinerario = mock(RepositorioItinerario.class);
+    servicioItinerario = new ServicioItinerarioImpl(repositorioItinerario);
+
+    buenosAires = new DestinoDisponible("Buenos Aires", "Argentina");
+    buenosAires.setId(1L);
   }
 
   @Test
-  public void generarItinerarioDeberiaDevolverTresOpcionesDeDestino() {
-    List<OpcionDestino> destinos = this.servicioItinerario.generarItinerario();
+  void deberiaGenerarItinerarioConDatosDelRepositorio() {
+    Hotel hotel = new Hotel("Hotel Palermo Soho", 90.0);
+    Actividad actividad = new Actividad("Show de tango en San Telmo", 70.0);
 
-    assertThat(destinos, hasSize(3));
+    when(repositorioItinerario.buscarDestinoPorCiudad("buenos aires")).thenReturn(buenosAires);
+    when(repositorioItinerario.buscarHotelesPorDestino(1L)).thenReturn(List.of(hotel));
+    when(repositorioItinerario.buscarActividadesPorDestino(1L)).thenReturn(List.of(actividad));
+
+    OpcionDestino resultado = servicioItinerario.generarItinerario("Buenos Aires");
+
+    assertNotNull(resultado);
+    assertEquals("Buenos Aires", resultado.getCiudad());
+    assertEquals("Argentina", resultado.getPais());
+    assertEquals(1, resultado.getHoteles().size());
+    assertEquals("Hotel Palermo Soho", resultado.getHoteles().get(0).getNombre());
+    assertEquals(1, resultado.getActividades().size());
+    assertEquals("Show de tango en San Telmo", resultado.getActividades().get(0).getNombre());
   }
 
   @Test
-  public void cadaOpcionDebeTenerDosHotelesYDosActividades() {
-    List<OpcionDestino> destinos = this.servicioItinerario.generarItinerario();
+  void deberiaAceptarDestinoConAcentos() {
+    when(repositorioItinerario.buscarDestinoPorCiudad("paris"))
+      .thenReturn(new DestinoDisponible("Paris", "Francia"));
+    when(repositorioItinerario.buscarHotelesPorDestino(0L)).thenReturn(List.of());
+    when(repositorioItinerario.buscarActividadesPorDestino(0L)).thenReturn(List.of());
 
-    for (OpcionDestino destino : destinos) {
-      assertThat(destino.getHoteles(), hasSize(2));
-      assertThat(destino.getActividades(), hasSize(2));
-    }
+    DestinoDisponible destino = new DestinoDisponible("Paris", "Francia");
+    destino.setId(0L);
+    when(repositorioItinerario.buscarDestinoPorCiudad("paris")).thenReturn(destino);
+
+    OpcionDestino resultado = servicioItinerario.generarItinerario("París");
+
+    assertNotNull(resultado);
+    assertEquals("Paris", resultado.getCiudad());
   }
 
   @Test
-  public void cadaHotelYActividadDebeTenerPrecio() {
-    List<OpcionDestino> destinos = this.servicioItinerario.generarItinerario();
+  void deberiaRetornarNullSiElNombreEsNulo() {
+    assertNull(servicioItinerario.generarItinerario(null));
+  }
 
-    for (OpcionDestino destino : destinos) {
-      for (Hotel hotel : destino.getHoteles()) {
-        assertThat(hotel.getPrecioPorNoche(), greaterThan(0.0));
-      }
-      for (Actividad actividad : destino.getActividades()) {
-        assertThat(actividad.getPrecio(), greaterThan(0.0));
-      }
-    }
+  @Test
+  void deberiaRetornarNullSiElNombreEstaVacio() {
+    assertNull(servicioItinerario.generarItinerario("   "));
+  }
+
+  @Test
+  void deberiaRetornarNullSiElDestinoNoExiste() {
+    when(repositorioItinerario.buscarDestinoPorCiudad("cordoba")).thenReturn(null);
+
+    assertNull(servicioItinerario.generarItinerario("Córdoba"));
   }
 }

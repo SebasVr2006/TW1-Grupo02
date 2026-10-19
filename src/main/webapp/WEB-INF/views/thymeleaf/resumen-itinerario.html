@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de itinerario | FlyNow</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main>
+    <h2>Resumen de tu itinerario</h2>
+    <p>Revisá los hoteles, las actividades y los costos antes de continuar al pago.</p>
+
+    <section th:each="destino : ${resumenItinerario.destinos}">
+        <h3 th:text="|${destino.nombreDestino} - ${destino.nombrePais}|"></h3>
+
+        <h4>Hotel seleccionado</h4>
+        <p>
+            <strong th:text="${destino.hotelSeleccionado.nombre}"></strong>
+        </p>
+        <p>
+            Costo del alojamiento:
+            <span th:text="${destino.costoHotel}"></span>
+        </p>
+
+        <h4>Actividades seleccionadas</h4>
+        <ul>
+            <li th:each="actividad : ${destino.actividadesSeleccionadas}">
+                <span th:text="${actividad.nombre}"></span> -
+                <span th:text="${actividad.precio}"></span>
+            </li>
+        </ul>
+
+        <p>
+            Costo de actividades:
+            <span th:text="${destino.costoActividades}"></span>
+        </p>
+
+        <p>
+            <strong>Subtotal del destino:</strong>
+            <span th:text="${destino.subtotal}"></span>
+        </p>
+
+        <hr>
+    </section>
+
+    <section>
+        <h3>Total del itinerario</h3>
+        <p>
+            <strong th:text="${resumenItinerario.total}"></strong>
+        </p>
+    </section>
+
+    <a th:href="@{/itinerario}">Volver a elegir opciones</a>
+    <a th:href="@{/resumen-planificacion}">Volver a la planificación</a>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

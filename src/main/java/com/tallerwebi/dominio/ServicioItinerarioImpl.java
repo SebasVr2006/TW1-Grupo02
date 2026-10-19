@@ -1,49 +1,45 @@
 package com.tallerwebi.dominio;
 
+import java.text.Normalizer;
 import java.util.List;
+import java.util.Locale;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service("servicioItinerario")
 public class ServicioItinerarioImpl implements ServicioItinerario {
 
+  private final RepositorioItinerario repositorioItinerario;
+
+  @Autowired
+  public ServicioItinerarioImpl(RepositorioItinerario repositorioItinerario) {
+    this.repositorioItinerario = repositorioItinerario;
+  }
+
   @Override
-  public List<OpcionDestino> generarItinerario() {
-    return List.of(crearBuenosAires(), creaDestinoParis(), crearSaoPaulo());
-  }
+  @Transactional(readOnly = true)
+  public OpcionDestino generarItinerario(String nombreDestino) {
+    if (nombreDestino == null || nombreDestino.isBlank()) {
+      return null;
+    }
 
-  public OpcionDestino crearBuenosAires() {
-    return new OpcionDestino(
-      "Buenos Aires",
-      "Argentina",
-      List.of(new Hotel("Hotel Paulista Centro", 80.0), new Hotel("Hotel Jardins Boutique", 135.0)),
-      List.of(
-        new Actividad("Visita al Mercado Municipal", 25.0),
-        new Actividad("Tour por Avenida Paulista y MASP", 40.0)
-      )
-    );
-  }
+    String ciudad = Normalizer
+      .normalize(nombreDestino.trim(), Normalizer.Form.NFD)
+      .replaceAll("\\p{M}", "")
+      .toLowerCase(Locale.ROOT);
 
-  public OpcionDestino crearSaoPaulo() {
-    return new OpcionDestino(
-      "Sao Paulo",
-      "Brasil",
-      List.of(new Hotel("Hotel Palermo Soho", 90.0), new Hotel("Hotel Recoleta Plaza", 150.0)),
-      List.of(
-        new Actividad("Show de tango en San Telmo", 70.0),
-        new Actividad("Tour por La Boca y Caminito", 35.0)
-      )
-    );
-  }
+    DestinoDisponible destino = this.repositorioItinerario.buscarDestinoPorCiudad(ciudad);
 
-  public OpcionDestino creaDestinoParis() {
-    return new OpcionDestino(
-      "Paris",
-      "Francia",
-      List.of(new Hotel("Hôtel Le Marais", 160.0), new Hotel("Hôtel Montmartre Vue", 210.0)),
-      List.of(
-        new Actividad("Entrada a la Torre Eiffel", 35.0),
-        new Actividad("Crucero por el Sena", 25.0)
-      )
-    );
+    if (destino == null) {
+      return null;
+    }
+
+    List<Hotel> hoteles = this.repositorioItinerario.buscarHotelesPorDestino(destino.getId());
+
+    List<Actividad> actividades =
+      this.repositorioItinerario.buscarActividadesPorDestino(destino.getId());
+
+    return new OpcionDestino(destino.getCiudad(), destino.getPais(), hoteles, actividades);
   }
 }

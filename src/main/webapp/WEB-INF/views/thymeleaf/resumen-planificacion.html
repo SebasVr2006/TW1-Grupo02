@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resumen de tu viaje</title>
+
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main>
+    <h2>Resumen de tu viaje</h2>
+
+    <section>
+        <h3>Destinos</h3>
+
+        <ul>
+            <li th:each="destino : ${planificacion.destinos}">
+                <span th:text="${destino.nombre}"></span>
+                -
+                <span th:text="${destino.fechaInicio}"></span>
+                -
+                <span th:text="${destino.duracion}"></span>
+                días
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h3>Viajeros</h3>
+
+        <p>
+            Adultos:
+            <span th:text="${planificacion.adultos}"></span>
+        </p>
+
+        <p>
+            Niños:
+            <span th:text="${planificacion.ninos}"></span>
+        </p>
+    </section>
+
+    <section>
+        <h3>Preferencias</h3>
+
+        <p>
+            Alojamiento:
+            <span th:text="${planificacion.alojamiento}"></span>
+        </p>
+
+        <p>Intereses:</p>
+
+        <ul>
+            <li th:each="interes : ${planificacion.intereses}"
+                th:text="${interes}">
+            </li>
+        </ul>
+    </section>
+
+    <a th:href="@{/itinerario}" class="boton">
+        Ver itinerario
+    </a>
+
+    <a th:href="@{/planificacion}">Volver a planificar</a>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

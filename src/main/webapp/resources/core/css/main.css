@@ -3,11 +3,6 @@
     margin: 0;
 }
 
-.logo {
-    text-decoration: none;
-    color: white;
-}
-
 body {
     display: flex;
     flex-direction: column;
