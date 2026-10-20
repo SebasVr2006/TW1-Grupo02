@@ -17,7 +17,7 @@ VALUES
      (SELECT id FROM destino_disponible WHERE ciudad = 'Sao Paulo')),
     ('Hotel Jardins Boutique', 135.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Sao Paulo')),
-    ('Hôtel Le Marais', 160.0,
+    ('Hôtel Le Marais', 225.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Paris')),
     ('Hôtel Montmartre Vue', 210.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Paris'));
@@ -26,13 +26,13 @@ INSERT INTO actividad (nombre, precio, destino_id)
 VALUES
     ('Show de tango en San Telmo', 70.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Buenos Aires')),
-    ('Tour por La Boca y Caminito', 35.0,
+    ('Tour por La Boca y Caminito', 45.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Buenos Aires')),
     ('Visita al Mercado Municipal', 25.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Sao Paulo')),
     ('Tour por Avenida Paulista y MASP', 40.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Sao Paulo')),
-    ('Entrada a la Torre Eiffel', 35.0,
+    ('Entrada a la Torre Eiffel', 40.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Paris')),
     ('Crucero por el Sena', 25.0,
      (SELECT id FROM destino_disponible WHERE ciudad = 'Paris'));
