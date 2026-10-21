@@ -12,137 +12,151 @@ import org.junit.jupiter.api.Test;
 public class ServicioPlanificacionTest {
 
   private ServicioPlanificacion servicioPlanificacion;
+  private Planificacion planificacion;
+  private Planificacion resultado;
 
   @BeforeEach
   public void init() {
-    this.servicioPlanificacion = new ServicioPlanificacionImpl();
+    servicioPlanificacion = new ServicioPlanificacionImpl();
   }
 
   @Test
   public void guardarPlanificacionDeberiaRetornarLaMismaPlanificacion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
+    givenTengoUnaPlanificacionValida();
 
-    // ejecucion
-    Planificacion resultado = this.servicioPlanificacion.guardarPlanificacion(planificacion);
+    whenGuardoLaPlanificacion();
 
-    // validacion
-    assertThat(resultado, equalTo(planificacion));
+    thenLaPlanificacionGuardadaEsLaMisma();
   }
 
   @Test
   public void guardarPlanificacionConNombreDestinoVacioDeberiaLanzarExcepcion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
-    planificacion.getDestinos().get(0).setNombre("");
+    givenTengoUnaPlanificacionConNombreDestinoVacio();
 
-    // ejecucion y validacion
-    assertThrows(
-      DestinoInvalidoException.class,
-      () -> this.servicioPlanificacion.guardarPlanificacion(planificacion)
-    );
+    whenIntentoGuardarLaPlanificacionConDestinoInvalido();
   }
 
   @Test
   public void guardarPlanificacionConFechaVaciaDeberiaLanzarExcepcion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
-    planificacion.getDestinos().get(0).setFechaInicio("");
+    givenTengoUnaPlanificacionConFechaVacia();
 
-    // ejecucion y validacion
-    assertThrows(
-      DestinoInvalidoException.class,
-      () -> this.servicioPlanificacion.guardarPlanificacion(planificacion)
-    );
+    whenIntentoGuardarLaPlanificacionConDestinoInvalido();
   }
 
   @Test
   public void guardarPlanificacionConDuracionCeroDeberiaLanzarExcepcion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
-    planificacion.getDestinos().get(0).setDuracion(0);
+    givenTengoUnaPlanificacionConDuracionCero();
 
-    // ejecucion y validacion
-    assertThrows(
-      DestinoInvalidoException.class,
-      () -> this.servicioPlanificacion.guardarPlanificacion(planificacion)
-    );
+    whenIntentoGuardarLaPlanificacionConDestinoInvalido();
   }
 
   @Test
   public void guardarPlanificacionSinAdultosDeberiaLanzarExcepcion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
-    planificacion.setAdultos(0);
+    givenTengoUnaPlanificacionSinAdultos();
 
-    // ejecucion y validacion
-    assertThrows(
-      PlanificacionInvalidaException.class,
-      () -> this.servicioPlanificacion.guardarPlanificacion(planificacion)
-    );
+    whenIntentoGuardarLaPlanificacionInvalida();
   }
 
   @Test
   public void guardarPlanificacionSinDestinosDeberiaLanzarExcepcion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
-    planificacion.getDestinos().clear();
+    givenTengoUnaPlanificacionSinDestinos();
 
-    // ejecucion y validacion
-    assertThrows(
-      PlanificacionInvalidaException.class,
-      () -> this.servicioPlanificacion.guardarPlanificacion(planificacion)
-    );
+    whenIntentoGuardarLaPlanificacionInvalida();
   }
 
   @Test
   public void guardarPlanificacionConNombreDestinoEnBlancoDeberiaLanzarExcepcion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
-    planificacion.getDestinos().get(0).setNombre("   ");
+    givenTengoUnaPlanificacionConNombreDestinoEnBlanco();
 
-    // ejecucion y validacion
-    assertThrows(
-      DestinoInvalidoException.class,
-      () -> this.servicioPlanificacion.guardarPlanificacion(planificacion)
-    );
+    whenIntentoGuardarLaPlanificacionConDestinoInvalido();
   }
 
   @Test
   public void guardarPlanificacionConNinosNegativosDeberiaLanzarExcepcion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
-    planificacion.setNinos(-1);
+    givenTengoUnaPlanificacionConNinosNegativos();
 
-    // ejecucion y validacion
-    assertThrows(
-      PlanificacionInvalidaException.class,
-      () -> this.servicioPlanificacion.guardarPlanificacion(planificacion)
-    );
+    whenIntentoGuardarLaPlanificacionInvalida();
   }
 
   @Test
   public void guardarPlanificacionSinAlojamientoDeberiaLanzarExcepcion() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
-    planificacion.setAlojamiento("");
+    givenTengoUnaPlanificacionSinAlojamiento();
 
-    // ejecucion y validacion
-    assertThrows(
-      PlanificacionInvalidaException.class,
-      () -> this.servicioPlanificacion.guardarPlanificacion(planificacion)
-    );
+    whenIntentoGuardarLaPlanificacionInvalida();
   }
 
   @Test
   public void guardarPlanificacionSinInteresesDeberiaSerValida() {
-    // preparacion
-    Planificacion planificacion = crearPlanificacionValida();
+    givenTengoUnaPlanificacionValida();
 
-    // ejecucion
-    Planificacion resultado = this.servicioPlanificacion.guardarPlanificacion(planificacion);
+    whenGuardoLaPlanificacion();
 
-    // validacion
+    thenLaPlanificacionGuardadaEsLaMisma();
+  }
+
+  private void givenTengoUnaPlanificacionValida() {
+    planificacion = crearPlanificacionValida();
+  }
+
+  private void givenTengoUnaPlanificacionConNombreDestinoVacio() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.getDestinos().get(0).setNombre("");
+  }
+
+  private void givenTengoUnaPlanificacionConFechaVacia() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.getDestinos().get(0).setFechaInicio("");
+  }
+
+  private void givenTengoUnaPlanificacionConDuracionCero() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.getDestinos().get(0).setDuracion(0);
+  }
+
+  private void givenTengoUnaPlanificacionSinAdultos() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.setAdultos(0);
+  }
+
+  private void givenTengoUnaPlanificacionSinDestinos() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.getDestinos().clear();
+  }
+
+  private void givenTengoUnaPlanificacionConNombreDestinoEnBlanco() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.getDestinos().get(0).setNombre("   ");
+  }
+
+  private void givenTengoUnaPlanificacionConNinosNegativos() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.setNinos(-1);
+  }
+
+  private void givenTengoUnaPlanificacionSinAlojamiento() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.setAlojamiento("");
+  }
+
+  private void whenGuardoLaPlanificacion() {
+    resultado = servicioPlanificacion.guardarPlanificacion(planificacion);
+  }
+
+  private void whenIntentoGuardarLaPlanificacionConDestinoInvalido() {
+    assertThrows(
+      DestinoInvalidoException.class,
+      () -> servicioPlanificacion.guardarPlanificacion(planificacion)
+    );
+  }
+
+  private void whenIntentoGuardarLaPlanificacionInvalida() {
+    assertThrows(
+      PlanificacionInvalidaException.class,
+      () -> servicioPlanificacion.guardarPlanificacion(planificacion)
+    );
+  }
+
+  private void thenLaPlanificacionGuardadaEsLaMisma() {
     assertThat(resultado, equalTo(planificacion));
   }
 

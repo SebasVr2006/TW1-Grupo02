@@ -9,31 +9,54 @@ import org.junit.jupiter.api.Test;
 
 public class PlanificacionTest {
 
+  private Planificacion planificacion;
+  private Destino destino1;
+  private Destino destino2;
+  private List<String> intereses;
+  private int cantidadDestinos;
+
   @Test
   public void crearPlanificacionDeberiaTenerListaDeDestinosVacia() {
-    // preparacion
-    Planificacion planificacion = new Planificacion();
+    givenTengoUnaPlanificacionNueva();
 
-    // ejecucion
-    int cantidadDestinos = planificacion.getDestinos().size();
+    whenConsultoLaCantidadDeDestinos();
 
-    // validacion
+    thenLaCantidadDeDestinosEsCero();
+  }
+
+  private void givenTengoUnaPlanificacionNueva() {
+    planificacion = new Planificacion();
+  }
+
+  private void whenConsultoLaCantidadDeDestinos() {
+    cantidadDestinos = planificacion.getDestinos().size();
+  }
+
+  private void thenLaCantidadDeDestinosEsCero() {
     assertThat(cantidadDestinos, equalTo(0));
   }
 
   @Test
   public void agregarDosDestinosDeberiaConservarSusDatos() {
-    // preparacion
-    Destino destino1 = new Destino("Bariloche", "2026-12-10", 5);
-    Destino destino2 = new Destino("Mendoza", "2026-12-15", 3);
+    givenTengoUnaPlanificacionYDosDestinos();
 
-    Planificacion planificacion = new Planificacion();
+    whenAgregoLosDosDestinos();
 
-    // ejecucion
+    thenLaPlanificacionConservaLosDatosDeAmbosDestinos();
+  }
+
+  private void givenTengoUnaPlanificacionYDosDestinos() {
+    planificacion = new Planificacion();
+    destino1 = new Destino("Bariloche", "2026-12-10", 5);
+    destino2 = new Destino("Mendoza", "2026-12-15", 3);
+  }
+
+  private void whenAgregoLosDosDestinos() {
     planificacion.agregarDestino(destino1);
     planificacion.agregarDestino(destino2);
+  }
 
-    // validacion
+  private void thenLaPlanificacionConservaLosDatosDeAmbosDestinos() {
     assertThat(planificacion.getDestinos().size(), equalTo(2));
 
     assertThat(planificacion.getDestinos().get(0).getNombre(), equalTo("Bariloche"));
@@ -47,31 +70,49 @@ public class PlanificacionTest {
 
   @Test
   public void guardarCantidadDeViajerosDeberiaConservarLosDatos() {
-    // preparacion
-    Planificacion planificacion = new Planificacion();
+    givenTengoUnaPlanificacionNuevaParaGuardarLosViajeros();
 
-    // ejecucion
+    whenGuardoLaCantidadDeAdultosYNinos();
+
+    thenLaPlanificacionConservaLaCantidadDeViajeros();
+  }
+
+  private void givenTengoUnaPlanificacionNuevaParaGuardarLosViajeros() {
+    planificacion = new Planificacion();
+  }
+
+  private void whenGuardoLaCantidadDeAdultosYNinos() {
     planificacion.setAdultos(2);
     planificacion.setNinos(1);
+  }
 
-    // validacion
+  private void thenLaPlanificacionConservaLaCantidadDeViajeros() {
     assertThat(planificacion.getAdultos(), equalTo(2));
     assertThat(planificacion.getNinos(), equalTo(1));
   }
 
   @Test
   public void guardarPreferenciasDeberiaConservarLosDatos() {
-    // preparacion
-    Planificacion planificacion = new Planificacion();
-    List<String> intereses = new ArrayList<>();
+    givenTengoUnaPlanificacionYMisIntereses();
+
+    whenGuardoElAlojamientoYLosIntereses();
+
+    thenLaPlanificacionConservaElAlojamientoYLosIntereses();
+  }
+
+  private void givenTengoUnaPlanificacionYMisIntereses() {
+    planificacion = new Planificacion();
+    intereses = new ArrayList<>();
     intereses.add("playa");
     intereses.add("cultura");
+  }
 
-    // ejecucion
+  private void whenGuardoElAlojamientoYLosIntereses() {
     planificacion.setAlojamiento("hotel");
     planificacion.setIntereses(intereses);
+  }
 
-    // validacion
+  private void thenLaPlanificacionConservaElAlojamientoYLosIntereses() {
     assertThat(planificacion.getAlojamiento(), equalTo("hotel"));
     assertThat(planificacion.getIntereses(), equalTo(intereses));
   }

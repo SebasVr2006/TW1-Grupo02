@@ -2,7 +2,10 @@ package com.tallerwebi.presentacion;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.tallerwebi.dominio.Destino;
 import com.tallerwebi.dominio.Planificacion;
@@ -17,70 +20,111 @@ public class ControladorPlanificacionTest {
 
   private ControladorPlanificacion controladorPlanificacion;
   private ServicioPlanificacion servicioPlanificacionMock;
+  private HttpServletRequest request;
+  private HttpSession sesion;
+  private Planificacion planificacion;
+  private ModelAndView resultado;
 
   @BeforeEach
-  public void init() {
+  public void inicializar() {
     this.servicioPlanificacionMock = mock(ServicioPlanificacion.class);
     this.controladorPlanificacion = new ControladorPlanificacion(this.servicioPlanificacionMock);
+    this.request = mock(HttpServletRequest.class);
+    this.sesion = mock(HttpSession.class);
   }
 
   @Test
   public void mostrarPlanificacionDeberiaRetornarVistaPlanificacion() {
-    // ejecucion
-    ModelAndView modeloYVista = this.controladorPlanificacion.mostrarPlanificacion();
+    whenMuestroLaPlanificacion();
 
-    // validacion
-    assertThat(modeloYVista.getViewName(), equalTo("planificacion"));
+    thenSeMuestraLaVistaPlanificacion();
   }
 
   @Test
   public void recibirPlanificacionDeberiaGuardarEnSesionYRedireccionarAlResumen() {
-    // preparacion
-    Planificacion planificacion = new Planificacion();
-    planificacion.agregarDestino(new Destino("Bariloche", "2026-12-10", 5));
-    planificacion.setAdultos(1);
-    planificacion.setNinos(0);
-    planificacion.setAlojamiento("hotel");
+    givenTengoUnaPlanificacionValida();
+    givenLaSesionEstaDisponible();
+    givenElServicioGuardaLaPlanificacion();
 
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpSession sesion = mock(HttpSession.class);
+    whenReciboLaPlanificacion();
 
-    when(request.getSession()).thenReturn(sesion);
-    when(this.servicioPlanificacionMock.guardarPlanificacion(planificacion))
-      .thenReturn(planificacion);
-
-    // ejecucion
-    ModelAndView modeloYVista =
-      this.controladorPlanificacion.recibirPlanificacion(planificacion, request);
-
-    // validacion
-    assertThat(modeloYVista.getViewName(), equalTo("redirect:/resumen-planificacion"));
-
-    verify(this.servicioPlanificacionMock, times(1)).guardarPlanificacion(planificacion);
-
-    verify(sesion, times(1)).setAttribute("planificacion", planificacion);
+    thenSeRedirigeAlResumen();
+    thenSeGuardaLaPlanificacionEnElServicio();
+    thenSeGuardaLaPlanificacionEnLaSesion();
   }
 
   @Test
   public void mostrarResumenDeberiaRecuperarPlanificacionDeSesion() {
-    // preparacion
-    Planificacion planificacion = new Planificacion();
-    planificacion.agregarDestino(new Destino("Bariloche", "2026-12-10", 5));
+    givenTengoUnaPlanificacionValida();
+    givenLaSesionEstaDisponible();
+    givenLaPlanificacionEstaGuardadaEnLaSesion();
 
-    HttpServletRequest request = mock(HttpServletRequest.class);
-    HttpSession sesion = mock(HttpSession.class);
+    whenMuestroElResumen();
 
-    when(request.getSession()).thenReturn(sesion);
-    when(sesion.getAttribute("planificacion")).thenReturn(planificacion);
+    thenSeMuestraLaVistaResumen();
+    thenSeIncluyeLaPlanificacionEnElModelo();
+    thenSeRecuperaLaPlanificacionDeLaSesion();
+  }
 
-    // ejecucion
-    ModelAndView modeloYVista = this.controladorPlanificacion.mostrarResumen(request);
+  private void givenTengoUnaPlanificacionValida() {
+    this.planificacion = new Planificacion();
+    this.planificacion.agregarDestino(new Destino("Bariloche", "2026-12-10", 5));
+    this.planificacion.setAdultos(1);
+    this.planificacion.setNinos(0);
+    this.planificacion.setAlojamiento("hotel");
+  }
 
-    // validacion
-    assertThat(modeloYVista.getViewName(), equalTo("resumen-planificacion"));
+  private void givenLaSesionEstaDisponible() {
+    when(this.request.getSession()).thenReturn(this.sesion);
+  }
 
-    assertThat(modeloYVista.getModel().get("planificacion"), equalTo(planificacion));
+  private void givenElServicioGuardaLaPlanificacion() {
+    when(this.servicioPlanificacionMock.guardarPlanificacion(this.planificacion))
+      .thenReturn(this.planificacion);
+  }
 
-    verify(sesion, times(1)).getAttribute("planificacion");
+  private void givenLaPlanificacionEstaGuardadaEnLaSesion() {
+    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
+  }
+
+  private void whenMuestroLaPlanificacion() {
+    this.resultado = this.controladorPlanificacion.mostrarPlanificacion();
+  }
+
+  private void whenReciboLaPlanificacion() {
+    this.resultado =
+      this.controladorPlanificacion.recibirPlanificacion(this.planificacion, this.request);
+  }
+
+  private void whenMuestroElResumen() {
+    this.resultado = this.controladorPlanificacion.mostrarResumen(this.request);
+  }
+
+  private void thenSeMuestraLaVistaPlanificacion() {
+    assertThat(this.resultado.getViewName(), equalTo("planificacion"));
+  }
+
+  private void thenSeRedirigeAlResumen() {
+    assertThat(this.resultado.getViewName(), equalTo("redirect:/resumen-planificacion"));
+  }
+
+  private void thenSeGuardaLaPlanificacionEnElServicio() {
+    verify(this.servicioPlanificacionMock, times(1)).guardarPlanificacion(this.planificacion);
+  }
+
+  private void thenSeGuardaLaPlanificacionEnLaSesion() {
+    verify(this.sesion, times(1)).setAttribute("planificacion", this.planificacion);
+  }
+
+  private void thenSeMuestraLaVistaResumen() {
+    assertThat(this.resultado.getViewName(), equalTo("resumen-planificacion"));
+  }
+
+  private void thenSeIncluyeLaPlanificacionEnElModelo() {
+    assertThat(this.resultado.getModel().get("planificacion"), equalTo(this.planificacion));
+  }
+
+  private void thenSeRecuperaLaPlanificacionDeLaSesion() {
+    verify(this.sesion, times(1)).getAttribute("planificacion");
   }
 }

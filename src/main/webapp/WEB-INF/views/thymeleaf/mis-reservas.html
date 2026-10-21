@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis reservas | FlyNow</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main>
+    <h2>Mis reservas</h2>
+
+    <p th:if="${#lists.isEmpty(reservas)}">Todavía no tenés reservas confirmadas.</p>
+
+    <article class="reserva" th:each="reserva : ${reservas}">
+        <h3 th:text="|Reserva #${reserva.id}|"></h3>
+        <p>Confirmada el <span th:text="${reserva.fechaCreacionFormateada}"></span></p>
+        <p>
+            Estado:
+            <span class="estado" th:classappend="${reserva.estado.name() == 'PAGADA'} ? 'estado-pagada' : 'estado-pendiente'"
+                  th:text="${reserva.estado.descripcion}"></span>
+        </p>
+        <p>
+            Adultos: <span th:text="${reserva.adultos}"></span> |
+            Niños: <span th:text="${reserva.ninos}"></span> |
+            Alojamiento: <span th:text="${reserva.alojamiento}"></span>
+        </p>
+        <p th:if="${!#lists.isEmpty(reserva.intereses)}">
+            Intereses: <span th:text="${#strings.listJoin(reserva.intereses, ', ')}"></span>
+        </p>
+
+        <section th:each="destino : ${reserva.destinos}">
+            <h4 th:text="|${destino.nombreDestino} - ${destino.pais}|"></h4>
+            <p>
+                Desde <span th:text="${destino.fechaInicio}"></span>
+                (<span th:text="${destino.duracion}"></span> noches)
+            </p>
+            <p>
+                Hotel: <strong th:text="${destino.hotel.nombre}"></strong>
+                - <span th:text="${destino.costoHotel}"></span>
+            </p>
+            <ul th:if="${!#lists.isEmpty(destino.actividades)}">
+                <li th:each="actividad : ${destino.actividades}">
+                    <span th:text="${actividad.nombre}"></span> -
+                    <span th:text="${actividad.precio}"></span>
+                </li>
+            </ul>
+            <p>Subtotal: <span th:text="${destino.subtotal}"></span></p>
+        </section>
+
+        <p><strong>Total: <span th:text="${reserva.total}"></span></strong></p>
+    </article>
+
+    <a th:href="@{/planificacion}">Planificar otro viaje</a>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

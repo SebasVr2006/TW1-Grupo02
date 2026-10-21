@@ -29,154 +29,165 @@ public class RepositorioUsuarioTest {
   private SessionFactory sessionFactory;
 
   private RepositorioUsuario repositorioUsuario;
+  private Usuario usuario;
+  private Usuario obtenido;
 
   @BeforeEach
-  public void init() {
-    repositorioUsuario = new RepositorioUsuarioImpl(sessionFactory);
+  public void inicializar() {
+    this.repositorioUsuario = new RepositorioUsuarioImpl(this.sessionFactory);
   }
 
   @Test
   @Transactional
   @Rollback
   public void deberiaGuardarUnNuevoUsuario() {
-    String emailNuevoUsuario = "nuevo.usuario@test.com";
+    givenTengoUnUsuarioNuevo();
 
-    // Preparación
-    Usuario usuario = this.dadoQueTengoUnUsuario("usuarioPrueba", emailNuevoUsuario, "1234");
+    whenGuardoElUsuario();
 
-    // Ejecución
-    this.cuandoGuardoUnUsuario(usuario);
-
-    // Validación
-    this.entoncesSeGuardoElUsuario(emailNuevoUsuario, usuario);
+    thenElUsuarioSeGuardaCorrectamente();
   }
 
   @Test
   @Transactional
   @Rollback
   public void deberiaEncontrarUnUsuarioExistenteCuandoBuscoPorEmailYPassword() {
-    String email = "test@test.com";
-    String password = "123";
+    givenTengoUnUsuarioExistente();
 
-    Usuario usuario = this.dadoQueTengoUnUsuario("usuarioPrueba", email, password);
-    this.dadoQueExisteElUsuario(usuario);
+    whenBuscoElUsuarioPorEmailYPassword();
 
-    Usuario obtenido = this.cuandoBuscoUnUsuario(email, password);
-
-    this.entoncesElUsuarioObtenidoEsCorrecto(obtenido, usuario);
+    thenElUsuarioObtenidoEsCorrecto();
   }
 
   @Test
   @Transactional
   public void noDeberiaEncontrarUnUsuarioInexistenteCuandoBuscoPorEmailYPassword() {
-    Usuario obtenido = this.cuandoBuscoUnUsuario("test@test.com", "123");
+    givenNoExisteUnUsuarioConEseEmailYPassword();
 
-    this.entoncesElUsuarioObtenidoEsNull(obtenido);
+    whenBuscoElUsuarioPorEmailYPassword();
+
+    thenElUsuarioObtenidoEsNulo();
   }
 
   @Test
   @Transactional
   @Rollback
   public void deberiaEncontrarUnUsuarioExistenteCuandoBuscoPorEmail() {
-    String email = "test@test.com";
+    givenTengoUnUsuarioExistente();
 
-    Usuario usuario = this.dadoQueTengoUnUsuario("usuarioPrueba", email, "123");
-    this.dadoQueExisteElUsuario(usuario);
+    whenBuscoElUsuarioPorEmail();
 
-    Usuario obtenido = this.cuandoObtengoUnUsuarioPorEmail(email);
-
-    this.entoncesElUsuarioObtenidoEsCorrecto(obtenido, usuario);
+    thenElUsuarioObtenidoEsCorrecto();
   }
 
   @Test
   @Transactional
   public void noDeberiaEncontrarUnUsuarioInexistenteCuandoBuscoPorEmail() {
-    Usuario obtenido = this.cuandoObtengoUnUsuarioPorEmail("test@test.com");
+    givenNoExisteUnUsuarioConEseEmail();
 
-    this.entoncesElUsuarioObtenidoEsNull(obtenido);
+    whenBuscoElUsuarioPorEmail();
+
+    thenElUsuarioObtenidoEsNulo();
   }
 
   @Test
   @Transactional
   @Rollback
   public void deberiaModificarUnUsuarioExistente() {
-    String email = "test@test.com";
+    givenTengoUnUsuarioExistente();
+    givenModificoLosDatosDelUsuario();
 
-    Usuario usuario = this.dadoQueTengoUnUsuario("usuarioPrueba", email, "123");
-    this.dadoQueExisteElUsuario(usuario);
+    whenModificoElUsuario();
+    whenBuscoElUsuarioPorEmail();
 
-    usuario.setNombreUsuario("nombreActualizado");
-    usuario.setPassword("4567");
-
-    this.cuandoModificoUnUsuario(usuario);
-
-    Usuario obtenido = this.cuandoObtengoUnUsuarioPorEmail(email);
-    this.entoncesElUsuarioObtenidoEsCorrecto(obtenido, usuario);
+    thenElUsuarioObtenidoEsCorrecto();
   }
 
   @Test
   @Transactional
   @Rollback
   public void deberiaLanzarUnaExcepcionAlIntentarModificarUnUsuarioInexistente() {
-    Usuario usuario = this.dadoQueTengoUnUsuario("usuarioInexistente", "noexiste@test.com", "123");
+    givenTengoUnUsuarioInexistente();
 
-    // Al no estar persistido, el usuario no tiene ID.
-    // Por eso, modificar debe lanzar UsuarioNoEncontrado.
-    this.entoncesSeLanzaUnaUsuarioNoEncontrado(usuario);
+    whenIntentoModificarElUsuarioYEsperoUnaExcepcion();
   }
 
-  private Usuario dadoQueTengoUnUsuario(String nombreUsuario, String email, String password) {
+  private void givenTengoUnUsuarioNuevo() {
+    this.usuario = crearUsuario("usuarioPrueba", "nuevo.usuario@test.com", "1234");
+  }
+
+  private void givenTengoUnUsuarioExistente() {
+    this.usuario = crearUsuario("usuarioPrueba", "test@test.com", "123");
+    this.sessionFactory.getCurrentSession().persist(this.usuario);
+  }
+
+  private void givenNoExisteUnUsuarioConEseEmailYPassword() {
+    this.usuario = crearUsuario("usuarioPrueba", "test@test.com", "123");
+  }
+
+  private void givenNoExisteUnUsuarioConEseEmail() {
+    this.usuario = crearUsuario("usuarioPrueba", "test@test.com", "123");
+  }
+
+  private void givenModificoLosDatosDelUsuario() {
+    this.usuario.setNombreUsuario("nombreActualizado");
+    this.usuario.setPassword("4567");
+  }
+
+  private void givenTengoUnUsuarioInexistente() {
+    this.usuario = crearUsuario("usuarioInexistente", "noexiste@test.com", "123");
+  }
+
+  private void whenGuardoElUsuario() {
+    this.repositorioUsuario.guardar(this.usuario);
+  }
+
+  private void whenBuscoElUsuarioPorEmailYPassword() {
+    this.obtenido =
+      this.repositorioUsuario.buscarUsuario(this.usuario.getEmail(), this.usuario.getPassword());
+  }
+
+  private void whenBuscoElUsuarioPorEmail() {
+    this.obtenido = this.repositorioUsuario.buscar(this.usuario.getEmail());
+  }
+
+  private void whenModificoElUsuario() {
+    this.repositorioUsuario.modificar(this.usuario);
+  }
+
+  private void whenIntentoModificarElUsuarioYEsperoUnaExcepcion() {
+    assertThrows(UsuarioNoEncontrado.class, () -> this.repositorioUsuario.modificar(this.usuario));
+  }
+
+  private void thenElUsuarioSeGuardaCorrectamente() {
+    String hql = "FROM Usuario WHERE email = :email";
+    Query query = this.sessionFactory.getCurrentSession().createQuery(hql, Usuario.class);
+    query.setParameter("email", this.usuario.getEmail());
+
+    Usuario usuarioGuardado = (Usuario) query.getSingleResult();
+
+    thenElUsuarioObtenidoEsCorrecto(usuarioGuardado);
+  }
+
+  private void thenElUsuarioObtenidoEsCorrecto() {
+    thenElUsuarioObtenidoEsCorrecto(this.obtenido);
+  }
+
+  private void thenElUsuarioObtenidoEsCorrecto(Usuario usuarioObtenido) {
+    assertThat(usuarioObtenido.getNombreUsuario(), is(equalTo(this.usuario.getNombreUsuario())));
+    assertThat(usuarioObtenido.getEmail(), is(equalTo(this.usuario.getEmail())));
+    assertThat(usuarioObtenido.getPassword(), is(equalTo(this.usuario.getPassword())));
+  }
+
+  private void thenElUsuarioObtenidoEsNulo() {
+    assertThat(this.obtenido, is(nullValue()));
+  }
+
+  private Usuario crearUsuario(String nombreUsuario, String email, String password) {
     Usuario usuario = new Usuario();
     usuario.setNombreUsuario(nombreUsuario);
     usuario.setEmail(email);
     usuario.setPassword(password);
     return usuario;
-  }
-
-  private void dadoQueExisteElUsuario(Usuario usuario) {
-    this.sessionFactory.getCurrentSession().persist(usuario);
-  }
-
-  private void cuandoGuardoUnUsuario(Usuario usuario) {
-    this.repositorioUsuario.guardar(usuario);
-  }
-
-  private Usuario cuandoBuscoUnUsuario(String email, String password) {
-    return this.repositorioUsuario.buscarUsuario(email, password);
-  }
-
-  private Usuario cuandoObtengoUnUsuarioPorEmail(String email) {
-    return this.repositorioUsuario.buscar(email);
-  }
-
-  private void cuandoModificoUnUsuario(Usuario usuario) {
-    this.repositorioUsuario.modificar(usuario);
-  }
-
-  private void entoncesSeGuardoElUsuario(String email, Usuario usuarioEsperado) {
-    String hql = "FROM Usuario WHERE email = :email";
-    Query query = this.sessionFactory.getCurrentSession().createQuery(hql, Usuario.class);
-    query.setParameter("email", email);
-
-    Usuario usuarioObtenido = (Usuario) query.getSingleResult();
-
-    this.entoncesElUsuarioObtenidoEsCorrecto(usuarioObtenido, usuarioEsperado);
-  }
-
-  private void entoncesElUsuarioObtenidoEsCorrecto(
-    Usuario usuarioObtenido,
-    Usuario usuarioEsperado
-  ) {
-    assertThat(usuarioObtenido.getNombreUsuario(), is(equalTo(usuarioEsperado.getNombreUsuario())));
-    assertThat(usuarioObtenido.getEmail(), is(equalTo(usuarioEsperado.getEmail())));
-    assertThat(usuarioObtenido.getPassword(), is(equalTo(usuarioEsperado.getPassword())));
-  }
-
-  private void entoncesElUsuarioObtenidoEsNull(Usuario obtenido) {
-    assertThat(obtenido, is(nullValue()));
-  }
-
-  private void entoncesSeLanzaUnaUsuarioNoEncontrado(Usuario usuario) {
-    assertThrows(UsuarioNoEncontrado.class, () -> this.cuandoModificoUnUsuario(usuario));
   }
 }

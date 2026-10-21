@@ -15,7 +15,13 @@ public class ReiniciarDB {
         : "user";
 
       String sqlCommands =
+        "SET FOREIGN_KEY_CHECKS=0;\n" +
+        "DELETE FROM reserva_destino_actividad;\n" +
+        "DELETE FROM reserva_interes;\n" +
+        "DELETE FROM ReservaDestino;\n" +
+        "DELETE FROM Reserva;\n" +
         "DELETE FROM Usuario;\n" +
+        "SET FOREIGN_KEY_CHECKS=1;\n" +
         "ALTER TABLE Usuario AUTO_INCREMENT = 1;\n" +
         "INSERT INTO Usuario(id, email, password, rol, activo) VALUES(null, 'test@unlam.edu.ar', 'test', 'ADMIN', true);";
 

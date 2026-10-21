@@ -23,6 +23,8 @@ public class ControladorItinerarioTest {
   private ServicioItinerario servicioItinerario;
   private ControladorItinerario controladorItinerario;
   private HttpSession sesion;
+  private Planificacion planificacion;
+  private ModelAndView resultado;
 
   @BeforeEach
   public void inicializar() {
@@ -33,31 +35,61 @@ public class ControladorItinerarioTest {
 
   @Test
   public void mostrarItinerarioConPlanificacionValida() {
-    Planificacion planificacion = new Planificacion();
-    planificacion.agregarDestino(new Destino("Buenos Aires", "2026-12-10", 5));
+    givenTengoUnaPlanificacionValida();
+    givenElServicioGeneraUnaOpcionParaBuenosAires();
 
-    OpcionDestino opcion = new OpcionDestino("Buenos Aires", "Argentina", List.of(), List.of());
+    whenMuestroElItinerario();
 
-    when(this.sesion.getAttribute("planificacion")).thenReturn(planificacion);
-    when(this.servicioItinerario.generarItinerario("Buenos Aires")).thenReturn(opcion);
-
-    ModelAndView resultado = this.controladorItinerario.mostrarItinerario(this.sesion);
-
-    assertThat(resultado.getViewName(), equalTo("itinerario"));
-    assertThat((List<?>) resultado.getModel().get("opcionesItinerario"), hasSize(1));
-    assertThat(resultado.getModel().get("planificacion"), equalTo(planificacion));
-
-    verify(this.servicioItinerario).generarItinerario("Buenos Aires");
+    thenSeMuestraElItinerarioConLaPlanificacion();
+    thenSeSolicitaElItinerarioAlServicio();
   }
 
   @Test
   public void redirigirCuandoNoExistePlanificacionEnSesion() {
+    givenNoExisteUnaPlanificacionEnLaSesion();
+
+    whenMuestroElItinerario();
+
+    thenSeRedirigeALaPlanificacion();
+    thenNoSeConsultaElServicioDeItinerario();
+  }
+
+  private void givenTengoUnaPlanificacionValida() {
+    this.planificacion = new Planificacion();
+    this.planificacion.agregarDestino(new Destino("Buenos Aires", "2026-12-10", 5));
+
+    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
+  }
+
+  private void givenElServicioGeneraUnaOpcionParaBuenosAires() {
+    OpcionDestino opcion = new OpcionDestino("Buenos Aires", "Argentina", List.of(), List.of());
+
+    when(this.servicioItinerario.generarItinerario("Buenos Aires")).thenReturn(opcion);
+  }
+
+  private void givenNoExisteUnaPlanificacionEnLaSesion() {
     when(this.sesion.getAttribute("planificacion")).thenReturn(null);
+  }
 
-    ModelAndView resultado = this.controladorItinerario.mostrarItinerario(this.sesion);
+  private void whenMuestroElItinerario() {
+    this.resultado = this.controladorItinerario.mostrarItinerario(this.sesion);
+  }
 
-    assertThat(resultado.getViewName(), equalTo("redirect:/planificacion"));
+  private void thenSeMuestraElItinerarioConLaPlanificacion() {
+    assertThat(this.resultado.getViewName(), equalTo("itinerario"));
+    assertThat((List<?>) this.resultado.getModel().get("opcionesItinerario"), hasSize(1));
+    assertThat(this.resultado.getModel().get("planificacion"), equalTo(this.planificacion));
+  }
 
+  private void thenSeSolicitaElItinerarioAlServicio() {
+    verify(this.servicioItinerario).generarItinerario("Buenos Aires");
+  }
+
+  private void thenSeRedirigeALaPlanificacion() {
+    assertThat(this.resultado.getViewName(), equalTo("redirect:/planificacion"));
+  }
+
+  private void thenNoSeConsultaElServicioDeItinerario() {
     verifyNoInteractions(this.servicioItinerario);
   }
 }
