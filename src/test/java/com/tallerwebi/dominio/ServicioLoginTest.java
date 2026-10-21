@@ -40,24 +40,20 @@ public class ServicioLoginTest {
     String password = "password";
     usuario = new Usuario();
 
-    when(repositorioUsuarioMock.buscarUsuario(email, password))
-            .thenReturn(usuario);
+    when(repositorioUsuarioMock.buscarUsuario(email, password)).thenReturn(usuario);
   }
 
   private void whenConsultoElUsuarioPorEmailYPassword() {
-    usuarioObtenido =
-            servicioLogin.consultarUsuario("test@test.com", "password");
+    usuarioObtenido = servicioLogin.consultarUsuario("test@test.com", "password");
   }
 
   private void thenObtengoElUsuarioEsperadoYSeConsultaElRepositorio() {
     assertThat(usuarioObtenido, equalTo(usuario));
-    verify(repositorioUsuarioMock, times(1))
-            .buscarUsuario("test@test.com", "password");
+    verify(repositorioUsuarioMock, times(1)).buscarUsuario("test@test.com", "password");
   }
 
   @Test
-  public void registrarUsuarioSiNoExisteDeberiaGuardarlo()
-          throws UsuarioExistente {
+  public void registrarUsuarioSiNoExisteDeberiaGuardarlo() throws UsuarioExistente {
     givenTengoUnUsuarioNuevoQueNoExiste();
 
     whenRegistroElUsuario();
@@ -70,8 +66,7 @@ public class ServicioLoginTest {
     usuario.setEmail("nuevo@test.com");
     usuario.setPassword("123");
 
-    when(repositorioUsuarioMock.buscar(usuario.getEmail()))
-            .thenReturn(null);
+    when(repositorioUsuarioMock.buscar(usuario.getEmail())).thenReturn(null);
   }
 
   private void whenRegistroElUsuario() throws UsuarioExistente {
@@ -101,15 +96,11 @@ public class ServicioLoginTest {
     usuarioExistente.setEmail("existe@test.com");
     usuarioExistente.setPassword("password-anterior");
 
-    when(repositorioUsuarioMock.buscar(usuario.getEmail()))
-            .thenReturn(usuarioExistente);
+    when(repositorioUsuarioMock.buscar(usuario.getEmail())).thenReturn(usuarioExistente);
   }
 
   private void whenIntentoRegistrarElUsuarioExistente() {
-    assertThrows(
-            UsuarioExistente.class,
-            () -> servicioLogin.registrar(usuario)
-    );
+    assertThrows(UsuarioExistente.class, () -> servicioLogin.registrar(usuario));
   }
 
   private void thenSeLanzaLaExcepcionYNoSeGuardaElUsuario() {

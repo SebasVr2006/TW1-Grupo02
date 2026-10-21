@@ -28,8 +28,7 @@ public class ControladorPlanificacionTest {
   @BeforeEach
   public void inicializar() {
     this.servicioPlanificacionMock = mock(ServicioPlanificacion.class);
-    this.controladorPlanificacion =
-            new ControladorPlanificacion(this.servicioPlanificacionMock);
+    this.controladorPlanificacion = new ControladorPlanificacion(this.servicioPlanificacionMock);
     this.request = mock(HttpServletRequest.class);
     this.sesion = mock(HttpSession.class);
   }
@@ -69,9 +68,7 @@ public class ControladorPlanificacionTest {
 
   private void givenTengoUnaPlanificacionValida() {
     this.planificacion = new Planificacion();
-    this.planificacion.agregarDestino(
-            new Destino("Bariloche", "2026-12-10", 5)
-    );
+    this.planificacion.agregarDestino(new Destino("Bariloche", "2026-12-10", 5));
     this.planificacion.setAdultos(1);
     this.planificacion.setNinos(0);
     this.planificacion.setAlojamiento("hotel");
@@ -83,12 +80,11 @@ public class ControladorPlanificacionTest {
 
   private void givenElServicioGuardaLaPlanificacion() {
     when(this.servicioPlanificacionMock.guardarPlanificacion(this.planificacion))
-            .thenReturn(this.planificacion);
+      .thenReturn(this.planificacion);
   }
 
   private void givenLaPlanificacionEstaGuardadaEnLaSesion() {
-    when(this.sesion.getAttribute("planificacion"))
-            .thenReturn(this.planificacion);
+    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
   }
 
   private void whenMuestroLaPlanificacion() {
@@ -96,10 +92,8 @@ public class ControladorPlanificacionTest {
   }
 
   private void whenReciboLaPlanificacion() {
-    this.resultado = this.controladorPlanificacion.recibirPlanificacion(
-            this.planificacion,
-            this.request
-    );
+    this.resultado =
+      this.controladorPlanificacion.recibirPlanificacion(this.planificacion, this.request);
   }
 
   private void whenMuestroElResumen() {
@@ -111,34 +105,23 @@ public class ControladorPlanificacionTest {
   }
 
   private void thenSeRedirigeAlResumen() {
-    assertThat(
-            this.resultado.getViewName(),
-            equalTo("redirect:/resumen-planificacion")
-    );
+    assertThat(this.resultado.getViewName(), equalTo("redirect:/resumen-planificacion"));
   }
 
   private void thenSeGuardaLaPlanificacionEnElServicio() {
-    verify(this.servicioPlanificacionMock, times(1))
-            .guardarPlanificacion(this.planificacion);
+    verify(this.servicioPlanificacionMock, times(1)).guardarPlanificacion(this.planificacion);
   }
 
   private void thenSeGuardaLaPlanificacionEnLaSesion() {
-    verify(this.sesion, times(1))
-            .setAttribute("planificacion", this.planificacion);
+    verify(this.sesion, times(1)).setAttribute("planificacion", this.planificacion);
   }
 
   private void thenSeMuestraLaVistaResumen() {
-    assertThat(
-            this.resultado.getViewName(),
-            equalTo("resumen-planificacion")
-    );
+    assertThat(this.resultado.getViewName(), equalTo("resumen-planificacion"));
   }
 
   private void thenSeIncluyeLaPlanificacionEnElModelo() {
-    assertThat(
-            this.resultado.getModel().get("planificacion"),
-            equalTo(this.planificacion)
-    );
+    assertThat(this.resultado.getModel().get("planificacion"), equalTo(this.planificacion));
   }
 
   private void thenSeRecuperaLaPlanificacionDeLaSesion() {

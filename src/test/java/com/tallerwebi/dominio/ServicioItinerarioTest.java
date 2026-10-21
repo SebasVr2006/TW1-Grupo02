@@ -28,20 +28,15 @@ class ServicioItinerarioTest {
     repositorioItinerario = mock(RepositorioItinerario.class);
     servicioItinerario = new ServicioItinerarioImpl(repositorioItinerario);
 
-    DestinoDisponible buenosAires =
-            new DestinoDisponible("Buenos Aires", "Argentina");
+    DestinoDisponible buenosAires = new DestinoDisponible("Buenos Aires", "Argentina");
     buenosAires.setId(1L);
 
     Hotel hotel = new Hotel("Hotel Palermo Soho", 90.0);
-    Actividad actividad =
-            new Actividad("Show de tango en San Telmo", 70.0);
+    Actividad actividad = new Actividad("Show de tango en San Telmo", 70.0);
 
-    when(repositorioItinerario.buscarDestinoPorCiudad("buenos aires"))
-            .thenReturn(buenosAires);
-    when(repositorioItinerario.buscarHotelesPorDestino(1L))
-            .thenReturn(List.of(hotel));
-    when(repositorioItinerario.buscarActividadesPorDestino(1L))
-            .thenReturn(List.of(actividad));
+    when(repositorioItinerario.buscarDestinoPorCiudad("buenos aires")).thenReturn(buenosAires);
+    when(repositorioItinerario.buscarHotelesPorDestino(1L)).thenReturn(List.of(hotel));
+    when(repositorioItinerario.buscarActividadesPorDestino(1L)).thenReturn(List.of(actividad));
   }
 
   private void whenGeneroElItinerarioDeBuenosAires() {
@@ -55,10 +50,7 @@ class ServicioItinerarioTest {
     assertEquals(1, resultado.getHoteles().size());
     assertEquals("Hotel Palermo Soho", resultado.getHoteles().get(0).getNombre());
     assertEquals(1, resultado.getActividades().size());
-    assertEquals(
-            "Show de tango en San Telmo",
-            resultado.getActividades().get(0).getNombre()
-    );
+    assertEquals("Show de tango en San Telmo", resultado.getActividades().get(0).getNombre());
   }
 
   @Test
@@ -77,12 +69,9 @@ class ServicioItinerarioTest {
     DestinoDisponible paris = new DestinoDisponible("Paris", "Francia");
     paris.setId(0L);
 
-    when(repositorioItinerario.buscarDestinoPorCiudad("paris"))
-            .thenReturn(paris);
-    when(repositorioItinerario.buscarHotelesPorDestino(0L))
-            .thenReturn(List.of());
-    when(repositorioItinerario.buscarActividadesPorDestino(0L))
-            .thenReturn(List.of());
+    when(repositorioItinerario.buscarDestinoPorCiudad("paris")).thenReturn(paris);
+    when(repositorioItinerario.buscarHotelesPorDestino(0L)).thenReturn(List.of());
+    when(repositorioItinerario.buscarActividadesPorDestino(0L)).thenReturn(List.of());
   }
 
   private void whenGeneroElItinerarioDeParisConAcento() {
@@ -142,8 +131,7 @@ class ServicioItinerarioTest {
     repositorioItinerario = mock(RepositorioItinerario.class);
     servicioItinerario = new ServicioItinerarioImpl(repositorioItinerario);
 
-    when(repositorioItinerario.buscarDestinoPorCiudad("cordoba"))
-            .thenReturn(null);
+    when(repositorioItinerario.buscarDestinoPorCiudad("cordoba")).thenReturn(null);
   }
 
   private void whenGeneroElItinerarioDeCordoba() {

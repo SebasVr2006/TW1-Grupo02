@@ -147,8 +147,8 @@ public class RepositorioReservaTest {
 
   private void whenSincronizoYConsultoLaReservaGuardada() {
     this.sincronizarYLimpiarLaSesion();
-    this.guardada = this.sessionFactory.getCurrentSession()
-            .get(Reserva.class, this.reserva.getId());
+    this.guardada =
+      this.sessionFactory.getCurrentSession().get(Reserva.class, this.reserva.getId());
   }
 
   private void whenBuscoLasReservasDeAna() {
@@ -161,10 +161,7 @@ public class RepositorioReservaTest {
     assertThat(this.guardada.getAdultos(), is(equalTo(2)));
     assertThat(this.guardada.getNinos(), is(equalTo(1)));
     assertThat(this.guardada.getAlojamiento(), is(equalTo("Hotel")));
-    assertThat(
-            this.guardada.getIntereses(),
-            is(equalTo(List.of("Cultura", "Gastronomía")))
-    );
+    assertThat(this.guardada.getIntereses(), is(equalTo(List.of("Cultura", "Gastronomía"))));
     assertThat(this.guardada.getTotal(), is(equalTo(1500.0)));
     assertThat(this.guardada.getEstado(), is(equalTo(EstadoReserva.PAGADA)));
     assertThat(this.guardada.getDestinos(), hasSize(2));
@@ -174,14 +171,8 @@ public class RepositorioReservaTest {
     assertThat(primero.getNombreDestino(), is(equalTo("Buenos Aires")));
     assertThat(primero.getHotel().getNombre(), is(equalTo("Hotel Palermo")));
     assertThat(primero.getActividades(), hasSize(1));
-    assertThat(
-            primero.getActividades().get(0).getNombre(),
-            is(equalTo("Show de tango"))
-    );
-    assertThat(
-            this.guardada.getDestinos().get(1).getNombreDestino(),
-            is(equalTo("Paris"))
-    );
+    assertThat(primero.getActividades().get(0).getNombre(), is(equalTo("Show de tango")));
+    assertThat(this.guardada.getDestinos().get(1).getNombreDestino(), is(equalTo("Paris")));
     assertThat(this.guardada.getDestinos().get(1).getActividades(), is(empty()));
   }
 
@@ -218,28 +209,24 @@ public class RepositorioReservaTest {
     reserva.setTotal(total);
 
     reserva.agregarDestino(
-            crearDestino(
-                    "Buenos Aires",
-                    new HotelReservado("Hotel Palermo", 90.0),
-                    List.of(new ActividadReservada("Show de tango", 70.0))
-            )
+      crearDestino(
+        "Buenos Aires",
+        new HotelReservado("Hotel Palermo", 90.0),
+        List.of(new ActividadReservada("Show de tango", 70.0))
+      )
     );
 
     reserva.agregarDestino(
-            crearDestino(
-                    "Paris",
-                    new HotelReservado("Hotel Marais", 160.0),
-                    List.of()
-            )
+      crearDestino("Paris", new HotelReservado("Hotel Marais", 160.0), List.of())
     );
 
     return reserva;
   }
 
   private ReservaDestino crearDestino(
-          String nombre,
-          HotelReservado hotel,
-          List<ActividadReservada> actividades
+    String nombre,
+    HotelReservado hotel,
+    List<ActividadReservada> actividades
   ) {
     ReservaDestino destino = new ReservaDestino();
     destino.setNombreDestino(nombre);

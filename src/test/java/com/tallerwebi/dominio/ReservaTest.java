@@ -1,4 +1,3 @@
-
 package com.tallerwebi.dominio;
 
 import static org.hamcrest.MatcherAssert.assertThat;

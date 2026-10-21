@@ -56,24 +56,15 @@ public class ControladorItinerarioTest {
 
   private void givenTengoUnaPlanificacionValida() {
     this.planificacion = new Planificacion();
-    this.planificacion.agregarDestino(
-            new Destino("Buenos Aires", "2026-12-10", 5)
-    );
+    this.planificacion.agregarDestino(new Destino("Buenos Aires", "2026-12-10", 5));
 
-    when(this.sesion.getAttribute("planificacion"))
-            .thenReturn(this.planificacion);
+    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
   }
 
   private void givenElServicioGeneraUnaOpcionParaBuenosAires() {
-    OpcionDestino opcion = new OpcionDestino(
-            "Buenos Aires",
-            "Argentina",
-            List.of(),
-            List.of()
-    );
+    OpcionDestino opcion = new OpcionDestino("Buenos Aires", "Argentina", List.of(), List.of());
 
-    when(this.servicioItinerario.generarItinerario("Buenos Aires"))
-            .thenReturn(opcion);
+    when(this.servicioItinerario.generarItinerario("Buenos Aires")).thenReturn(opcion);
   }
 
   private void givenNoExisteUnaPlanificacionEnLaSesion() {
@@ -86,14 +77,8 @@ public class ControladorItinerarioTest {
 
   private void thenSeMuestraElItinerarioConLaPlanificacion() {
     assertThat(this.resultado.getViewName(), equalTo("itinerario"));
-    assertThat(
-            (List<?>) this.resultado.getModel().get("opcionesItinerario"),
-            hasSize(1)
-    );
-    assertThat(
-            this.resultado.getModel().get("planificacion"),
-            equalTo(this.planificacion)
-    );
+    assertThat((List<?>) this.resultado.getModel().get("opcionesItinerario"), hasSize(1));
+    assertThat(this.resultado.getModel().get("planificacion"), equalTo(this.planificacion));
   }
 
   private void thenSeSolicitaElItinerarioAlServicio() {
@@ -101,10 +86,7 @@ public class ControladorItinerarioTest {
   }
 
   private void thenSeRedirigeALaPlanificacion() {
-    assertThat(
-            this.resultado.getViewName(),
-            equalTo("redirect:/planificacion")
-    );
+    assertThat(this.resultado.getViewName(), equalTo("redirect:/planificacion"));
   }
 
   private void thenNoSeConsultaElServicioDeItinerario() {

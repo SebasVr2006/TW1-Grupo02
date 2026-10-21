@@ -144,15 +144,15 @@ public class ServicioPlanificacionTest {
 
   private void whenIntentoGuardarLaPlanificacionConDestinoInvalido() {
     assertThrows(
-            DestinoInvalidoException.class,
-            () -> servicioPlanificacion.guardarPlanificacion(planificacion)
+      DestinoInvalidoException.class,
+      () -> servicioPlanificacion.guardarPlanificacion(planificacion)
     );
   }
 
   private void whenIntentoGuardarLaPlanificacionInvalida() {
     assertThrows(
-            PlanificacionInvalidaException.class,
-            () -> servicioPlanificacion.guardarPlanificacion(planificacion)
+      PlanificacionInvalidaException.class,
+      () -> servicioPlanificacion.guardarPlanificacion(planificacion)
     );
   }
 

@@ -195,68 +195,54 @@ public class ControladorReservaTest {
   private void givenElServicioPreparaLaConfirmacion() {
     this.confirmacion = mock(ConfirmacionCompraDto.class);
 
-    when(this.servicioReserva.prepararConfirmacion(
-            this.planificacion,
-            this.seleccion
-    )).thenReturn(this.confirmacion);
+    when(this.servicioReserva.prepararConfirmacion(this.planificacion, this.seleccion))
+      .thenReturn(this.confirmacion);
   }
 
   private void givenLaConfirmacionEsInvalida() {
     doThrow(new ReservaInvalidaException("Selección inválida"))
-            .when(this.servicioReserva)
-            .prepararConfirmacion(this.planificacion, this.seleccion);
+      .when(this.servicioReserva)
+      .prepararConfirmacion(this.planificacion, this.seleccion);
   }
 
   private void givenLaReservaEsInvalida() {
     doThrow(new ReservaInvalidaException("Selección inválida"))
-            .when(this.servicioReserva)
-            .confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+      .when(this.servicioReserva)
+      .confirmarReserva(this.usuario, this.planificacion, this.seleccion);
   }
 
   private void givenElUsuarioTieneReservas() {
     this.reservas = List.of(new Reserva());
 
-    when(this.servicioReserva.obtenerReservasDelUsuario(this.usuario))
-            .thenReturn(this.reservas);
+    when(this.servicioReserva.obtenerReservasDelUsuario(this.usuario)).thenReturn(this.reservas);
   }
 
   private void whenConsultoLaConfirmacionDeCompra() {
-    this.resultado = this.controladorReserva.verConfirmacionCompra(
-            this.sesion,
-            this.modelo,
-            this.redirectAttributes
-    );
+    this.resultado =
+      this.controladorReserva.verConfirmacionCompra(
+          this.sesion,
+          this.modelo,
+          this.redirectAttributes
+        );
   }
 
   private void whenConfirmoLaReservaAceptandoLosTerminos() {
-    this.resultado = this.controladorReserva.confirmarReserva(
-            this.sesion,
-            true,
-            this.redirectAttributes
-    );
+    this.resultado =
+      this.controladorReserva.confirmarReserva(this.sesion, true, this.redirectAttributes);
   }
 
   private void whenConfirmoLaReservaSinAceptarLosTerminos() {
-    this.resultado = this.controladorReserva.confirmarReserva(
-            this.sesion,
-            false,
-            this.redirectAttributes
-    );
+    this.resultado =
+      this.controladorReserva.confirmarReserva(this.sesion, false, this.redirectAttributes);
   }
 
   private void whenConsultoMisReservas() {
-    this.resultado = this.controladorReserva.verMisReservas(
-            this.sesion,
-            this.modelo
-    );
+    this.resultado = this.controladorReserva.verMisReservas(this.sesion, this.modelo);
   }
 
   private void thenSeMuestraLaConfirmacionDeCompra() {
     assertThat(this.resultado, is(equalTo("confirmacion-compra")));
-    assertThat(
-            this.modelo.getAttribute("confirmacion"),
-            is(equalTo(this.confirmacion))
-    );
+    assertThat(this.modelo.getAttribute("confirmacion"), is(equalTo(this.confirmacion)));
   }
 
   private void thenSeRedirigeAlLogin() {
@@ -280,8 +266,7 @@ public class ControladorReservaTest {
   }
 
   private void thenSeConfirmaLaReserva() {
-    verify(this.servicioReserva)
-            .confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+    verify(this.servicioReserva).confirmarReserva(this.usuario, this.planificacion, this.seleccion);
   }
 
   private void thenSeLimpiaElItinerarioDeLaSesion() {
@@ -291,15 +276,12 @@ public class ControladorReservaTest {
   }
 
   private void thenSeMuestraElErrorDeTerminos() {
-    verify(this.redirectAttributes).addFlashAttribute(
-            "error",
-            "Tenés que aceptar los términos y condiciones para continuar."
-    );
+    verify(this.redirectAttributes)
+      .addFlashAttribute("error", "Tenés que aceptar los términos y condiciones para continuar.");
   }
 
   private void thenSeMuestraElErrorDeReservaInvalida() {
-    verify(this.redirectAttributes)
-            .addFlashAttribute("error", "Selección inválida");
+    verify(this.redirectAttributes).addFlashAttribute("error", "Selección inválida");
   }
 
   private void thenNoSeConsultaElServicio() {
@@ -319,9 +301,6 @@ public class ControladorReservaTest {
   }
 
   private void thenSeIncluyenLasReservasEnElModelo() {
-    assertThat(
-            this.modelo.getAttribute("reservas"),
-            is(equalTo(this.reservas))
-    );
+    assertThat(this.modelo.getAttribute("reservas"), is(equalTo(this.reservas)));
   }
 }

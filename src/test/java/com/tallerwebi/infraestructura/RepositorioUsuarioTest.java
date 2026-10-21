@@ -113,11 +113,7 @@ public class RepositorioUsuarioTest {
   }
 
   private void givenTengoUnUsuarioNuevo() {
-    this.usuario = crearUsuario(
-            "usuarioPrueba",
-            "nuevo.usuario@test.com",
-            "1234"
-    );
+    this.usuario = crearUsuario("usuarioPrueba", "nuevo.usuario@test.com", "1234");
   }
 
   private void givenTengoUnUsuarioExistente() {
@@ -139,11 +135,7 @@ public class RepositorioUsuarioTest {
   }
 
   private void givenTengoUnUsuarioInexistente() {
-    this.usuario = crearUsuario(
-            "usuarioInexistente",
-            "noexiste@test.com",
-            "123"
-    );
+    this.usuario = crearUsuario("usuarioInexistente", "noexiste@test.com", "123");
   }
 
   private void whenGuardoElUsuario() {
@@ -151,10 +143,8 @@ public class RepositorioUsuarioTest {
   }
 
   private void whenBuscoElUsuarioPorEmailYPassword() {
-    this.obtenido = this.repositorioUsuario.buscarUsuario(
-            this.usuario.getEmail(),
-            this.usuario.getPassword()
-    );
+    this.obtenido =
+      this.repositorioUsuario.buscarUsuario(this.usuario.getEmail(), this.usuario.getPassword());
   }
 
   private void whenBuscoElUsuarioPorEmail() {
@@ -166,16 +156,12 @@ public class RepositorioUsuarioTest {
   }
 
   private void whenIntentoModificarElUsuarioYEsperoUnaExcepcion() {
-    assertThrows(
-            UsuarioNoEncontrado.class,
-            () -> this.repositorioUsuario.modificar(this.usuario)
-    );
+    assertThrows(UsuarioNoEncontrado.class, () -> this.repositorioUsuario.modificar(this.usuario));
   }
 
   private void thenElUsuarioSeGuardaCorrectamente() {
     String hql = "FROM Usuario WHERE email = :email";
-    Query query = this.sessionFactory.getCurrentSession()
-            .createQuery(hql, Usuario.class);
+    Query query = this.sessionFactory.getCurrentSession().createQuery(hql, Usuario.class);
     query.setParameter("email", this.usuario.getEmail());
 
     Usuario usuarioGuardado = (Usuario) query.getSingleResult();
@@ -188,18 +174,9 @@ public class RepositorioUsuarioTest {
   }
 
   private void thenElUsuarioObtenidoEsCorrecto(Usuario usuarioObtenido) {
-    assertThat(
-            usuarioObtenido.getNombreUsuario(),
-            is(equalTo(this.usuario.getNombreUsuario()))
-    );
-    assertThat(
-            usuarioObtenido.getEmail(),
-            is(equalTo(this.usuario.getEmail()))
-    );
-    assertThat(
-            usuarioObtenido.getPassword(),
-            is(equalTo(this.usuario.getPassword()))
-    );
+    assertThat(usuarioObtenido.getNombreUsuario(), is(equalTo(this.usuario.getNombreUsuario())));
+    assertThat(usuarioObtenido.getEmail(), is(equalTo(this.usuario.getEmail())));
+    assertThat(usuarioObtenido.getPassword(), is(equalTo(this.usuario.getPassword())));
   }
 
   private void thenElUsuarioObtenidoEsNulo() {

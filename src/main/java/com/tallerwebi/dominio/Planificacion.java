@@ -16,7 +16,9 @@ public class Planificacion {
     this.intereses = new ArrayList<>();
   }
 
-  public void agregarDestino(Destino destino) { this.destinos.add(destino); }
+  public void agregarDestino(Destino destino) {
+    this.destinos.add(destino);
+  }
 
   public List<Destino> getDestinos() {
     return destinos;

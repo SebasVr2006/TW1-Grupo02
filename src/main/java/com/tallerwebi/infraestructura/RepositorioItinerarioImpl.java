@@ -23,15 +23,23 @@ public class RepositorioItinerarioImpl implements RepositorioItinerario {
   public DestinoDisponible buscarDestinoPorCiudad(String ciudad) {
     List<DestinoDisponible> destinos = sessionFactory
       .getCurrentSession()
-      .createQuery(
-        "from DestinoDisponible d where lower(d.ciudad) = lower(:ciudad)",
-        DestinoDisponible.class
-      )
-      .setParameter("ciudad", ciudad)
-      .setMaxResults(1)
+      .createQuery("from DestinoDisponible", DestinoDisponible.class)
       .getResultList();
 
-    return destinos.isEmpty() ? null : destinos.get(0);
+    String ciudadBuscada = normalizarCiudad(ciudad);
+
+    return destinos
+      .stream()
+      .filter(destino -> normalizarCiudad(destino.getCiudad()).equals(ciudadBuscada))
+      .findFirst()
+      .orElse(null);
+  }
+
+  private String normalizarCiudad(String ciudad) {
+    return java.text.Normalizer
+      .normalize(ciudad.trim(), java.text.Normalizer.Form.NFD)
+      .replaceAll("\\p{M}", "")
+      .toLowerCase(java.util.Locale.ROOT);
   }
 
   @Override

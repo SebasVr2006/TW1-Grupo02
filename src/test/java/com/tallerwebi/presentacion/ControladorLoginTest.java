@@ -52,7 +52,7 @@ public class ControladorLoginTest {
 
   @Test
   public void registrarUsuarioConDatosValidosDeberiaRegistrarYRedirigirALogin()
-          throws UsuarioExistente {
+    throws UsuarioExistente {
     givenTengoDatosDeRegistroValidos();
 
     whenRegistroElUsuario();
@@ -62,8 +62,7 @@ public class ControladorLoginTest {
   }
 
   @Test
-  public void registrarUsuarioConNombreVacioDeberiaMostrarError()
-          throws UsuarioExistente {
+  public void registrarUsuarioConNombreVacioDeberiaMostrarError() throws UsuarioExistente {
     givenTengoDatosDeRegistroValidos();
     givenElNombreEstaVacio();
 
@@ -74,8 +73,7 @@ public class ControladorLoginTest {
   }
 
   @Test
-  public void registrarUsuarioConEmailVacioDeberiaMostrarError()
-          throws UsuarioExistente {
+  public void registrarUsuarioConEmailVacioDeberiaMostrarError() throws UsuarioExistente {
     givenTengoDatosDeRegistroValidos();
     givenElEmailEstaVacio();
 
@@ -86,8 +84,7 @@ public class ControladorLoginTest {
   }
 
   @Test
-  public void registrarUsuarioConPasswordVacioDeberiaMostrarError()
-          throws UsuarioExistente {
+  public void registrarUsuarioConPasswordVacioDeberiaMostrarError() throws UsuarioExistente {
     givenTengoDatosDeRegistroValidos();
     givenLaPasswordEstaVacia();
 
@@ -98,8 +95,7 @@ public class ControladorLoginTest {
   }
 
   @Test
-  public void registrarUsuarioConConfirmacionVaciaDeberiaMostrarError()
-          throws UsuarioExistente {
+  public void registrarUsuarioConConfirmacionVaciaDeberiaMostrarError() throws UsuarioExistente {
     givenTengoDatosDeRegistroValidos();
     givenLaConfirmacionEstaVacia();
 
@@ -110,8 +106,7 @@ public class ControladorLoginTest {
   }
 
   @Test
-  public void registrarUsuarioConPasswordsDiferentesDeberiaMostrarError()
-          throws UsuarioExistente {
+  public void registrarUsuarioConPasswordsDiferentesDeberiaMostrarError() throws UsuarioExistente {
     givenTengoDatosDeRegistroValidos();
     givenLasPasswordsSonDiferentes();
 
@@ -122,8 +117,7 @@ public class ControladorLoginTest {
   }
 
   @Test
-  public void registrarUsuarioConEmailExistenteDeberiaMostrarError()
-          throws UsuarioExistente {
+  public void registrarUsuarioConEmailExistenteDeberiaMostrarError() throws UsuarioExistente {
     givenTengoDatosDeRegistroValidos();
     givenElEmailYaEstaRegistrado();
 
@@ -162,9 +156,7 @@ public class ControladorLoginTest {
   }
 
   private void givenElEmailYaEstaRegistrado() throws UsuarioExistente {
-    doThrow(UsuarioExistente.class)
-            .when(this.servicioLoginMock)
-            .registrar(any(Usuario.class));
+    doThrow(UsuarioExistente.class).when(this.servicioLoginMock).registrar(any(Usuario.class));
   }
 
   private void whenIngresoAlLogin() {
@@ -204,24 +196,15 @@ public class ControladorLoginTest {
   }
 
   private void thenSeMuestraElErrorDeCamposObligatorios() {
-    verificarErrorDeRegistro(
-            this.resultado,
-            "Completá todos los campos."
-    );
+    verificarErrorDeRegistro(this.resultado, "Completá todos los campos.");
   }
 
   private void thenSeMuestraElErrorDePasswordsDiferentes() {
-    verificarErrorDeRegistro(
-            this.resultado,
-            "Las contraseñas no coinciden."
-    );
+    verificarErrorDeRegistro(this.resultado, "Las contraseñas no coinciden.");
   }
 
   private void thenSeMuestraElErrorDeEmailExistente() {
-    verificarErrorDeRegistro(
-            this.resultado,
-            "Ya existe una cuenta registrada con ese email."
-    );
+    verificarErrorDeRegistro(this.resultado, "Ya existe una cuenta registrada con ese email.");
   }
 
   private void thenNoSeRegistraElUsuario() throws UsuarioExistente {
@@ -232,15 +215,9 @@ public class ControladorLoginTest {
     verify(this.servicioLoginMock).registrar(any(Usuario.class));
   }
 
-  private void verificarErrorDeRegistro(
-          ModelAndView modelAndView,
-          String mensajeEsperado
-  ) {
+  private void verificarErrorDeRegistro(ModelAndView modelAndView, String mensajeEsperado) {
     assertThat(modelAndView.getViewName(), is(equalTo("registro")));
-    assertThat(
-            modelAndView.getModel().get("mensajeError"),
-            is(equalTo(mensajeEsperado))
-    );
+    assertThat(modelAndView.getModel().get("mensajeError"), is(equalTo(mensajeEsperado)));
     assertThat(modelAndView.getModel().containsKey("datosLogin"), is(true));
   }
 }

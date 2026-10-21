@@ -1,7 +1,9 @@
 package com.tallerwebi.dominio;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -95,7 +97,6 @@ public class ServicioResumenItinerarioImpl implements ServicioResumenItinerario 
     List<Actividad> actividades
   ) {
     double costoHotel = hotel.getPrecioPorNoche() * destino.getDuracion();
-
     double costoActividades = calcularCostoActividades(actividades);
 
     DetalleDestinoItinerario detalle = new DetalleDestinoItinerario();
@@ -138,8 +139,16 @@ public class ServicioResumenItinerarioImpl implements ServicioResumenItinerario 
     return (
       seleccion != null &&
       nombreDestino != null &&
-      nombreDestino.equalsIgnoreCase(seleccion.getNombreDestino())
+      seleccion.getNombreDestino() != null &&
+      normalizarCiudad(nombreDestino).equals(normalizarCiudad(seleccion.getNombreDestino()))
     );
+  }
+
+  private String normalizarCiudad(String ciudad) {
+    return Normalizer
+      .normalize(ciudad.trim(), Normalizer.Form.NFD)
+      .replaceAll("\\p{M}", "")
+      .toLowerCase(Locale.ROOT);
   }
 
   private Hotel buscarHotel(OpcionDestino opcion, String nombreHotel) {

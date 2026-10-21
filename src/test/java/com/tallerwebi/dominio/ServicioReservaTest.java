@@ -53,10 +53,7 @@ public class ServicioReservaTest {
     assertThat(guardada.getAdultos(), is(equalTo(2)));
     assertThat(guardada.getNinos(), is(equalTo(1)));
     assertThat(guardada.getAlojamiento(), is(equalTo("Hotel")));
-    assertThat(
-            guardada.getIntereses(),
-            is(equalTo(List.of("Gastronomía", "Cultura")))
-    );
+    assertThat(guardada.getIntereses(), is(equalTo(List.of("Gastronomía", "Cultura"))));
   }
 
   @Test
@@ -91,20 +88,11 @@ public class ServicioReservaTest {
     assertThat(buenosAires.getPais(), is(equalTo("Argentina")));
     assertThat(buenosAires.getFechaInicio(), is(equalTo("2026-12-10")));
     assertThat(buenosAires.getDuracion(), is(equalTo(5)));
-    assertThat(
-            buenosAires.getHotel().getNombre(),
-            is(equalTo("Hotel Palermo Soho"))
-    );
+    assertThat(buenosAires.getHotel().getNombre(), is(equalTo("Hotel Palermo Soho")));
     assertThat(buenosAires.getHotel().getPrecioPorNoche(), is(equalTo(90.0)));
     assertThat(buenosAires.getActividades(), hasSize(1));
-    assertThat(
-            buenosAires.getActividades().get(0).getNombre(),
-            is(equalTo("Show de tango"))
-    );
-    assertThat(
-            buenosAires.getActividades().get(0).getPrecio(),
-            is(equalTo(70.0))
-    );
+    assertThat(buenosAires.getActividades().get(0).getNombre(), is(equalTo("Show de tango")));
+    assertThat(buenosAires.getActividades().get(0).getPrecio(), is(equalTo(70.0)));
     assertThat(buenosAires.getCostoHotel(), is(equalTo(450.0)));
     assertThat(buenosAires.getCostoActividades(), is(equalTo(70.0)));
     assertThat(buenosAires.getSubtotal(), is(equalTo(520.0)));
@@ -113,10 +101,7 @@ public class ServicioReservaTest {
     assertThat(paris.getNombreDestino(), is(equalTo("Paris")));
     assertThat(paris.getFechaInicio(), is(equalTo("2026-12-20")));
     assertThat(paris.getDuracion(), is(equalTo(3)));
-    assertThat(
-            paris.getHotel().getNombre(),
-            is(equalTo("Hotel Le Marais"))
-    );
+    assertThat(paris.getHotel().getNombre(), is(equalTo("Hotel Le Marais")));
     assertThat(paris.getActividades(), is(empty()));
     assertThat(paris.getSubtotal(), is(equalTo(480.0)));
   }
@@ -162,10 +147,7 @@ public class ServicioReservaTest {
     Reserva guardada = entoncesSeGuardoUnaReserva();
 
     assertThat(guardada.getDestinos(), hasSize(2));
-    assertThat(
-            guardada.getDestinos().get(1).getNombreDestino(),
-            is(equalTo("Paris"))
-    );
+    assertThat(guardada.getDestinos().get(1).getNombreDestino(), is(equalTo("Paris")));
   }
 
   @Test
@@ -174,9 +156,7 @@ public class ServicioReservaTest {
 
     whenIntentoConfirmarLaReservaSinDatosValidos();
 
-    thenLaConfirmacionFallaConElMensaje(
-            "Debés iniciar sesión para confirmar la reserva."
-    );
+    thenLaConfirmacionFallaConElMensaje("Debés iniciar sesión para confirmar la reserva.");
   }
 
   private void givenNoTengoUnUsuario() {
@@ -190,9 +170,7 @@ public class ServicioReservaTest {
 
     whenIntentoConfirmarLaReservaSinDatosValidos();
 
-    thenLaConfirmacionFallaConElMensaje(
-            "No hay un itinerario para confirmar."
-    );
+    thenLaConfirmacionFallaConElMensaje("No hay un itinerario para confirmar.");
   }
 
   private void givenNoTengoUnaPlanificacion() {
@@ -206,9 +184,7 @@ public class ServicioReservaTest {
 
     whenIntentoConfirmarLaReservaSinDatosValidos();
 
-    thenLaConfirmacionFallaConElMensaje(
-            "No hay un itinerario para confirmar."
-    );
+    thenLaConfirmacionFallaConElMensaje("No hay un itinerario para confirmar.");
   }
 
   private void givenNoTengoUnaSeleccion() {
@@ -222,20 +198,14 @@ public class ServicioReservaTest {
 
     whenIntentoConfirmarLaReservaSinDatosValidos();
 
-    thenLaConfirmacionFallaConElMensaje(
-            "Debés elegir un hotel válido para Paris"
-    );
+    thenLaConfirmacionFallaConElMensaje("Debés elegir un hotel válido para Paris");
   }
 
   private void givenTengoUnaSeleccionInvalida() {
     givenTengoDatosValidosParaLaReserva();
 
     when(servicioResumenItinerario.generarResumen(seleccion, planificacion))
-            .thenThrow(
-                    new IllegalArgumentException(
-                            "Debés elegir un hotel válido para Paris"
-                    )
-            );
+      .thenThrow(new IllegalArgumentException("Debés elegir un hotel válido para Paris"));
   }
 
   @Test
@@ -244,9 +214,7 @@ public class ServicioReservaTest {
 
     whenIntentoConfirmarLaReservaSinDatosValidos();
 
-    thenLaConfirmacionFallaConElMensaje(
-            "El itinerario no coincide con la planificación."
-    );
+    thenLaConfirmacionFallaConElMensaje("El itinerario no coincide con la planificación.");
   }
 
   private void givenTengoUnResumenQueNoCoincideConLaPlanificacion() {
@@ -265,8 +233,8 @@ public class ServicioReservaTest {
 
   private void thenLaReservaEstaPendienteDePago() {
     assertThat(
-            entoncesSeGuardoUnaReserva().getEstado(),
-            is(equalTo(EstadoReserva.PENDIENTE_DE_PAGO))
+      entoncesSeGuardoUnaReserva().getEstado(),
+      is(equalTo(EstadoReserva.PENDIENTE_DE_PAGO))
     );
   }
 
@@ -317,10 +285,7 @@ public class ServicioReservaTest {
     assertThat(buenosAires.getPais(), is(equalTo("Argentina")));
     assertThat(buenosAires.getFechaInicio(), is(equalTo("2026-12-10")));
     assertThat(buenosAires.getNoches(), is(equalTo(5)));
-    assertThat(
-            confirmacion.getDestinos().get(1).getNombre(),
-            is(equalTo("Paris"))
-    );
+    assertThat(confirmacion.getDestinos().get(1).getNombre(), is(equalTo("Paris")));
     assertThat(confirmacion.getDestinos().get(1).getNoches(), is(equalTo(3)));
   }
 
@@ -343,9 +308,7 @@ public class ServicioReservaTest {
 
     whenIntentoPrepararLaConfirmacionSinDatosValidos();
 
-    thenLaPreparacionFallaConElMensaje(
-            "No hay un itinerario para confirmar."
-    );
+    thenLaPreparacionFallaConElMensaje("No hay un itinerario para confirmar.");
   }
 
   @Test
@@ -354,9 +317,7 @@ public class ServicioReservaTest {
 
     whenIntentoPrepararLaConfirmacionSinDatosValidos();
 
-    thenLaPreparacionFallaConElMensaje(
-            "No hay un itinerario para confirmar."
-    );
+    thenLaPreparacionFallaConElMensaje("No hay un itinerario para confirmar.");
   }
 
   @Test
@@ -365,9 +326,7 @@ public class ServicioReservaTest {
 
     whenIntentoPrepararLaConfirmacionSinDatosValidos();
 
-    thenLaPreparacionFallaConElMensaje(
-            "Debés elegir un hotel válido para Paris"
-    );
+    thenLaPreparacionFallaConElMensaje("Debés elegir un hotel válido para Paris");
   }
 
   @Test
@@ -376,9 +335,7 @@ public class ServicioReservaTest {
 
     whenIntentoPrepararLaConfirmacionSinDatosValidos();
 
-    thenLaPreparacionFallaConElMensaje(
-            "El itinerario no coincide con la planificación."
-    );
+    thenLaPreparacionFallaConElMensaje("El itinerario no coincide con la planificación.");
   }
 
   @Test
@@ -398,8 +355,7 @@ public class ServicioReservaTest {
     givenTengoDatosValidosParaLaReserva();
     reservasEsperadas = List.of(new Reserva(), new Reserva());
 
-    when(repositorioReserva.buscarPorUsuario(ID_USUARIO))
-            .thenReturn(reservasEsperadas);
+    when(repositorioReserva.buscarPorUsuario(ID_USUARIO)).thenReturn(reservasEsperadas);
   }
 
   private void whenConsultoLasReservasDelUsuario() {
@@ -421,8 +377,8 @@ public class ServicioReservaTest {
 
   private void whenIntentoObtenerReservasSinUsuario() {
     assertThrows(
-            ReservaInvalidaException.class,
-            () -> servicioReserva.obtenerReservasDelUsuario(null)
+      ReservaInvalidaException.class,
+      () -> servicioReserva.obtenerReservasDelUsuario(null)
     );
   }
 
@@ -433,8 +389,7 @@ public class ServicioReservaTest {
   private void givenTengoDatosValidosParaLaReserva() {
     repositorioReserva = mock(RepositorioReserva.class);
     servicioResumenItinerario = mock(ServicioResumenItinerario.class);
-    servicioReserva =
-            new ServicioReservaImpl(repositorioReserva, servicioResumenItinerario);
+    servicioReserva = new ServicioReservaImpl(repositorioReserva, servicioResumenItinerario);
 
     usuario = new Usuario();
     usuario.setId(ID_USUARIO);
@@ -442,13 +397,11 @@ public class ServicioReservaTest {
     seleccion = new SeleccionItinerario();
     resumen = dadoQueTengoUnResumen();
 
-    when(servicioResumenItinerario.generarResumen(seleccion, planificacion))
-            .thenReturn(resumen);
+    when(servicioResumenItinerario.generarResumen(seleccion, planificacion)).thenReturn(resumen);
   }
 
   private void whenConfirmoLaReserva() {
-    reservaResultado =
-            servicioReserva.confirmarReserva(usuario, planificacion, seleccion);
+    reservaResultado = servicioReserva.confirmarReserva(usuario, planificacion, seleccion);
   }
 
   private void whenPreparoLaConfirmacion() {
@@ -456,17 +409,19 @@ public class ServicioReservaTest {
   }
 
   private void whenIntentoConfirmarLaReservaSinDatosValidos() {
-    excepcion = assertThrows(
-            ReservaInvalidaException.class,
-            () -> servicioReserva.confirmarReserva(usuario, planificacion, seleccion)
-    );
+    excepcion =
+      assertThrows(
+        ReservaInvalidaException.class,
+        () -> servicioReserva.confirmarReserva(usuario, planificacion, seleccion)
+      );
   }
 
   private void whenIntentoPrepararLaConfirmacionSinDatosValidos() {
-    excepcion = assertThrows(
-            ReservaInvalidaException.class,
-            () -> servicioReserva.prepararConfirmacion(planificacion, seleccion)
-    );
+    excepcion =
+      assertThrows(
+        ReservaInvalidaException.class,
+        () -> servicioReserva.prepararConfirmacion(planificacion, seleccion)
+      );
   }
 
   private void thenLaConfirmacionFallaConElMensaje(String mensajeEsperado) {
@@ -496,23 +451,21 @@ public class ServicioReservaTest {
   }
 
   private ResumenItinerario dadoQueTengoUnResumen() {
-    DetalleDestinoItinerario buenosAires =
-            dadoQueTengoUnDetalle(
-                    "Buenos Aires",
-                    "Argentina",
-                    new Hotel("Hotel Palermo Soho", 90.0),
-                    List.of(new Actividad("Show de tango", 70.0)),
-                    new Double[] {450.0, 70.0, 520.0}
-            );
+    DetalleDestinoItinerario buenosAires = dadoQueTengoUnDetalle(
+      "Buenos Aires",
+      "Argentina",
+      new Hotel("Hotel Palermo Soho", 90.0),
+      List.of(new Actividad("Show de tango", 70.0)),
+      new Double[] { 450.0, 70.0, 520.0 }
+    );
 
-    DetalleDestinoItinerario paris =
-            dadoQueTengoUnDetalle(
-                    "Paris",
-                    "Francia",
-                    new Hotel("Hotel Le Marais", 160.0),
-                    List.of(),
-                    new Double[] {480.0, 0.0, 480.0}
-            );
+    DetalleDestinoItinerario paris = dadoQueTengoUnDetalle(
+      "Paris",
+      "Francia",
+      new Hotel("Hotel Le Marais", 160.0),
+      List.of(),
+      new Double[] { 480.0, 0.0, 480.0 }
+    );
 
     ResumenItinerario nuevo = new ResumenItinerario();
     nuevo.setDestinos(List.of(buenosAires, paris));
@@ -521,11 +474,11 @@ public class ServicioReservaTest {
   }
 
   private DetalleDestinoItinerario dadoQueTengoUnDetalle(
-          String ciudad,
-          String pais,
-          Hotel hotel,
-          List<Actividad> actividades,
-          Double[] costos
+    String ciudad,
+    String pais,
+    Hotel hotel,
+    List<Actividad> actividades,
+    Double[] costos
   ) {
     DetalleDestinoItinerario detalle = new DetalleDestinoItinerario();
     detalle.setNombreDestino(ciudad);
