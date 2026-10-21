@@ -21,6 +21,11 @@
         <h3 th:text="|Reserva #${reserva.id}|"></h3>
         <p>Confirmada el <span th:text="${reserva.fechaCreacionFormateada}"></span></p>
         <p>
+            Estado:
+            <span class="estado" th:classappend="${reserva.estado.name() == 'PAGADA'} ? 'estado-pagada' : 'estado-pendiente'"
+                  th:text="${reserva.estado.descripcion}"></span>
+        </p>
+        <p>
             Adultos: <span th:text="${reserva.adultos}"></span> |
             Niños: <span th:text="${reserva.ninos}"></span> |
             Alojamiento: <span th:text="${reserva.alojamiento}"></span>

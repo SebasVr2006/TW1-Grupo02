@@ -163,6 +163,82 @@ public class ServicioReservaTest {
   }
 
   @Test
+  public void deberiaGuardarLaReservaComoPendienteDePago() {
+    this.cuandoConfirmoLaReserva();
+
+    Reserva guardada = this.entoncesSeGuardoUnaReserva();
+    assertThat(guardada.getEstado(), is(equalTo(EstadoReserva.PENDIENTE_DE_PAGO)));
+  }
+
+  @Test
+  public void deberiaPrepararLaConfirmacionConElDesgloseDeCostos() {
+    ConfirmacionCompraDto confirmacion = this.cuandoPreparoLaConfirmacion();
+
+    assertThat(confirmacion.getTotalAlojamiento(), is(equalTo(930.0)));
+    assertThat(confirmacion.getTotalActividades(), is(equalTo(70.0)));
+    assertThat(confirmacion.getTotal(), is(equalTo(1000.0)));
+  }
+
+  @Test
+  public void deberiaPrepararLaConfirmacionConLosDatosDelViaje() {
+    ConfirmacionCompraDto confirmacion = this.cuandoPreparoLaConfirmacion();
+
+    assertThat(confirmacion.getAdultos(), is(equalTo(2)));
+    assertThat(confirmacion.getNinos(), is(equalTo(1)));
+    assertThat(confirmacion.getAlojamiento(), is(equalTo("Hotel")));
+  }
+
+  @Test
+  public void deberiaPrepararLaConfirmacionConUnResumenCortoDeCadaDestino() {
+    ConfirmacionCompraDto confirmacion = this.cuandoPreparoLaConfirmacion();
+
+    assertThat(confirmacion.getDestinos(), hasSize(2));
+    DestinoConfirmacionDto buenosAires = confirmacion.getDestinos().get(0);
+    assertThat(buenosAires.getNombre(), is(equalTo("Buenos Aires")));
+    assertThat(buenosAires.getPais(), is(equalTo("Argentina")));
+    assertThat(buenosAires.getFechaInicio(), is(equalTo("2026-12-10")));
+    assertThat(buenosAires.getNoches(), is(equalTo(5)));
+    assertThat(confirmacion.getDestinos().get(1).getNombre(), is(equalTo("Paris")));
+    assertThat(confirmacion.getDestinos().get(1).getNoches(), is(equalTo(3)));
+  }
+
+  @Test
+  public void noDeberiaGuardarNadaAlPrepararLaConfirmacion() {
+    this.cuandoPreparoLaConfirmacion();
+
+    verifyNoInteractions(this.repositorioReserva);
+  }
+
+  @Test
+  public void noDeberiaPrepararLaConfirmacionSiNoHayPlanificacion() {
+    this.planificacion = null;
+
+    this.entoncesLaPreparacionFallaConElMensaje("No hay un itinerario para confirmar.");
+  }
+
+  @Test
+  public void noDeberiaPrepararLaConfirmacionSiNoHaySeleccion() {
+    this.seleccion = null;
+
+    this.entoncesLaPreparacionFallaConElMensaje("No hay un itinerario para confirmar.");
+  }
+
+  @Test
+  public void noDeberiaPrepararLaConfirmacionSiLaSeleccionEsInvalida() {
+    when(this.servicioResumenItinerario.generarResumen(this.seleccion, this.planificacion))
+      .thenThrow(new IllegalArgumentException("Debés elegir un hotel válido para Paris"));
+
+    this.entoncesLaPreparacionFallaConElMensaje("Debés elegir un hotel válido para Paris");
+  }
+
+  @Test
+  public void noDeberiaPrepararLaConfirmacionSiElResumenNoCoincideConLaPlanificacion() {
+    this.resumen.setDestinos(List.of(this.resumen.getDestinos().get(0)));
+
+    this.entoncesLaPreparacionFallaConElMensaje("El itinerario no coincide con la planificación.");
+  }
+
+  @Test
   public void deberiaObtenerLasReservasDelUsuario() {
     List<Reserva> reservas = List.of(new Reserva(), new Reserva());
     when(this.repositorioReserva.buscarPorUsuario(ID_USUARIO)).thenReturn(reservas);
@@ -184,6 +260,19 @@ public class ServicioReservaTest {
 
   private Reserva cuandoConfirmoLaReserva() {
     return this.servicioReserva.confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+  }
+
+  private ConfirmacionCompraDto cuandoPreparoLaConfirmacion() {
+    return this.servicioReserva.prepararConfirmacion(this.planificacion, this.seleccion);
+  }
+
+  private void entoncesLaPreparacionFallaConElMensaje(String mensajeEsperado) {
+    ReservaInvalidaException excepcion = assertThrows(
+      ReservaInvalidaException.class,
+      this::cuandoPreparoLaConfirmacion
+    );
+
+    assertThat(excepcion.getMessage(), is(equalTo(mensajeEsperado)));
   }
 
   private Reserva entoncesSeGuardoUnaReserva() {

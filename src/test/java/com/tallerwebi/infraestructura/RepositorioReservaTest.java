@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.tallerwebi.dominio.ActividadReservada;
+import com.tallerwebi.dominio.EstadoReserva;
 import com.tallerwebi.dominio.HotelReservado;
 import com.tallerwebi.dominio.RepositorioReserva;
 import com.tallerwebi.dominio.Reserva;
@@ -47,6 +48,7 @@ public class RepositorioReservaTest {
   public void deberiaGuardarLaReservaConTodosSusDatos() {
     Usuario usuario = this.dadoQueExisteUnUsuario("ana@test.com");
     Reserva reserva = this.dadoQueTengoUnaReserva(usuario, 1500.0);
+    reserva.setEstado(EstadoReserva.PAGADA);
 
     this.repositorioReserva.guardar(reserva);
     this.sincronizarYLimpiarLaSesion();
@@ -59,6 +61,7 @@ public class RepositorioReservaTest {
     assertThat(guardada.getAlojamiento(), is(equalTo("Hotel")));
     assertThat(guardada.getIntereses(), is(equalTo(List.of("Cultura", "Gastronomía"))));
     assertThat(guardada.getTotal(), is(equalTo(1500.0)));
+    assertThat(guardada.getEstado(), is(equalTo(EstadoReserva.PAGADA)));
     assertThat(guardada.getDestinos(), hasSize(2));
 
     ReservaDestino primero = guardada.getDestinos().get(0);

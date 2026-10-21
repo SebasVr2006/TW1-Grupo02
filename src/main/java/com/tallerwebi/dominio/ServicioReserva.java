@@ -8,5 +8,9 @@ public interface ServicioReserva {
     Planificacion planificacion,
     SeleccionItinerario seleccion
   );
+  ConfirmacionCompraDto prepararConfirmacion(
+    Planificacion planificacion,
+    SeleccionItinerario seleccion
+  );
   List<Reserva> obtenerReservasDelUsuario(Usuario usuario);
 }

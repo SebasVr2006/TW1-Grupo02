@@ -37,19 +37,27 @@ public class ServicioReservaImpl implements ServicioReserva {
     SeleccionItinerario seleccion
   ) {
     validarUsuario(usuario);
-    if (planificacion == null || seleccion == null) {
-      throw new ReservaInvalidaException(MENSAJE_SIN_ITINERARIO);
-    }
+    validarItinerario(planificacion, seleccion);
 
     ResumenItinerario resumen = generarResumen(seleccion, planificacion);
-    List<Destino> destinos = destinosDe(planificacion);
-    if (destinos.size() != resumen.getDestinos().size()) {
-      throw new ReservaInvalidaException(MENSAJE_NO_COINCIDE);
-    }
+    List<Destino> destinos = destinosCoincidentes(planificacion, resumen);
 
     Reserva reserva = crearReserva(usuario, planificacion, resumen, destinos);
     this.repositorioReserva.guardar(reserva);
     return reserva;
+  }
+
+  @Override
+  public ConfirmacionCompraDto prepararConfirmacion(
+    Planificacion planificacion,
+    SeleccionItinerario seleccion
+  ) {
+    validarItinerario(planificacion, seleccion);
+
+    ResumenItinerario resumen = generarResumen(seleccion, planificacion);
+    List<Destino> destinos = destinosCoincidentes(planificacion, resumen);
+
+    return crearConfirmacion(planificacion, resumen, destinos);
   }
 
   @Override
@@ -62,6 +70,58 @@ public class ServicioReservaImpl implements ServicioReserva {
     if (usuario == null) {
       throw new ReservaInvalidaException(MENSAJE_SIN_USUARIO);
     }
+  }
+
+  private void validarItinerario(Planificacion planificacion, SeleccionItinerario seleccion) {
+    if (planificacion == null || seleccion == null) {
+      throw new ReservaInvalidaException(MENSAJE_SIN_ITINERARIO);
+    }
+  }
+
+  private List<Destino> destinosCoincidentes(
+    Planificacion planificacion,
+    ResumenItinerario resumen
+  ) {
+    List<Destino> destinos = destinosDe(planificacion);
+    if (destinos.size() != resumen.getDestinos().size()) {
+      throw new ReservaInvalidaException(MENSAJE_NO_COINCIDE);
+    }
+    return destinos;
+  }
+
+  private ConfirmacionCompraDto crearConfirmacion(
+    Planificacion planificacion,
+    ResumenItinerario resumen,
+    List<Destino> destinos
+  ) {
+    List<DestinoConfirmacionDto> resumenDestinos = new ArrayList<>();
+    double totalAlojamiento = 0.0;
+    double totalActividades = 0.0;
+
+    for (int i = 0; i < destinos.size(); i++) {
+      DetalleDestinoItinerario detalle = resumen.getDestinos().get(i);
+      Destino destino = destinos.get(i);
+      resumenDestinos.add(
+        new DestinoConfirmacionDto(
+          detalle.getNombreDestino(),
+          detalle.getNombrePais(),
+          destino.getFechaInicio(),
+          destino.getDuracion()
+        )
+      );
+      totalAlojamiento += detalle.getCostoHotel();
+      totalActividades += detalle.getCostoActividades();
+    }
+
+    return new ConfirmacionCompraDto(
+      planificacion.getAdultos(),
+      planificacion.getNinos(),
+      planificacion.getAlojamiento(),
+      resumenDestinos,
+      totalAlojamiento,
+      totalActividades,
+      resumen.getTotal()
+    );
   }
 
   private ResumenItinerario generarResumen(

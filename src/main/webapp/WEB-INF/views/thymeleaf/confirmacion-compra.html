@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de compra | FlyNow</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+
+<body>
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main class="confirmacion">
+    <ol class="pasos" aria-label="Pasos de la compra">
+        <li class="paso paso-hecho">1. Armá tu itinerario</li>
+        <li class="paso paso-actual">2. Confirmá tu compra</li>
+        <li class="paso">3. Pago</li>
+    </ol>
+
+    <h2>Confirmá tu compra</h2>
+    <p class="aviso">
+        Este es el último paso antes del pago. <strong>Todavía no se te cobró nada:</strong>
+        al confirmar, tu reserva queda <strong>pendiente de pago</strong>.
+    </p>
+
+    <p class="mensaje-error" th:if="${error}" th:text="${error}"></p>
+
+    <section class="bloque">
+        <h3>Tu viaje</h3>
+        <ul class="lista-destinos">
+            <li th:each="destino : ${confirmacion.destinos}">
+                <strong th:text="|${destino.nombre}, ${destino.pais}|"></strong>
+                <span th:text="|Desde el ${destino.fechaInicio} · ${destino.noches} noches|"></span>
+            </li>
+        </ul>
+        <p>
+            <span th:text="|Adultos: ${confirmacion.adultos}|"></span> ·
+            <span th:text="|Niños: ${confirmacion.ninos}|"></span> ·
+            <span th:text="|Alojamiento: ${confirmacion.alojamiento}|"></span>
+        </p>
+        <a th:href="@{/itinerario}">Modificar mi itinerario</a>
+    </section>
+
+    <section class="bloque">
+        <h3>Lo que vas a pagar</h3>
+        <table class="desglose">
+            <tr>
+                <td>Alojamiento</td>
+                <td th:text="'$ ' + ${#numbers.formatDecimal(confirmacion.totalAlojamiento, 1, 'POINT', 2, 'COMMA')}"></td>
+            </tr>
+            <tr>
+                <td>Actividades</td>
+                <td th:text="'$ ' + ${#numbers.formatDecimal(confirmacion.totalActividades, 1, 'POINT', 2, 'COMMA')}"></td>
+            </tr>
+            <tr class="total-a-pagar">
+                <td>Total a pagar</td>
+                <td th:text="'$ ' + ${#numbers.formatDecimal(confirmacion.total, 1, 'POINT', 2, 'COMMA')}"></td>
+            </tr>
+        </table>
+    </section>
+
+    <section class="bloque">
+        <h3>Medio de pago</h3>
+        <p>Vas a pagar con <strong>MercadoPago</strong> en el paso siguiente.</p>
+    </section>
+
+    <form th:action="@{/reservas/confirmar}" method="post" class="formulario-confirmacion">
+        <label class="terminos">
+            <input type="checkbox" name="aceptaTerminos" value="true">
+            Acepto los términos y condiciones
+        </label>
+        <button type="submit" class="boton-confirmar">Confirmar y continuar al pago</button>
+    </form>
+
+    <a th:href="@{/resumen-itinerario}">Volver al resumen del itinerario</a>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

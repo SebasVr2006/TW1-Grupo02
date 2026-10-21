@@ -5,6 +5,8 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -51,6 +53,9 @@ public class Reserva {
   private List<ReservaDestino> destinos = new ArrayList<>();
 
   private Double total;
+
+  @Enumerated(EnumType.STRING)
+  private EstadoReserva estado = EstadoReserva.PENDIENTE_DE_PAGO;
 
   public Long getId() {
     return id;
@@ -117,6 +122,14 @@ public class Reserva {
 
   public void agregarDestino(ReservaDestino destino) {
     this.destinos.add(destino);
+  }
+
+  public EstadoReserva getEstado() {
+    return estado;
+  }
+
+  public void setEstado(EstadoReserva estado) {
+    this.estado = estado;
   }
 
   public Double getTotal() {

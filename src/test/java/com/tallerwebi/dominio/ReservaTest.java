@@ -24,6 +24,26 @@ public class ReservaTest {
   }
 
   @Test
+  public void deberiaNacerPendienteDePago() {
+    assertThat(new Reserva().getEstado(), is(equalTo(EstadoReserva.PENDIENTE_DE_PAGO)));
+  }
+
+  @Test
+  public void deberiaPoderMarcarseComoPagada() {
+    Reserva reserva = new Reserva();
+
+    reserva.setEstado(EstadoReserva.PAGADA);
+
+    assertThat(reserva.getEstado(), is(equalTo(EstadoReserva.PAGADA)));
+  }
+
+  @Test
+  public void deberiaDescribirCadaEstadoParaElUsuario() {
+    assertThat(EstadoReserva.PENDIENTE_DE_PAGO.getDescripcion(), is(equalTo("Pendiente de pago")));
+    assertThat(EstadoReserva.PAGADA.getDescripcion(), is(equalTo("Pagada")));
+  }
+
+  @Test
   public void deberiaAgregarDestinosEnOrden() {
     Reserva reserva = new Reserva();
     ReservaDestino primero = new ReservaDestino();

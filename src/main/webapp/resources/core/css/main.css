@@ -216,3 +216,118 @@ footer {
     color: white;
     cursor: pointer;
 }
+
+/* Confirmación de compra (paso previo al pago) */
+.confirmacion {
+    max-width: 46rem;
+    align-items: stretch;
+    padding: 1.5rem;
+}
+
+.pasos {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+}
+
+.paso {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    background-color: #eceef8;
+    color: #6a6f94;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.paso-hecho {
+    background-color: #d8f0df;
+    color: #1d6b3a;
+}
+
+.paso-actual {
+    background-color: rgb(0, 19, 126);
+    color: white;
+    font-weight: bold;
+}
+
+.aviso {
+    margin: 0.75rem 0 1rem;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid rgb(0, 19, 126);
+    background-color: #eef1ff;
+}
+
+.bloque {
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid #d0d5e8;
+    border-radius: 12px;
+}
+
+.lista-destinos {
+    list-style: none;
+    padding: 0;
+}
+
+.lista-destinos li {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+}
+
+.desglose {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.desglose td {
+    padding: 0.4rem 0;
+}
+
+.desglose td:last-child {
+    text-align: right;
+}
+
+.total-a-pagar td {
+    padding-top: 0.75rem;
+    border-top: 2px solid rgb(0, 19, 126);
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.formulario-confirmacion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.terminos {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.estado {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.estado-pendiente {
+    background-color: #fff1cc;
+    color: #8a5a00;
+}
+
+.estado-pagada {
+    background-color: #d8f0df;
+    color: #1d6b3a;
+}
+
+a.boton-confirmar {
+    display: inline-block;
+}
