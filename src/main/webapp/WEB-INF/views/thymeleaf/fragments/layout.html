@@ -3,7 +3,16 @@
 
 <body>
     <header th:fragment="header">
-        <h1>FlyNow</h1>
+        <h1 class="logo">
+            <svg class="logo-avion"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 24 24"
+                 aria-hidden="true">
+                <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5L21 16z"
+                      fill="currentColor"/>
+            </svg>
+            FlyNow
+        </h1>
         <nav class="menu">
             <ul class="lista_header">
                 <li><a th:href="@{/home}">Home</a></li>
