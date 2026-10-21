@@ -36,9 +36,12 @@ public class ControladorReservaTest {
   private Usuario usuario;
   private Planificacion planificacion;
   private SeleccionItinerario seleccion;
+  private ConfirmacionCompraDto confirmacion;
+  private List<Reserva> reservas;
+  private String resultado;
 
   @BeforeEach
-  public void init() {
+  public void inicializar() {
     this.servicioReserva = mock(ServicioReserva.class);
     this.controladorReserva = new ControladorReserva(this.servicioReserva);
     this.sesion = mock(HttpSession.class);
@@ -52,170 +55,273 @@ public class ControladorReservaTest {
 
   @Test
   public void deberiaMostrarLaConfirmacionDeCompraConSusDatosEnElModelo() {
-    this.dadoQueLaSesionTieneTodo();
-    ConfirmacionCompraDto confirmacion = mock(ConfirmacionCompraDto.class);
-    when(this.servicioReserva.prepararConfirmacion(this.planificacion, this.seleccion))
-      .thenReturn(confirmacion);
+    givenLaSesionTieneTodo();
+    givenElServicioPreparaLaConfirmacion();
 
-    String vista =
-      this.controladorReserva.verConfirmacionCompra(
-          this.sesion,
-          this.modelo,
-          this.redirectAttributes
-        );
+    whenConsultoLaConfirmacionDeCompra();
 
-    assertThat(vista, is(equalTo("confirmacion-compra")));
-    assertThat(this.modelo.getAttribute("confirmacion"), is(equalTo(confirmacion)));
+    thenSeMuestraLaConfirmacionDeCompra();
   }
 
   @Test
   public void deberiaRedirigirALoginAlVerLaConfirmacionSinUsuarioLogueado() {
-    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
-    when(this.sesion.getAttribute("seleccionItinerario")).thenReturn(this.seleccion);
+    givenLaSesionTienePlanificacionYSeleccion();
 
-    String vista =
-      this.controladorReserva.verConfirmacionCompra(
-          this.sesion,
-          this.modelo,
-          this.redirectAttributes
-        );
+    whenConsultoLaConfirmacionDeCompra();
 
-    assertThat(vista, is(equalTo("redirect:/login")));
-    verifyNoInteractions(this.servicioReserva);
+    thenSeRedirigeAlLogin();
+    thenNoSeConsultaElServicio();
   }
 
   @Test
   public void deberiaRedirigirAPlanificacionAlVerLaConfirmacionSinItinerario() {
-    when(this.sesion.getAttribute("usuarioLogueado")).thenReturn(this.usuario);
+    givenHayUnUsuarioLogueado();
 
-    String vista =
-      this.controladorReserva.verConfirmacionCompra(
-          this.sesion,
-          this.modelo,
-          this.redirectAttributes
-        );
+    whenConsultoLaConfirmacionDeCompra();
 
-    assertThat(vista, is(equalTo("redirect:/planificacion")));
-    verifyNoInteractions(this.servicioReserva);
+    thenSeRedirigeAPlanificacion();
+    thenNoSeConsultaElServicio();
   }
 
   @Test
   public void deberiaVolverAlResumenSiNoSePuedePrepararLaConfirmacion() {
-    this.dadoQueLaSesionTieneTodo();
-    doThrow(new ReservaInvalidaException("Selección inválida"))
-      .when(this.servicioReserva)
-      .prepararConfirmacion(this.planificacion, this.seleccion);
+    givenLaSesionTieneTodo();
+    givenLaConfirmacionEsInvalida();
 
-    String vista =
-      this.controladorReserva.verConfirmacionCompra(
-          this.sesion,
-          this.modelo,
-          this.redirectAttributes
-        );
+    whenConsultoLaConfirmacionDeCompra();
 
-    assertThat(vista, is(equalTo("redirect:/resumen-itinerario")));
-    verify(this.redirectAttributes).addFlashAttribute("error", "Selección inválida");
-    assertThat(this.modelo.asMap().isEmpty(), is(true));
+    thenSeRedirigeAlResumenDelItinerario();
+    thenSeMuestraElErrorDeReservaInvalida();
+    thenElModeloPermaneceVacio();
   }
 
   @Test
   public void deberiaConfirmarLaReservaYRedirigirAMisReservas() {
-    this.dadoQueLaSesionTieneTodo();
+    givenLaSesionTieneTodo();
 
-    String vista =
-      this.controladorReserva.confirmarReserva(this.sesion, true, this.redirectAttributes);
+    whenConfirmoLaReservaAceptandoLosTerminos();
 
-    assertThat(vista, is(equalTo("redirect:/mis-reservas")));
-    verify(this.servicioReserva).confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+    thenSeRedirigeAMisReservas();
+    thenSeConfirmaLaReserva();
   }
 
   @Test
   public void deberiaLimpiarElItinerarioDeLaSesionLuegoDeConfirmar() {
-    this.dadoQueLaSesionTieneTodo();
+    givenLaSesionTieneTodo();
 
-    this.controladorReserva.confirmarReserva(this.sesion, true, this.redirectAttributes);
+    whenConfirmoLaReservaAceptandoLosTerminos();
 
+    thenSeLimpiaElItinerarioDeLaSesion();
+  }
+
+  @Test
+  public void noDeberiaConfirmarSiNoSeAceptanLosTerminos() {
+    givenLaSesionTieneTodo();
+
+    whenConfirmoLaReservaSinAceptarLosTerminos();
+
+    thenSeRedirigeALaConfirmacionDeCompra();
+    thenSeMuestraElErrorDeTerminos();
+    thenNoSeConsultaElServicio();
+    thenNoSeEliminaLaPlanificacionDeLaSesion();
+  }
+
+  @Test
+  public void deberiaRedirigirALoginSiNoHayUsuarioLogueadoAlConfirmar() {
+    givenLaSesionTienePlanificacionYSeleccion();
+
+    whenConfirmoLaReservaAceptandoLosTerminos();
+
+    thenSeRedirigeAlLogin();
+    thenNoSeConsultaElServicio();
+  }
+
+  @Test
+  public void deberiaRedirigirAPlanificacionSiNoHayItinerarioEnSesion() {
+    givenHayUnUsuarioLogueado();
+
+    whenConfirmoLaReservaAceptandoLosTerminos();
+
+    thenSeRedirigeAPlanificacion();
+    thenNoSeConsultaElServicio();
+  }
+
+  @Test
+  public void deberiaVolverAlResumenConElErrorSiLaReservaEsInvalida() {
+    givenLaSesionTieneTodo();
+    givenLaReservaEsInvalida();
+
+    whenConfirmoLaReservaAceptandoLosTerminos();
+
+    thenSeRedirigeAlResumenDelItinerario();
+    thenSeMuestraElErrorDeReservaInvalida();
+    thenNoSeEliminaLaPlanificacionDeLaSesion();
+  }
+
+  @Test
+  public void deberiaMostrarLasReservasDelUsuarioEnElModelo() {
+    givenHayUnUsuarioLogueado();
+    givenElUsuarioTieneReservas();
+
+    whenConsultoMisReservas();
+
+    thenSeMuestraLaVistaMisReservas();
+    thenSeIncluyenLasReservasEnElModelo();
+  }
+
+  @Test
+  public void deberiaRedirigirALoginAlVerReservasSinUsuarioLogueado() {
+    whenConsultoMisReservas();
+
+    thenSeRedirigeAlLogin();
+    thenElModeloPermaneceVacio();
+    thenNoSeConsultaElServicio();
+  }
+
+  private void givenLaSesionTieneTodo() {
+    givenHayUnUsuarioLogueado();
+    givenLaSesionTienePlanificacionYSeleccion();
+  }
+
+  private void givenHayUnUsuarioLogueado() {
+    when(this.sesion.getAttribute("usuarioLogueado")).thenReturn(this.usuario);
+  }
+
+  private void givenLaSesionTienePlanificacionYSeleccion() {
+    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
+    when(this.sesion.getAttribute("seleccionItinerario")).thenReturn(this.seleccion);
+  }
+
+  private void givenElServicioPreparaLaConfirmacion() {
+    this.confirmacion = mock(ConfirmacionCompraDto.class);
+
+    when(this.servicioReserva.prepararConfirmacion(
+            this.planificacion,
+            this.seleccion
+    )).thenReturn(this.confirmacion);
+  }
+
+  private void givenLaConfirmacionEsInvalida() {
+    doThrow(new ReservaInvalidaException("Selección inválida"))
+            .when(this.servicioReserva)
+            .prepararConfirmacion(this.planificacion, this.seleccion);
+  }
+
+  private void givenLaReservaEsInvalida() {
+    doThrow(new ReservaInvalidaException("Selección inválida"))
+            .when(this.servicioReserva)
+            .confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+  }
+
+  private void givenElUsuarioTieneReservas() {
+    this.reservas = List.of(new Reserva());
+
+    when(this.servicioReserva.obtenerReservasDelUsuario(this.usuario))
+            .thenReturn(this.reservas);
+  }
+
+  private void whenConsultoLaConfirmacionDeCompra() {
+    this.resultado = this.controladorReserva.verConfirmacionCompra(
+            this.sesion,
+            this.modelo,
+            this.redirectAttributes
+    );
+  }
+
+  private void whenConfirmoLaReservaAceptandoLosTerminos() {
+    this.resultado = this.controladorReserva.confirmarReserva(
+            this.sesion,
+            true,
+            this.redirectAttributes
+    );
+  }
+
+  private void whenConfirmoLaReservaSinAceptarLosTerminos() {
+    this.resultado = this.controladorReserva.confirmarReserva(
+            this.sesion,
+            false,
+            this.redirectAttributes
+    );
+  }
+
+  private void whenConsultoMisReservas() {
+    this.resultado = this.controladorReserva.verMisReservas(
+            this.sesion,
+            this.modelo
+    );
+  }
+
+  private void thenSeMuestraLaConfirmacionDeCompra() {
+    assertThat(this.resultado, is(equalTo("confirmacion-compra")));
+    assertThat(
+            this.modelo.getAttribute("confirmacion"),
+            is(equalTo(this.confirmacion))
+    );
+  }
+
+  private void thenSeRedirigeAlLogin() {
+    assertThat(this.resultado, is(equalTo("redirect:/login")));
+  }
+
+  private void thenSeRedirigeAPlanificacion() {
+    assertThat(this.resultado, is(equalTo("redirect:/planificacion")));
+  }
+
+  private void thenSeRedirigeAlResumenDelItinerario() {
+    assertThat(this.resultado, is(equalTo("redirect:/resumen-itinerario")));
+  }
+
+  private void thenSeRedirigeAMisReservas() {
+    assertThat(this.resultado, is(equalTo("redirect:/mis-reservas")));
+  }
+
+  private void thenSeRedirigeALaConfirmacionDeCompra() {
+    assertThat(this.resultado, is(equalTo("redirect:/confirmacion-compra")));
+  }
+
+  private void thenSeConfirmaLaReserva() {
+    verify(this.servicioReserva)
+            .confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+  }
+
+  private void thenSeLimpiaElItinerarioDeLaSesion() {
     verify(this.sesion).removeAttribute("planificacion");
     verify(this.sesion).removeAttribute("seleccionItinerario");
     verify(this.sesion).removeAttribute("resumenItinerario");
   }
 
-  @Test
-  public void noDeberiaConfirmarSiNoSeAceptanLosTerminos() {
-    this.dadoQueLaSesionTieneTodo();
+  private void thenSeMuestraElErrorDeTerminos() {
+    verify(this.redirectAttributes).addFlashAttribute(
+            "error",
+            "Tenés que aceptar los términos y condiciones para continuar."
+    );
+  }
 
-    String vista =
-      this.controladorReserva.confirmarReserva(this.sesion, false, this.redirectAttributes);
-
-    assertThat(vista, is(equalTo("redirect:/confirmacion-compra")));
+  private void thenSeMuestraElErrorDeReservaInvalida() {
     verify(this.redirectAttributes)
-      .addFlashAttribute("error", "Tenés que aceptar los términos y condiciones para continuar.");
+            .addFlashAttribute("error", "Selección inválida");
+  }
+
+  private void thenNoSeConsultaElServicio() {
     verifyNoInteractions(this.servicioReserva);
+  }
+
+  private void thenNoSeEliminaLaPlanificacionDeLaSesion() {
     verify(this.sesion, never()).removeAttribute("planificacion");
   }
 
-  @Test
-  public void deberiaRedirigirALoginSiNoHayUsuarioLogueadoAlConfirmar() {
-    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
-    when(this.sesion.getAttribute("seleccionItinerario")).thenReturn(this.seleccion);
-
-    String vista =
-      this.controladorReserva.confirmarReserva(this.sesion, true, this.redirectAttributes);
-
-    assertThat(vista, is(equalTo("redirect:/login")));
-    verifyNoInteractions(this.servicioReserva);
-  }
-
-  @Test
-  public void deberiaRedirigirAPlanificacionSiNoHayItinerarioEnSesion() {
-    when(this.sesion.getAttribute("usuarioLogueado")).thenReturn(this.usuario);
-
-    String vista =
-      this.controladorReserva.confirmarReserva(this.sesion, true, this.redirectAttributes);
-
-    assertThat(vista, is(equalTo("redirect:/planificacion")));
-    verifyNoInteractions(this.servicioReserva);
-  }
-
-  @Test
-  public void deberiaVolverAlResumenConElErrorSiLaReservaEsInvalida() {
-    this.dadoQueLaSesionTieneTodo();
-    doThrow(new ReservaInvalidaException("Selección inválida"))
-      .when(this.servicioReserva)
-      .confirmarReserva(this.usuario, this.planificacion, this.seleccion);
-
-    String vista =
-      this.controladorReserva.confirmarReserva(this.sesion, true, this.redirectAttributes);
-
-    assertThat(vista, is(equalTo("redirect:/resumen-itinerario")));
-    verify(this.redirectAttributes).addFlashAttribute("error", "Selección inválida");
-    verify(this.sesion, never()).removeAttribute("planificacion");
-  }
-
-  @Test
-  public void deberiaMostrarLasReservasDelUsuarioEnElModelo() {
-    List<Reserva> reservas = List.of(new Reserva());
-    when(this.sesion.getAttribute("usuarioLogueado")).thenReturn(this.usuario);
-    when(this.servicioReserva.obtenerReservasDelUsuario(this.usuario)).thenReturn(reservas);
-
-    String vista = this.controladorReserva.verMisReservas(this.sesion, this.modelo);
-
-    assertThat(vista, is(equalTo("mis-reservas")));
-    assertThat(this.modelo.getAttribute("reservas"), is(equalTo(reservas)));
-  }
-
-  @Test
-  public void deberiaRedirigirALoginAlVerReservasSinUsuarioLogueado() {
-    String vista = this.controladorReserva.verMisReservas(this.sesion, this.modelo);
-
-    assertThat(vista, is(equalTo("redirect:/login")));
+  private void thenElModeloPermaneceVacio() {
     assertThat(this.modelo.asMap().isEmpty(), is(true));
-    verifyNoInteractions(this.servicioReserva);
   }
 
-  private void dadoQueLaSesionTieneTodo() {
-    when(this.sesion.getAttribute("usuarioLogueado")).thenReturn(this.usuario);
-    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
-    when(this.sesion.getAttribute("seleccionItinerario")).thenReturn(this.seleccion);
+  private void thenSeMuestraLaVistaMisReservas() {
+    assertThat(this.resultado, is(equalTo("mis-reservas")));
+  }
+
+  private void thenSeIncluyenLasReservasEnElModelo() {
+    assertThat(
+            this.modelo.getAttribute("reservas"),
+            is(equalTo(this.reservas))
+    );
   }
 }

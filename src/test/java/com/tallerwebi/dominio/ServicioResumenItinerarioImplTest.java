@@ -14,6 +14,9 @@ public class ServicioResumenItinerarioImplTest {
 
   private ServicioItinerario servicioItinerario;
   private ServicioResumenItinerarioImpl servicioResumen;
+  private Planificacion planificacion;
+  private SeleccionItinerario seleccion;
+  private ResumenItinerario resumen;
 
   @BeforeEach
   public void inicializar() {
@@ -23,24 +26,263 @@ public class ServicioResumenItinerarioImplTest {
 
   @Test
   public void generarResumenConHotelYActividadesSeleccionadas() {
-    Planificacion planificacion = crearPlanificacion(new Destino("Buenos Aires", "2026-12-10", 5));
+    givenTengoUnaPlanificacionDeBuenosAiresConCincoDias();
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+    givenSeleccionoHotelYDosActividades();
 
-    OpcionDestino opcion = crearOpcionBuenosAires();
+    whenGeneroElResumen();
 
-    when(this.servicioItinerario.generarItinerario("Buenos Aires")).thenReturn(opcion);
+    thenElResumenIncluyeLosCostosDelHotelYLasActividades();
+  }
 
-    SeleccionItinerario seleccion = crearSeleccion(
-      "Buenos Aires",
-      "Hotel Palermo Soho",
-      List.of("Show de tango en San Telmo", "Tour por La Boca y Caminito")
+  @Test
+  public void generarResumenSinActividadesSeleccionadas() {
+    givenTengoUnaPlanificacionDeBuenosAiresConTresDias();
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+    givenSeleccionoUnHotelSinActividades();
+
+    whenGeneroElResumen();
+
+    thenElResumenIncluyeSoloElCostoDelHotel();
+  }
+
+  @Test
+  public void generarResumenConVariosDestinos() {
+    givenTengoUnaPlanificacionConBuenosAiresYParis();
+    givenHayOpcionesParaBuenosAiresYParis();
+    givenSeleccionoHotelYActividadesParaAmbosDestinos();
+
+    whenGeneroElResumen();
+
+    thenElResumenIncluyeLosSubtotalesDeAmbosDestinos();
+  }
+
+  @Test
+  public void rechazarSeleccionNula() {
+    givenTengoUnaPlanificacionDeBuenosAiresConDosDias();
+    givenLaSeleccionEsNula();
+
+    whenGeneroElResumenYEsperoUnaExcepcion();
+
+  }
+
+  @Test
+  public void rechazarPlanificacionNula() {
+    givenTengoUnaSeleccionVacia();
+    givenLaPlanificacionEsNula();
+
+    whenGeneroElResumenYEsperoUnaExcepcion();
+
+  }
+
+  @Test
+  public void rechazarDestinoSinSeleccion() {
+    givenTengoUnaPlanificacionDeBuenosAiresConDosDias();
+    givenTengoUnaSeleccionVacia();
+
+    whenGeneroElResumenYEsperoUnaExcepcion();
+
+  }
+
+  @Test
+  public void rechazarDestinoSinOpcionesDisponibles() {
+    givenTengoUnaPlanificacionDeLondresConDosDias();
+    givenSeleccionoUnHotelInexistenteEnLondres();
+    givenLondresNoTieneOpcionesDisponibles();
+
+    whenGeneroElResumenYEsperoUnaExcepcion();
+
+  }
+
+  @Test
+  public void rechazarHotelNoValido() {
+    givenTengoUnaPlanificacionDeBuenosAiresConDosDias();
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+    givenSeleccionoUnHotelInexistente();
+
+    whenGeneroElResumenYEsperoUnaExcepcion();
+
+  }
+
+  @Test
+  public void rechazarActividadNoValida() {
+    givenTengoUnaPlanificacionDeBuenosAiresConDosDias();
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+    givenSeleccionoUnaActividadInexistente();
+
+    whenGeneroElResumenYEsperoUnaExcepcion();
+
+  }
+
+  @Test
+  public void aceptarListaDeActividadesNula() {
+    givenTengoUnaPlanificacionDeBuenosAiresConDosDias();
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+    givenSeleccionoUnHotelConListaDeActividadesNula();
+
+    whenGeneroElResumen();
+
+    thenElResumenIncluyeElHotelSinActividadesSeleccionadas();
+  }
+
+  private void givenTengoUnaPlanificacionDeBuenosAiresConCincoDias() {
+    this.planificacion = crearPlanificacion(
+            new Destino("Buenos Aires", "2026-12-10", 5)
+    );
+  }
+
+  private void givenTengoUnaPlanificacionDeBuenosAiresConTresDias() {
+    this.planificacion = crearPlanificacion(
+            new Destino("Buenos Aires", "2026-12-10", 3)
+    );
+  }
+
+  private void givenTengoUnaPlanificacionDeBuenosAiresConDosDias() {
+    this.planificacion = crearPlanificacion(
+            new Destino("Buenos Aires", "2026-12-10", 2)
+    );
+  }
+
+  private void givenTengoUnaPlanificacionDeLondresConDosDias() {
+    this.planificacion = crearPlanificacion(
+            new Destino("Londres", "2026-12-10", 2)
+    );
+  }
+
+  private void givenTengoUnaPlanificacionConBuenosAiresYParis() {
+    this.planificacion = crearPlanificacion(
+            new Destino("Buenos Aires", "2026-12-10", 2),
+            new Destino("Paris", "2026-12-12", 3)
+    );
+  }
+
+  private void givenHayOpcionesDeHotelYActividadesParaBuenosAires() {
+    when(this.servicioItinerario.generarItinerario("Buenos Aires"))
+            .thenReturn(crearOpcionBuenosAires());
+  }
+
+  private void givenHayOpcionesParaBuenosAiresYParis() {
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+
+    when(this.servicioItinerario.generarItinerario("Paris"))
+            .thenReturn(
+                    new OpcionDestino(
+                            "Paris",
+                            "Francia",
+                            List.of(new Hotel("Hôtel Le Marais", 160.0)),
+                            List.of(new Actividad("Crucero por el Sena", 25.0))
+                    )
+            );
+  }
+
+  private void givenSeleccionoHotelYDosActividades() {
+    this.seleccion = crearSeleccion(
+            "Buenos Aires",
+            "Hotel Palermo Soho",
+            List.of("Show de tango en San Telmo", "Tour por La Boca y Caminito")
+    );
+  }
+
+  private void givenSeleccionoUnHotelSinActividades() {
+    this.seleccion = crearSeleccion(
+            "Buenos Aires",
+            "Hotel Recoleta Plaza",
+            List.of()
+    );
+  }
+
+  private void givenSeleccionoHotelYActividadesParaAmbosDestinos() {
+    this.seleccion = new SeleccionItinerario();
+    this.seleccion.setDestinosSeleccionados(
+            List.of(
+                    crearSeleccionDestino(
+                            "Buenos Aires",
+                            "Hotel Palermo Soho",
+                            List.of("Show de tango en San Telmo")
+                    ),
+                    crearSeleccionDestino(
+                            "Paris",
+                            "Hôtel Le Marais",
+                            List.of("Crucero por el Sena")
+                    )
+            )
+    );
+  }
+
+  private void givenLaSeleccionEsNula() {
+    this.seleccion = null;
+  }
+
+  private void givenTengoUnaSeleccionVacia() {
+    this.seleccion = new SeleccionItinerario();
+  }
+
+  private void givenLaPlanificacionEsNula() {
+    this.planificacion = null;
+  }
+
+  private void givenSeleccionoUnHotelInexistenteEnLondres() {
+    this.seleccion = crearSeleccion(
+            "Londres",
+            "Hotel inexistente",
+            List.of()
+    );
+  }
+
+  private void givenLondresNoTieneOpcionesDisponibles() {
+    when(this.servicioItinerario.generarItinerario("Londres"))
+            .thenReturn(null);
+  }
+
+  private void givenSeleccionoUnHotelInexistente() {
+    this.seleccion = crearSeleccion(
+            "Buenos Aires",
+            "Hotel inventado",
+            List.of()
+    );
+  }
+
+  private void givenSeleccionoUnaActividadInexistente() {
+    this.seleccion = crearSeleccion(
+            "Buenos Aires",
+            "Hotel Palermo Soho",
+            List.of("Actividad inventada")
+    );
+  }
+
+  private void givenSeleccionoUnHotelConListaDeActividadesNula() {
+    SeleccionDestino destino = crearSeleccionDestino(
+            "Buenos Aires",
+            "Hotel Palermo Soho",
+            null
     );
 
-    ResumenItinerario resumen = this.servicioResumen.generarResumen(seleccion, planificacion);
+    this.seleccion = new SeleccionItinerario();
+    this.seleccion.setDestinosSeleccionados(List.of(destino));
+  }
 
-    assertEquals(1, resumen.getDestinos().size());
-    assertEquals(555.0, resumen.getTotal());
+  private void whenGeneroElResumen() {
+    this.resumen = this.servicioResumen.generarResumen(
+            this.seleccion,
+            this.planificacion
+    );
+  }
 
-    DetalleDestinoItinerario detalle = resumen.getDestinos().get(0);
+  private void whenGeneroElResumenYEsperoUnaExcepcion() {
+    assertThrows(
+            IllegalArgumentException.class,
+            () -> this.servicioResumen.generarResumen(
+                    this.seleccion,
+                    this.planificacion
+            )
+    );
+  }
+
+  private void thenElResumenIncluyeLosCostosDelHotelYLasActividades() {
+    assertEquals(1, this.resumen.getDestinos().size());
+    assertEquals(555.0, this.resumen.getTotal());
+
+    DetalleDestinoItinerario detalle = this.resumen.getDestinos().get(0);
 
     assertEquals("Buenos Aires", detalle.getNombreDestino());
     assertEquals("Argentina", detalle.getNombrePais());
@@ -51,165 +293,27 @@ public class ServicioResumenItinerarioImplTest {
     assertEquals(2, detalle.getActividadesSeleccionadas().size());
   }
 
-  @Test
-  public void generarResumenSinActividadesSeleccionadas() {
-    Planificacion planificacion = crearPlanificacion(new Destino("Buenos Aires", "2026-12-10", 3));
-
-    when(this.servicioItinerario.generarItinerario("Buenos Aires"))
-      .thenReturn(crearOpcionBuenosAires());
-
-    SeleccionItinerario seleccion = crearSeleccion(
-      "Buenos Aires",
-      "Hotel Recoleta Plaza",
-      List.of()
-    );
-
-    ResumenItinerario resumen = this.servicioResumen.generarResumen(seleccion, planificacion);
-
-    DetalleDestinoItinerario detalle = resumen.getDestinos().get(0);
+  private void thenElResumenIncluyeSoloElCostoDelHotel() {
+    DetalleDestinoItinerario detalle = this.resumen.getDestinos().get(0);
 
     assertEquals(450.0, detalle.getCostoHotel());
     assertEquals(0.0, detalle.getCostoActividades());
-    assertEquals(450.0, resumen.getTotal());
+    assertEquals(450.0, this.resumen.getTotal());
   }
 
-  @Test
-  public void generarResumenConVariosDestinos() {
-    Planificacion planificacion = crearPlanificacion(
-      new Destino("Buenos Aires", "2026-12-10", 2),
-      new Destino("Paris", "2026-12-12", 3)
-    );
-
-    when(this.servicioItinerario.generarItinerario("Buenos Aires"))
-      .thenReturn(crearOpcionBuenosAires());
-
-    when(this.servicioItinerario.generarItinerario("Paris"))
-      .thenReturn(
-        new OpcionDestino(
-          "Paris",
-          "Francia",
-          List.of(new Hotel("Hôtel Le Marais", 160.0)),
-          List.of(new Actividad("Crucero por el Sena", 25.0))
-        )
-      );
-
-    SeleccionItinerario seleccion = new SeleccionItinerario();
-    seleccion.setDestinosSeleccionados(
-      List.of(
-        crearSeleccionDestino(
-          "Buenos Aires",
-          "Hotel Palermo Soho",
-          List.of("Show de tango en San Telmo")
-        ),
-        crearSeleccionDestino("Paris", "Hôtel Le Marais", List.of("Crucero por el Sena"))
-      )
-    );
-
-    ResumenItinerario resumen = this.servicioResumen.generarResumen(seleccion, planificacion);
-
-    assertEquals(2, resumen.getDestinos().size());
-    assertEquals(250.0, resumen.getDestinos().get(0).getSubtotal());
-    assertEquals(505.0, resumen.getDestinos().get(1).getSubtotal());
-    assertEquals(755.0, resumen.getTotal());
+  private void thenElResumenIncluyeLosSubtotalesDeAmbosDestinos() {
+    assertEquals(2, this.resumen.getDestinos().size());
+    assertEquals(250.0, this.resumen.getDestinos().get(0).getSubtotal());
+    assertEquals(505.0, this.resumen.getDestinos().get(1).getSubtotal());
+    assertEquals(755.0, this.resumen.getTotal());
   }
 
-  @Test
-  public void rechazarSeleccionNula() {
-    Planificacion planificacion = crearPlanificacion(new Destino("Buenos Aires", "2026-12-10", 2));
-
-    assertThrows(
-      IllegalArgumentException.class,
-      () -> this.servicioResumen.generarResumen(null, planificacion)
+  private void thenElResumenIncluyeElHotelSinActividadesSeleccionadas() {
+    assertEquals(1, this.resumen.getDestinos().size());
+    assertEquals(180.0, this.resumen.getTotal());
+    assertTrue(
+            this.resumen.getDestinos().get(0).getActividadesSeleccionadas().isEmpty()
     );
-  }
-
-  @Test
-  public void rechazarPlanificacionNula() {
-    SeleccionItinerario seleccion = new SeleccionItinerario();
-
-    assertThrows(
-      IllegalArgumentException.class,
-      () -> this.servicioResumen.generarResumen(seleccion, null)
-    );
-  }
-
-  @Test
-  public void rechazarDestinoSinSeleccion() {
-    Planificacion planificacion = crearPlanificacion(new Destino("Buenos Aires", "2026-12-10", 2));
-
-    SeleccionItinerario seleccion = new SeleccionItinerario();
-
-    assertThrows(
-      IllegalArgumentException.class,
-      () -> this.servicioResumen.generarResumen(seleccion, planificacion)
-    );
-  }
-
-  @Test
-  public void rechazarDestinoSinOpcionesDisponibles() {
-    Planificacion planificacion = crearPlanificacion(new Destino("Londres", "2026-12-10", 2));
-
-    SeleccionItinerario seleccion = crearSeleccion("Londres", "Hotel inexistente", List.of());
-
-    when(this.servicioItinerario.generarItinerario("Londres")).thenReturn(null);
-
-    assertThrows(
-      IllegalArgumentException.class,
-      () -> this.servicioResumen.generarResumen(seleccion, planificacion)
-    );
-  }
-
-  @Test
-  public void rechazarHotelNoValido() {
-    Planificacion planificacion = crearPlanificacion(new Destino("Buenos Aires", "2026-12-10", 2));
-
-    when(this.servicioItinerario.generarItinerario("Buenos Aires"))
-      .thenReturn(crearOpcionBuenosAires());
-
-    SeleccionItinerario seleccion = crearSeleccion("Buenos Aires", "Hotel inventado", List.of());
-
-    assertThrows(
-      IllegalArgumentException.class,
-      () -> this.servicioResumen.generarResumen(seleccion, planificacion)
-    );
-  }
-
-  @Test
-  public void rechazarActividadNoValida() {
-    Planificacion planificacion = crearPlanificacion(new Destino("Buenos Aires", "2026-12-10", 2));
-
-    when(this.servicioItinerario.generarItinerario("Buenos Aires"))
-      .thenReturn(crearOpcionBuenosAires());
-
-    SeleccionItinerario seleccion = crearSeleccion(
-      "Buenos Aires",
-      "Hotel Palermo Soho",
-      List.of("Actividad inventada")
-    );
-
-    assertThrows(
-      IllegalArgumentException.class,
-      () -> this.servicioResumen.generarResumen(seleccion, planificacion)
-    );
-  }
-
-  @Test
-  public void aceptarListaDeActividadesNula() {
-    Planificacion planificacion = crearPlanificacion(new Destino("Buenos Aires", "2026-12-10", 2));
-
-    when(this.servicioItinerario.generarItinerario("Buenos Aires"))
-      .thenReturn(crearOpcionBuenosAires());
-
-    SeleccionDestino destino = crearSeleccionDestino("Buenos Aires", "Hotel Palermo Soho", null);
-
-    SeleccionItinerario seleccion = new SeleccionItinerario();
-    seleccion.setDestinosSeleccionados(List.of(destino));
-
-    ResumenItinerario resumen = this.servicioResumen.generarResumen(seleccion, planificacion);
-
-    assertEquals(1, resumen.getDestinos().size());
-    assertEquals(180.0, resumen.getTotal());
-    assertTrue(resumen.getDestinos().get(0).getActividadesSeleccionadas().isEmpty());
   }
 
   private Planificacion crearPlanificacion(Destino... destinos) {
@@ -224,30 +328,35 @@ public class ServicioResumenItinerarioImplTest {
 
   private OpcionDestino crearOpcionBuenosAires() {
     return new OpcionDestino(
-      "Buenos Aires",
-      "Argentina",
-      List.of(new Hotel("Hotel Palermo Soho", 90.0), new Hotel("Hotel Recoleta Plaza", 150.0)),
-      List.of(
-        new Actividad("Show de tango en San Telmo", 70.0),
-        new Actividad("Tour por La Boca y Caminito", 35.0)
-      )
+            "Buenos Aires",
+            "Argentina",
+            List.of(
+                    new Hotel("Hotel Palermo Soho", 90.0),
+                    new Hotel("Hotel Recoleta Plaza", 150.0)
+            ),
+            List.of(
+                    new Actividad("Show de tango en San Telmo", 70.0),
+                    new Actividad("Tour por La Boca y Caminito", 35.0)
+            )
     );
   }
 
   private SeleccionItinerario crearSeleccion(
-    String destino,
-    String hotel,
-    List<String> actividades
+          String destino,
+          String hotel,
+          List<String> actividades
   ) {
     SeleccionItinerario seleccion = new SeleccionItinerario();
-    seleccion.setDestinosSeleccionados(List.of(crearSeleccionDestino(destino, hotel, actividades)));
+    seleccion.setDestinosSeleccionados(
+            List.of(crearSeleccionDestino(destino, hotel, actividades))
+    );
     return seleccion;
   }
 
   private SeleccionDestino crearSeleccionDestino(
-    String destino,
-    String hotel,
-    List<String> actividades
+          String destino,
+          String hotel,
+          List<String> actividades
   ) {
     SeleccionDestino seleccion = new SeleccionDestino();
     seleccion.setNombreDestino(destino);

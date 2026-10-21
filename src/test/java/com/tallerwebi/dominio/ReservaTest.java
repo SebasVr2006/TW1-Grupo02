@@ -1,3 +1,4 @@
+
 package com.tallerwebi.dominio;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -13,67 +14,164 @@ import org.junit.jupiter.api.Test;
 
 public class ReservaTest {
 
+  private Reserva reserva;
+  private ReservaDestino destino;
+  private ReservaDestino primero;
+  private ReservaDestino segundo;
+  private HotelReservado hotel;
+  private ActividadReservada actividad;
+  private Usuario usuario;
+  private LocalDateTime fecha;
+  private EstadoReserva estado;
+  private String descripcionPendiente;
+  private String descripcionPagada;
+  private String fechaFormateada;
+  private Long id;
+  private List<ReservaDestino> destinos;
+  private List<String> intereses;
+
   @Test
   public void deberiaNacerSinIdNiDestinos() {
-    Reserva reserva = new Reserva();
+    givenTengoUnaReservaNueva();
 
-    assertThat(reserva.getId(), is(nullValue()));
-    assertThat(reserva.getDestinos(), is(notNullValue()));
-    assertThat(reserva.getDestinos(), hasSize(0));
-    assertThat(reserva.getIntereses(), hasSize(0));
+    whenConsultoElIdYLasColeccionesDeLaReserva();
+
+    thenLaReservaNoTieneIdNiDestinosNiIntereses();
+  }
+
+  private void givenTengoUnaReservaNueva() {
+    reserva = new Reserva();
+  }
+
+  private void whenConsultoElIdYLasColeccionesDeLaReserva() {
+    id = reserva.getId();
+    destinos = reserva.getDestinos();
+    intereses = reserva.getIntereses();
+  }
+
+  private void thenLaReservaNoTieneIdNiDestinosNiIntereses() {
+    assertThat(id, is(nullValue()));
+    assertThat(destinos, is(notNullValue()));
+    assertThat(destinos, hasSize(0));
+    assertThat(intereses, hasSize(0));
   }
 
   @Test
   public void deberiaNacerPendienteDePago() {
-    assertThat(new Reserva().getEstado(), is(equalTo(EstadoReserva.PENDIENTE_DE_PAGO)));
+    givenTengoUnaReservaNueva();
+
+    whenConsultoElEstadoDeLaReserva();
+
+    thenElEstadoEsPendienteDePago();
+  }
+
+  private void whenConsultoElEstadoDeLaReserva() {
+    estado = reserva.getEstado();
+  }
+
+  private void thenElEstadoEsPendienteDePago() {
+    assertThat(estado, is(equalTo(EstadoReserva.PENDIENTE_DE_PAGO)));
   }
 
   @Test
   public void deberiaPoderMarcarseComoPagada() {
-    Reserva reserva = new Reserva();
+    givenTengoUnaReservaNueva();
 
+    whenMarcoLaReservaComoPagada();
+
+    thenElEstadoDeLaReservaEsPagada();
+  }
+
+  private void whenMarcoLaReservaComoPagada() {
     reserva.setEstado(EstadoReserva.PAGADA);
+    estado = reserva.getEstado();
+  }
 
-    assertThat(reserva.getEstado(), is(equalTo(EstadoReserva.PAGADA)));
+  private void thenElEstadoDeLaReservaEsPagada() {
+    assertThat(estado, is(equalTo(EstadoReserva.PAGADA)));
   }
 
   @Test
   public void deberiaDescribirCadaEstadoParaElUsuario() {
-    assertThat(EstadoReserva.PENDIENTE_DE_PAGO.getDescripcion(), is(equalTo("Pendiente de pago")));
-    assertThat(EstadoReserva.PAGADA.getDescripcion(), is(equalTo("Pagada")));
+    givenTengoLosEstadosDeUnaReserva();
+
+    whenConsultoLasDescripcionesDeLosEstados();
+
+    thenCadaEstadoTieneSuDescripcionCorrespondiente();
+  }
+
+  private void givenTengoLosEstadosDeUnaReserva() {
+    // Los estados se encuentran definidos en el enum EstadoReserva.
+  }
+
+  private void whenConsultoLasDescripcionesDeLosEstados() {
+    descripcionPendiente = EstadoReserva.PENDIENTE_DE_PAGO.getDescripcion();
+    descripcionPagada = EstadoReserva.PAGADA.getDescripcion();
+  }
+
+  private void thenCadaEstadoTieneSuDescripcionCorrespondiente() {
+    assertThat(descripcionPendiente, is(equalTo("Pendiente de pago")));
+    assertThat(descripcionPagada, is(equalTo("Pagada")));
   }
 
   @Test
   public void deberiaAgregarDestinosEnOrden() {
-    Reserva reserva = new Reserva();
-    ReservaDestino primero = new ReservaDestino();
-    primero.setNombreDestino("Buenos Aires");
-    ReservaDestino segundo = new ReservaDestino();
-    segundo.setNombreDestino("Paris");
+    givenTengoUnaReservaYDosDestinos();
 
+    whenAgregoLosDestinosEnOrden();
+
+    thenLosDestinosSeConservanEnElOrdenAgregado();
+  }
+
+  private void givenTengoUnaReservaYDosDestinos() {
+    reserva = new Reserva();
+
+    primero = new ReservaDestino();
+    primero.setNombreDestino("Buenos Aires");
+
+    segundo = new ReservaDestino();
+    segundo.setNombreDestino("Paris");
+  }
+
+  private void whenAgregoLosDestinosEnOrden() {
     reserva.agregarDestino(primero);
     reserva.agregarDestino(segundo);
+    destinos = reserva.getDestinos();
+  }
 
-    assertThat(reserva.getDestinos(), hasSize(2));
-    assertThat(reserva.getDestinos().get(1).getNombreDestino(), is(equalTo("Paris")));
+  private void thenLosDestinosSeConservanEnElOrdenAgregado() {
+    assertThat(destinos, hasSize(2));
+    assertThat(destinos.get(1).getNombreDestino(), is(equalTo("Paris")));
   }
 
   @Test
   public void deberiaGuardarLosDatosGenerales() {
-    Reserva reserva = new Reserva();
-    LocalDateTime ahora = LocalDateTime.of(2026, 10, 14, 10, 30);
-    Usuario usuario = new Usuario();
+    givenTengoUnaReservaYLosDatosGenerales();
 
+    whenGuardoLosDatosGeneralesDeLaReserva();
+
+    thenLaReservaConservaLosDatosGenerales();
+  }
+
+  private void givenTengoUnaReservaYLosDatosGenerales() {
+    reserva = new Reserva();
+    fecha = LocalDateTime.of(2026, 10, 14, 10, 30);
+    usuario = new Usuario();
+  }
+
+  private void whenGuardoLosDatosGeneralesDeLaReserva() {
     reserva.setUsuario(usuario);
-    reserva.setFechaCreacion(ahora);
+    reserva.setFechaCreacion(fecha);
     reserva.setAdultos(2);
     reserva.setNinos(1);
     reserva.setAlojamiento("Hotel");
     reserva.setIntereses(List.of("Cultura"));
     reserva.setTotal(1500.0);
+  }
 
+  private void thenLaReservaConservaLosDatosGenerales() {
     assertThat(reserva.getUsuario(), is(equalTo(usuario)));
-    assertThat(reserva.getFechaCreacion(), is(equalTo(ahora)));
+    assertThat(reserva.getFechaCreacion(), is(equalTo(fecha)));
     assertThat(reserva.getAdultos(), is(equalTo(2)));
     assertThat(reserva.getNinos(), is(equalTo(1)));
     assertThat(reserva.getAlojamiento(), is(equalTo("Hotel")));
@@ -83,23 +181,59 @@ public class ReservaTest {
 
   @Test
   public void deberiaFormatearLaFechaDeCreacion() {
-    Reserva reserva = new Reserva();
-    reserva.setFechaCreacion(LocalDateTime.of(2026, 10, 14, 9, 5));
+    givenTengoUnaReservaConFechaDeCreacion();
 
-    assertThat(reserva.getFechaCreacionFormateada(), is(equalTo("14/10/2026 09:05")));
+    whenConsultoLaFechaDeCreacionFormateada();
+
+    thenLaFechaSeMuestraEnElFormatoEsperado();
+  }
+
+  private void givenTengoUnaReservaConFechaDeCreacion() {
+    reserva = new Reserva();
+    reserva.setFechaCreacion(LocalDateTime.of(2026, 10, 14, 9, 5));
+  }
+
+  private void whenConsultoLaFechaDeCreacionFormateada() {
+    fechaFormateada = reserva.getFechaCreacionFormateada();
+  }
+
+  private void thenLaFechaSeMuestraEnElFormatoEsperado() {
+    assertThat(fechaFormateada, is(equalTo("14/10/2026 09:05")));
   }
 
   @Test
   public void deberiaFormatearVacioSiNoHayFecha() {
-    assertThat(new Reserva().getFechaCreacionFormateada(), is(equalTo("")));
+    givenTengoUnaReservaSinFechaDeCreacion();
+
+    whenConsultoLaFechaDeCreacionFormateada();
+
+    thenLaFechaFormateadaEsVacia();
+  }
+
+  private void givenTengoUnaReservaSinFechaDeCreacion() {
+    reserva = new Reserva();
+  }
+
+  private void thenLaFechaFormateadaEsVacia() {
+    assertThat(fechaFormateada, is(equalTo("")));
   }
 
   @Test
   public void deberiaGuardarLosDatosDeUnDestinoReservado() {
-    ReservaDestino destino = new ReservaDestino();
-    HotelReservado hotel = new HotelReservado("Hotel Centro", 100.0);
-    ActividadReservada actividad = new ActividadReservada("Museo", 20.0);
+    givenTengoUnDestinoReservadoConSusDatos();
 
+    whenGuardoLosDatosDelDestinoReservado();
+
+    thenElDestinoReservadoConservaSusDatos();
+  }
+
+  private void givenTengoUnDestinoReservadoConSusDatos() {
+    destino = new ReservaDestino();
+    hotel = new HotelReservado("Hotel Centro", 100.0);
+    actividad = new ActividadReservada("Museo", 20.0);
+  }
+
+  private void whenGuardoLosDatosDelDestinoReservado() {
     destino.setNombreDestino("Roma");
     destino.setPais("Italia");
     destino.setFechaInicio("2026-11-01");
@@ -109,7 +243,9 @@ public class ReservaTest {
     destino.setCostoHotel(400.0);
     destino.setCostoActividades(20.0);
     destino.setSubtotal(420.0);
+  }
 
+  private void thenElDestinoReservadoConservaSusDatos() {
     assertThat(destino.getNombreDestino(), is(equalTo("Roma")));
     assertThat(destino.getPais(), is(equalTo("Italia")));
     assertThat(destino.getFechaInicio(), is(equalTo("2026-11-01")));

@@ -36,9 +36,13 @@ public class RepositorioReservaTest {
   private SessionFactory sessionFactory;
 
   private RepositorioReserva repositorioReserva;
+  private Usuario usuario;
+  private Reserva reserva;
+  private Reserva guardada;
+  private List<Reserva> reservas;
 
   @BeforeEach
-  public void init() {
+  public void inicializar() {
     this.repositorioReserva = new RepositorioReservaImpl(this.sessionFactory);
   }
 
@@ -46,88 +50,164 @@ public class RepositorioReservaTest {
   @Transactional
   @Rollback
   public void deberiaGuardarLaReservaConTodosSusDatos() {
-    Usuario usuario = this.dadoQueExisteUnUsuario("ana@test.com");
-    Reserva reserva = this.dadoQueTengoUnaReserva(usuario, 1500.0);
-    reserva.setEstado(EstadoReserva.PAGADA);
+    givenExisteUnUsuario("ana@test.com");
+    givenTengoUnaReservaConTotal(1500.0);
+    givenLaReservaEstaPagada();
 
-    this.repositorioReserva.guardar(reserva);
-    this.sincronizarYLimpiarLaSesion();
+    whenGuardoLaReserva();
+    whenSincronizoYConsultoLaReservaGuardada();
 
-    Reserva guardada = this.sessionFactory.getCurrentSession().get(Reserva.class, reserva.getId());
-    assertThat(guardada, is(notNullValue()));
-    assertThat(guardada.getUsuario().getId(), is(equalTo(usuario.getId())));
-    assertThat(guardada.getAdultos(), is(equalTo(2)));
-    assertThat(guardada.getNinos(), is(equalTo(1)));
-    assertThat(guardada.getAlojamiento(), is(equalTo("Hotel")));
-    assertThat(guardada.getIntereses(), is(equalTo(List.of("Cultura", "Gastronomía"))));
-    assertThat(guardada.getTotal(), is(equalTo(1500.0)));
-    assertThat(guardada.getEstado(), is(equalTo(EstadoReserva.PAGADA)));
-    assertThat(guardada.getDestinos(), hasSize(2));
-
-    ReservaDestino primero = guardada.getDestinos().get(0);
-    assertThat(primero.getNombreDestino(), is(equalTo("Buenos Aires")));
-    assertThat(primero.getHotel().getNombre(), is(equalTo("Hotel Palermo")));
-    assertThat(primero.getActividades(), hasSize(1));
-    assertThat(primero.getActividades().get(0).getNombre(), is(equalTo("Show de tango")));
-    assertThat(guardada.getDestinos().get(1).getNombreDestino(), is(equalTo("Paris")));
-    assertThat(guardada.getDestinos().get(1).getActividades(), is(empty()));
+    thenLaReservaSeGuardaConTodosSusDatos();
   }
 
   @Test
   @Transactional
   @Rollback
   public void deberiaBuscarSoloLasReservasDelUsuario() {
-    Usuario ana = this.dadoQueExisteUnUsuario("ana@test.com");
-    Usuario beto = this.dadoQueExisteUnUsuario("beto@test.com");
-    this.repositorioReserva.guardar(this.dadoQueTengoUnaReserva(ana, 100.0));
-    this.repositorioReserva.guardar(this.dadoQueTengoUnaReserva(ana, 200.0));
-    this.repositorioReserva.guardar(this.dadoQueTengoUnaReserva(beto, 300.0));
-    this.sincronizarYLimpiarLaSesion();
+    givenExistenDosUsuariosConReservas();
+    givenHayDosReservasDeAnaYUnaDeBeto();
 
-    List<Reserva> deAna = this.repositorioReserva.buscarPorUsuario(ana.getId());
+    whenBuscoLasReservasDeAna();
 
-    assertThat(deAna, hasSize(2));
-    assertThat(deAna.get(0).getDestinos(), hasSize(2));
+    thenEncuentroSoloLasReservasDeAna();
   }
 
   @Test
   @Transactional
   @Rollback
   public void deberiaDevolverLasReservasMasRecientesPrimero() {
-    Usuario ana = this.dadoQueExisteUnUsuario("ana@test.com");
-    Reserva vieja = this.dadoQueTengoUnaReserva(ana, 100.0);
-    vieja.setFechaCreacion(LocalDateTime.of(2026, 1, 1, 10, 0));
-    Reserva nueva = this.dadoQueTengoUnaReserva(ana, 200.0);
-    nueva.setFechaCreacion(LocalDateTime.of(2026, 6, 1, 10, 0));
-    this.repositorioReserva.guardar(vieja);
-    this.repositorioReserva.guardar(nueva);
-    this.sincronizarYLimpiarLaSesion();
+    givenExisteUnUsuario("ana@test.com");
+    givenTengoUnaReservaAntiguaYUnaNueva();
 
-    List<Reserva> reservas = this.repositorioReserva.buscarPorUsuario(ana.getId());
+    whenBuscoLasReservasDeAna();
 
-    assertThat(reservas.get(0).getTotal(), is(equalTo(200.0)));
-    assertThat(reservas.get(1).getTotal(), is(equalTo(100.0)));
+    thenLaReservaMasRecienteAparecePrimero();
   }
 
   @Test
   @Transactional
   @Rollback
   public void deberiaDevolverListaVaciaSiElUsuarioNoTieneReservas() {
-    Usuario ana = this.dadoQueExisteUnUsuario("ana@test.com");
+    givenExisteUnUsuario("ana@test.com");
 
-    assertThat(this.repositorioReserva.buscarPorUsuario(ana.getId()), is(empty()));
+    whenBuscoLasReservasDeAna();
+
+    thenLaListaDeReservasEstaVacia();
   }
 
-  private Usuario dadoQueExisteUnUsuario(String email) {
+  private void givenExisteUnUsuario(String email) {
+    this.usuario = new Usuario();
+    this.usuario.setNombreUsuario("usuario");
+    this.usuario.setEmail(email);
+    this.usuario.setPassword("1234");
+    this.sessionFactory.getCurrentSession().persist(this.usuario);
+  }
+
+  private void givenTengoUnaReservaConTotal(double total) {
+    this.reserva = crearReserva(this.usuario, total);
+  }
+
+  private void givenLaReservaEstaPagada() {
+    this.reserva.setEstado(EstadoReserva.PAGADA);
+  }
+
+  private void givenExistenDosUsuariosConReservas() {
+    Usuario ana = crearUsuario("ana@test.com");
+    Usuario beto = crearUsuario("beto@test.com");
+
+    this.usuario = ana;
+    this.sessionFactory.getCurrentSession().persist(ana);
+    this.sessionFactory.getCurrentSession().persist(beto);
+
+    this.reserva = crearReserva(ana, 100.0);
+    this.repositorioReserva.guardar(this.reserva);
+    this.repositorioReserva.guardar(crearReserva(ana, 200.0));
+    this.repositorioReserva.guardar(crearReserva(beto, 300.0));
+  }
+
+  private void givenHayDosReservasDeAnaYUnaDeBeto() {
+    this.sincronizarYLimpiarLaSesion();
+  }
+
+  private void givenTengoUnaReservaAntiguaYUnaNueva() {
+    Reserva vieja = crearReserva(this.usuario, 100.0);
+    vieja.setFechaCreacion(LocalDateTime.of(2026, 1, 1, 10, 0));
+
+    Reserva nueva = crearReserva(this.usuario, 200.0);
+    nueva.setFechaCreacion(LocalDateTime.of(2026, 6, 1, 10, 0));
+
+    this.repositorioReserva.guardar(vieja);
+    this.repositorioReserva.guardar(nueva);
+    this.sincronizarYLimpiarLaSesion();
+  }
+
+  private void whenGuardoLaReserva() {
+    this.repositorioReserva.guardar(this.reserva);
+  }
+
+  private void whenSincronizoYConsultoLaReservaGuardada() {
+    this.sincronizarYLimpiarLaSesion();
+    this.guardada = this.sessionFactory.getCurrentSession()
+            .get(Reserva.class, this.reserva.getId());
+  }
+
+  private void whenBuscoLasReservasDeAna() {
+    this.reservas = this.repositorioReserva.buscarPorUsuario(this.usuario.getId());
+  }
+
+  private void thenLaReservaSeGuardaConTodosSusDatos() {
+    assertThat(this.guardada, is(notNullValue()));
+    assertThat(this.guardada.getUsuario().getId(), is(equalTo(this.usuario.getId())));
+    assertThat(this.guardada.getAdultos(), is(equalTo(2)));
+    assertThat(this.guardada.getNinos(), is(equalTo(1)));
+    assertThat(this.guardada.getAlojamiento(), is(equalTo("Hotel")));
+    assertThat(
+            this.guardada.getIntereses(),
+            is(equalTo(List.of("Cultura", "Gastronomía")))
+    );
+    assertThat(this.guardada.getTotal(), is(equalTo(1500.0)));
+    assertThat(this.guardada.getEstado(), is(equalTo(EstadoReserva.PAGADA)));
+    assertThat(this.guardada.getDestinos(), hasSize(2));
+
+    ReservaDestino primero = this.guardada.getDestinos().get(0);
+
+    assertThat(primero.getNombreDestino(), is(equalTo("Buenos Aires")));
+    assertThat(primero.getHotel().getNombre(), is(equalTo("Hotel Palermo")));
+    assertThat(primero.getActividades(), hasSize(1));
+    assertThat(
+            primero.getActividades().get(0).getNombre(),
+            is(equalTo("Show de tango"))
+    );
+    assertThat(
+            this.guardada.getDestinos().get(1).getNombreDestino(),
+            is(equalTo("Paris"))
+    );
+    assertThat(this.guardada.getDestinos().get(1).getActividades(), is(empty()));
+  }
+
+  private void thenEncuentroSoloLasReservasDeAna() {
+    assertThat(this.reservas, hasSize(2));
+    assertThat(this.reservas.get(0).getDestinos(), hasSize(2));
+  }
+
+  private void thenLaReservaMasRecienteAparecePrimero() {
+    assertThat(this.reservas.get(0).getTotal(), is(equalTo(200.0)));
+    assertThat(this.reservas.get(1).getTotal(), is(equalTo(100.0)));
+  }
+
+  private void thenLaListaDeReservasEstaVacia() {
+    assertThat(this.reservas, is(empty()));
+  }
+
+  private Usuario crearUsuario(String email) {
     Usuario usuario = new Usuario();
     usuario.setNombreUsuario("usuario");
     usuario.setEmail(email);
     usuario.setPassword("1234");
-    this.sessionFactory.getCurrentSession().persist(usuario);
     return usuario;
   }
 
-  private Reserva dadoQueTengoUnaReserva(Usuario usuario, double total) {
+  private Reserva crearReserva(Usuario usuario, double total) {
     Reserva reserva = new Reserva();
     reserva.setUsuario(usuario);
     reserva.setFechaCreacion(LocalDateTime.now());
@@ -136,23 +216,30 @@ public class RepositorioReservaTest {
     reserva.setAlojamiento("Hotel");
     reserva.setIntereses(List.of("Cultura", "Gastronomía"));
     reserva.setTotal(total);
+
     reserva.agregarDestino(
-      this.dadoQueTengoUnDestino(
-          "Buenos Aires",
-          new HotelReservado("Hotel Palermo", 90.0),
-          List.of(new ActividadReservada("Show de tango", 70.0))
-        )
+            crearDestino(
+                    "Buenos Aires",
+                    new HotelReservado("Hotel Palermo", 90.0),
+                    List.of(new ActividadReservada("Show de tango", 70.0))
+            )
     );
+
     reserva.agregarDestino(
-      this.dadoQueTengoUnDestino("Paris", new HotelReservado("Hotel Marais", 160.0), List.of())
+            crearDestino(
+                    "Paris",
+                    new HotelReservado("Hotel Marais", 160.0),
+                    List.of()
+            )
     );
+
     return reserva;
   }
 
-  private ReservaDestino dadoQueTengoUnDestino(
-    String nombre,
-    HotelReservado hotel,
-    List<ActividadReservada> actividades
+  private ReservaDestino crearDestino(
+          String nombre,
+          HotelReservado hotel,
+          List<ActividadReservada> actividades
   ) {
     ReservaDestino destino = new ReservaDestino();
     destino.setNombreDestino(nombre);
