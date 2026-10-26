@@ -181,3 +181,10 @@ footer {
     color: rgb(200, 30, 30);
     font-size: 0.9rem;
 }
+
+.error-formulario {
+    margin-bottom: 1rem;
+
+    color: rgb(200, 30, 30);
+    font-weight: bold;
+}

@@ -2,6 +2,8 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.Planificacion;
 import com.tallerwebi.dominio.ServicioPlanificacion;
+import com.tallerwebi.dominio.excepcion.DestinoInvalidoException;
+import com.tallerwebi.dominio.excepcion.PlanificacionInvalidaException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -48,8 +50,12 @@ public class ControladorPlanificacion {
     @ModelAttribute Planificacion planificacion,
     HttpServletRequest request
   ) {
-    Planificacion planificacionValidada =
-      this.servicioPlanificacion.guardarPlanificacion(planificacion);
+    Planificacion planificacionValidada;
+    try {
+      planificacionValidada = this.servicioPlanificacion.guardarPlanificacion(planificacion);
+    } catch (PlanificacionInvalidaException | DestinoInvalidoException e) {
+      return new ModelAndView(VISTA_PLANIFICACION, "error", e.getMessage());
+    }
 
     HttpSession sesion = request.getSession();
     sesion.setAttribute(CLAVE_PLANIFICACION, planificacionValidada);
