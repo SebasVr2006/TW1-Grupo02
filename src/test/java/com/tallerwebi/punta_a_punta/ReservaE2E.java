@@ -2,6 +2,7 @@ package com.tallerwebi.punta_a_punta;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.matchesPattern;
 
 import com.microsoft.playwright.*;
@@ -20,6 +21,7 @@ public class ReservaE2E {
   static Browser browser;
   BrowserContext context;
   VistaReservas vistaReservas;
+  Page page;
 
   @BeforeAll
   static void abrirNavegador() {
@@ -37,7 +39,7 @@ public class ReservaE2E {
     ReiniciarDB.limpiarBaseDeDatos();
 
     context = browser.newContext();
-    Page page = context.newPage();
+    page = context.newPage();
     dadoQueElUsuarioInicioSesion(page);
     vistaReservas = new VistaReservas(page);
   }
@@ -70,12 +72,36 @@ public class ReservaE2E {
     entoncesDeberiaVerLaReservaPendienteDePagoEnMisReservas();
   }
 
+  @Test
+  void cadaUsuarioDeberiaVerSoloSusReservas() {
+    dadoQueElUsuarioArmoSuItinerarioEnBuenosAires();
+    cuandoElUsuarioContinuaConLaCompra();
+    cuandoElUsuarioAceptaLosTerminosYConfirma();
+    cuandoElUsuarioCierraSesionEIniciaConOtraCuenta();
+    entoncesElOtroUsuarioNoDeberiaVerReservasAjenas();
+  }
+
   private void dadoQueElUsuarioInicioSesion(Page page) {
+    iniciarSesion(page, "test@unlam.edu.ar", "test");
+  }
+
+  private void iniciarSesion(Page page, String email, String clave) {
     VistaLogin vistaLogin = new VistaLogin(page);
-    vistaLogin.escribirEMAIL("test@unlam.edu.ar");
-    vistaLogin.escribirClave("test");
+    vistaLogin.escribirEMAIL(email);
+    vistaLogin.escribirClave(clave);
     vistaLogin.darClickEnIniciarSesion();
     page.waitForURL("**/home**");
+  }
+
+  private void cuandoElUsuarioCierraSesionEIniciaConOtraCuenta() {
+    new VistaLogin(page).darClickEnCerrarSesion();
+    page.waitForURL("**/home**");
+    iniciarSesion(page, "otro@unlam.edu.ar", "otro");
+  }
+
+  private void entoncesElOtroUsuarioNoDeberiaVerReservasAjenas() {
+    vistaReservas.irAMisReservas();
+    assertThat(vistaReservas.contarReservas(), equalTo(0));
   }
 
   private void dadoQueElUsuarioArmoSuItinerarioEnBuenosAires() {

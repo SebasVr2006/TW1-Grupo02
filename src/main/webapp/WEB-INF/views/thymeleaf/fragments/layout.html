@@ -17,7 +17,17 @@
             <ul class="lista_header">
                 <li><label for="toggle-barra" class="boton-barra">&#9776; Menú</label></li>
                 <li><a th:href="@{/home}">Home</a></li>
-                <li><a th:href="@{/login}">Iniciar Sesión</a></li>
+                <li th:if="${session.nombreUsuario == null}">
+                    <a th:href="@{/login}">Iniciar Sesión</a>
+                </li>
+                <li th:unless="${session.nombreUsuario == null}" class="usuario-header">
+                    <span th:text="${session.nombreUsuario}">Usuario</span>
+                </li>
+                <li th:unless="${session.nombreUsuario == null}">
+                    <form th:action="@{/logout}" method="post" class="form-cerrar-sesion">
+                        <button type="submit" class="boton-cerrar-sesion">Cerrar sesión</button>
+                    </form>
+                </li>
             </ul>
         </nav>
     </header>

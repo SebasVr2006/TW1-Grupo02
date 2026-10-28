@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ServicioReserva {
   Reserva confirmarReserva(
-    Usuario usuario,
+    Long idUsuario,
     Planificacion planificacion,
     SeleccionItinerario seleccion
   );
@@ -12,5 +12,5 @@ public interface ServicioReserva {
     Planificacion planificacion,
     SeleccionItinerario seleccion
   );
-  List<Reserva> obtenerReservasDelUsuario(Usuario usuario);
+  List<Reserva> obtenerReservasDelUsuario(Long idUsuario);
 }

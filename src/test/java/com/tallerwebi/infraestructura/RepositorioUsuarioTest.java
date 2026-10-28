@@ -93,6 +93,35 @@ public class RepositorioUsuarioTest {
   @Test
   @Transactional
   @Rollback
+  public void deberiaEncontrarUnUsuarioExistenteCuandoBuscoPorId() {
+    givenTengoUnUsuarioExistente();
+
+    whenBuscoElUsuarioPorId(this.usuario.getId());
+
+    thenElUsuarioObtenidoEsCorrecto();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  public void noDeberiaEncontrarUnUsuarioInexistenteCuandoBuscoPorId() {
+    whenBuscoElUsuarioPorId(999999L);
+
+    thenElUsuarioObtenidoEsNulo();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
+  public void noDeberiaEncontrarNingunUsuarioCuandoBuscoPorIdNulo() {
+    whenBuscoElUsuarioPorId(null);
+
+    thenElUsuarioObtenidoEsNulo();
+  }
+
+  @Test
+  @Transactional
+  @Rollback
   public void deberiaModificarUnUsuarioExistente() {
     givenTengoUnUsuarioExistente();
     givenModificoLosDatosDelUsuario();
@@ -149,6 +178,10 @@ public class RepositorioUsuarioTest {
 
   private void whenBuscoElUsuarioPorEmail() {
     this.obtenido = this.repositorioUsuario.buscar(this.usuario.getEmail());
+  }
+
+  private void whenBuscoElUsuarioPorId(Long id) {
+    this.obtenido = this.repositorioUsuario.buscarPorId(id);
   }
 
   private void whenModificoElUsuario() {

@@ -28,6 +28,8 @@
 <main>
 
     <h2>Planificá tu viaje</h2>
+    <p class="error-formulario" role="alert" th:if="${error}" th:text="${error}"></p>
+    
     <form th:action="@{/planificacion}" method="post" id="formPlanificacion">
         <section class="destinos">
 

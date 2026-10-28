@@ -28,6 +28,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 public class ControladorReservaTest {
 
+  private static final Long ID_USUARIO = 5L;
+  private static final Long ID_OTRO_USUARIO = 6L;
+
   private ServicioReserva servicioReserva;
   private ServicioMercadoPago servicioMercadoPago;
   private ControladorReserva controladorReserva;
@@ -57,6 +60,7 @@ public class ControladorReservaTest {
     this.modelo = new ExtendedModelMap();
 
     this.usuario = new Usuario();
+    this.usuario.setId(ID_USUARIO);
     this.planificacion = new Planificacion();
     this.seleccion = new SeleccionItinerario();
     this.reserva = new Reserva();
@@ -199,6 +203,28 @@ public class ControladorReservaTest {
   }
 
   @Test
+  public void deberiaConsultarLasReservasConElIdDelUsuarioDeLaSesionActual() {
+    givenHayUnUsuarioLogueado();
+    givenElUsuarioTieneReservas();
+
+    whenConsultoMisReservas();
+
+    thenSeConsultanLasReservasPorElIdDelUsuario();
+  }
+
+  @Test
+  public void noDeberiaMostrarReservasAjenasCuandoCambiaElUsuarioDeLaSesion() {
+    givenHayUnUsuarioLogueado();
+    givenElUsuarioTieneReservas();
+    givenInicioSesionOtroUsuarioSinReservas();
+
+    whenConsultoMisReservas();
+
+    thenSeMuestraLaVistaMisReservas();
+    thenNoSeMuestranLasReservasDelUsuarioAnterior();
+  }
+
+  @Test
   public void deberiaRedirigirALoginAlVerReservasSinUsuarioLogueado() {
     whenConsultoMisReservas();
 
@@ -214,6 +240,13 @@ public class ControladorReservaTest {
 
   private void givenHayUnUsuarioLogueado() {
     when(this.sesion.getAttribute("usuarioLogueado")).thenReturn(this.usuario);
+  }
+
+  private void givenInicioSesionOtroUsuarioSinReservas() {
+    Usuario otro = new Usuario();
+    otro.setId(ID_OTRO_USUARIO);
+    when(this.sesion.getAttribute("usuarioLogueado")).thenReturn(otro);
+    when(this.servicioReserva.obtenerReservasDelUsuario(ID_OTRO_USUARIO)).thenReturn(List.of());
   }
 
   private void givenLaSesionTienePlanificacionYSeleccion() {
@@ -242,7 +275,7 @@ public class ControladorReservaTest {
   private void givenLaReservaEsInvalida() {
     doThrow(new ReservaInvalidaException("Selección inválida"))
       .when(this.servicioReserva)
-      .confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+      .confirmarReserva(ID_USUARIO, this.planificacion, this.seleccion);
   }
 
   private void givenMercadoPagoCreaElCheckout() {
@@ -258,7 +291,7 @@ public class ControladorReservaTest {
   private void givenElUsuarioTieneReservas() {
     this.reservas = List.of(new Reserva());
 
-    when(this.servicioReserva.obtenerReservasDelUsuario(this.usuario)).thenReturn(this.reservas);
+    when(this.servicioReserva.obtenerReservasDelUsuario(ID_USUARIO)).thenReturn(this.reservas);
   }
 
   private void whenConsultoLaConfirmacionDeCompra() {
@@ -314,7 +347,7 @@ public class ControladorReservaTest {
   }
 
   private void thenSeConfirmaLaReserva() {
-    verify(this.servicioReserva).confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+    verify(this.servicioReserva).confirmarReserva(ID_USUARIO, this.planificacion, this.seleccion);
   }
 
   private void thenSeSolicitaElCheckout() {
@@ -366,6 +399,14 @@ public class ControladorReservaTest {
 
   private void thenSeMuestraLaVistaMisReservas() {
     assertThat(this.resultado, is(equalTo("mis-reservas")));
+  }
+
+  private void thenSeConsultanLasReservasPorElIdDelUsuario() {
+    verify(this.servicioReserva).obtenerReservasDelUsuario(ID_USUARIO);
+  }
+
+  private void thenNoSeMuestranLasReservasDelUsuarioAnterior() {
+    assertThat(this.modelo.getAttribute("reservas"), is(equalTo(List.of())));
   }
 
   private void thenSeIncluyenLasReservasEnElModelo() {
