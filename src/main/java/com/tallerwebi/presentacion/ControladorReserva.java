@@ -2,11 +2,15 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.ConfirmacionCompraDto;
 import com.tallerwebi.dominio.Planificacion;
+import com.tallerwebi.dominio.Reserva;
 import com.tallerwebi.dominio.SeleccionItinerario;
+import com.tallerwebi.dominio.ServicioMercadoPago;
 import com.tallerwebi.dominio.ServicioReserva;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.ReservaInvalidaException;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,12 +38,18 @@ public class ControladorReserva {
   private static final String REDIRECT_RESUMEN_ITINERARIO = "redirect:/resumen-itinerario";
   private static final String REDIRECT_MIS_RESERVAS = "redirect:/mis-reservas";
   private static final String REDIRECT_CONFIRMACION_COMPRA = "redirect:/confirmacion-compra";
+  private static final Logger LOGGER = LoggerFactory.getLogger(ControladorReserva.class);
 
   private final ServicioReserva servicioReserva;
+  private final ServicioMercadoPago servicioMercadoPago;
 
   @Autowired
-  public ControladorReserva(ServicioReserva servicioReserva) {
+  public ControladorReserva(
+    ServicioReserva servicioReserva,
+    ServicioMercadoPago servicioMercadoPago
+  ) {
     this.servicioReserva = servicioReserva;
+    this.servicioMercadoPago = servicioMercadoPago;
   }
 
   @GetMapping("/confirmacion-compra")
@@ -87,16 +97,19 @@ public class ControladorReserva {
     SeleccionItinerario seleccion = (SeleccionItinerario) sesion.getAttribute(
       CLAVE_SELECCION_ITINERARIO
     );
+
     if (planificacion == null || seleccion == null) {
       return REDIRECT_PLANIFICACION;
     }
+
     if (!aceptaTerminos) {
       redirectAttributes.addFlashAttribute(CLAVE_ERROR, MENSAJE_TERMINOS);
       return REDIRECT_CONFIRMACION_COMPRA;
     }
 
+    Reserva reserva;
     try {
-      this.servicioReserva.confirmarReserva(usuario, planificacion, seleccion);
+      reserva = this.servicioReserva.confirmarReserva(usuario, planificacion, seleccion);
     } catch (ReservaInvalidaException e) {
       redirectAttributes.addFlashAttribute(CLAVE_ERROR, e.getMessage());
       return REDIRECT_RESUMEN_ITINERARIO;
@@ -105,7 +118,18 @@ public class ControladorReserva {
     sesion.removeAttribute(CLAVE_PLANIFICACION);
     sesion.removeAttribute(CLAVE_SELECCION_ITINERARIO);
     sesion.removeAttribute(CLAVE_RESUMEN_ITINERARIO);
-    return REDIRECT_MIS_RESERVAS;
+
+    try {
+      String checkoutUrl = this.servicioMercadoPago.crearCheckout(reserva, usuario);
+      return "redirect:" + checkoutUrl;
+    } catch (RuntimeException e) {
+      LOGGER.error("Error al iniciar el checkout de Mercado Pago", e);
+      redirectAttributes.addFlashAttribute(
+        CLAVE_ERROR,
+        "La reserva se creó, pero falló el inicio del pago: " + e.getMessage()
+      );
+      return REDIRECT_MIS_RESERVAS;
+    }
   }
 
   @GetMapping("/mis-reservas")

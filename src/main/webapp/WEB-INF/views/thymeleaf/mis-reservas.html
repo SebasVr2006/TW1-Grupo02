@@ -14,6 +14,8 @@
 
 <main>
     <h2>Mis reservas</h2>
+    <p class="mensaje-exito" th:if="${exito}" th:text="${exito}"></p>
+    <p class="mensaje-error" th:if="${error}" th:text="${error}"></p>
 
     <p th:if="${#lists.isEmpty(reservas)}">Todavía no tenés reservas confirmadas.</p>
 

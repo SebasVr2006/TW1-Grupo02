@@ -14,6 +14,7 @@ import com.tallerwebi.dominio.ConfirmacionCompraDto;
 import com.tallerwebi.dominio.Planificacion;
 import com.tallerwebi.dominio.Reserva;
 import com.tallerwebi.dominio.SeleccionItinerario;
+import com.tallerwebi.dominio.ServicioMercadoPago;
 import com.tallerwebi.dominio.ServicioReserva;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.ReservaInvalidaException;
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ControladorReservaTest {
 
   private ServicioReserva servicioReserva;
+  private ServicioMercadoPago servicioMercadoPago;
   private ControladorReserva controladorReserva;
   private HttpSession sesion;
   private RedirectAttributes redirectAttributes;
@@ -37,13 +39,19 @@ public class ControladorReservaTest {
   private Planificacion planificacion;
   private SeleccionItinerario seleccion;
   private ConfirmacionCompraDto confirmacion;
+  private Reserva reserva;
   private List<Reserva> reservas;
   private String resultado;
+  private String checkoutUrl;
 
   @BeforeEach
   public void inicializar() {
     this.servicioReserva = mock(ServicioReserva.class);
-    this.controladorReserva = new ControladorReserva(this.servicioReserva);
+    this.servicioMercadoPago = mock(ServicioMercadoPago.class);
+
+    this.controladorReserva =
+      new ControladorReserva(this.servicioReserva, this.servicioMercadoPago);
+
     this.sesion = mock(HttpSession.class);
     this.redirectAttributes = mock(RedirectAttributes.class);
     this.modelo = new ExtendedModelMap();
@@ -51,6 +59,8 @@ public class ControladorReservaTest {
     this.usuario = new Usuario();
     this.planificacion = new Planificacion();
     this.seleccion = new SeleccionItinerario();
+    this.reserva = new Reserva();
+    this.checkoutUrl = "https://www.mercadopago.com/checkout/ejemplo";
   }
 
   @Test
@@ -96,18 +106,23 @@ public class ControladorReservaTest {
   }
 
   @Test
-  public void deberiaConfirmarLaReservaYRedirigirAMisReservas() {
+  public void deberiaConfirmarLaReservaYRedirigirAlCheckout() {
     givenLaSesionTieneTodo();
+    givenLaReservaSeConfirma();
+    givenMercadoPagoCreaElCheckout();
 
     whenConfirmoLaReservaAceptandoLosTerminos();
 
-    thenSeRedirigeAMisReservas();
+    thenSeRedirigeAlCheckout();
     thenSeConfirmaLaReserva();
+    thenSeSolicitaElCheckout();
   }
 
   @Test
   public void deberiaLimpiarElItinerarioDeLaSesionLuegoDeConfirmar() {
     givenLaSesionTieneTodo();
+    givenLaReservaSeConfirma();
+    givenMercadoPagoCreaElCheckout();
 
     whenConfirmoLaReservaAceptandoLosTerminos();
 
@@ -122,7 +137,7 @@ public class ControladorReservaTest {
 
     thenSeRedirigeALaConfirmacionDeCompra();
     thenSeMuestraElErrorDeTerminos();
-    thenNoSeConsultaElServicio();
+    thenNoSeConsultaNingunServicio();
     thenNoSeEliminaLaPlanificacionDeLaSesion();
   }
 
@@ -133,7 +148,7 @@ public class ControladorReservaTest {
     whenConfirmoLaReservaAceptandoLosTerminos();
 
     thenSeRedirigeAlLogin();
-    thenNoSeConsultaElServicio();
+    thenNoSeConsultaNingunServicio();
   }
 
   @Test
@@ -143,7 +158,7 @@ public class ControladorReservaTest {
     whenConfirmoLaReservaAceptandoLosTerminos();
 
     thenSeRedirigeAPlanificacion();
-    thenNoSeConsultaElServicio();
+    thenNoSeConsultaNingunServicio();
   }
 
   @Test
@@ -156,6 +171,20 @@ public class ControladorReservaTest {
     thenSeRedirigeAlResumenDelItinerario();
     thenSeMuestraElErrorDeReservaInvalida();
     thenNoSeEliminaLaPlanificacionDeLaSesion();
+    thenNoSeSolicitaElCheckout();
+  }
+
+  @Test
+  public void deberiaRedirigirAMisReservasSiNoSePuedeCrearElCheckout() {
+    givenLaSesionTieneTodo();
+    givenLaReservaSeConfirma();
+    givenMercadoPagoFalla();
+
+    whenConfirmoLaReservaAceptandoLosTerminos();
+
+    thenSeRedirigeAMisReservas();
+    thenSeMuestraElErrorDeCheckout();
+    thenSeConfirmaLaReserva();
   }
 
   @Test
@@ -205,10 +234,25 @@ public class ControladorReservaTest {
       .prepararConfirmacion(this.planificacion, this.seleccion);
   }
 
+  private void givenLaReservaSeConfirma() {
+    when(this.servicioReserva.confirmarReserva(this.usuario, this.planificacion, this.seleccion))
+      .thenReturn(this.reserva);
+  }
+
   private void givenLaReservaEsInvalida() {
     doThrow(new ReservaInvalidaException("Selección inválida"))
       .when(this.servicioReserva)
       .confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+  }
+
+  private void givenMercadoPagoCreaElCheckout() {
+    when(this.servicioMercadoPago.crearCheckout(this.reserva, this.usuario))
+      .thenReturn(this.checkoutUrl);
+  }
+
+  private void givenMercadoPagoFalla() {
+    when(this.servicioMercadoPago.crearCheckout(this.reserva, this.usuario))
+      .thenThrow(new RuntimeException("Error al crear el checkout"));
   }
 
   private void givenElUsuarioTieneReservas() {
@@ -265,8 +309,20 @@ public class ControladorReservaTest {
     assertThat(this.resultado, is(equalTo("redirect:/confirmacion-compra")));
   }
 
+  private void thenSeRedirigeAlCheckout() {
+    assertThat(this.resultado, is(equalTo("redirect:" + this.checkoutUrl)));
+  }
+
   private void thenSeConfirmaLaReserva() {
     verify(this.servicioReserva).confirmarReserva(this.usuario, this.planificacion, this.seleccion);
+  }
+
+  private void thenSeSolicitaElCheckout() {
+    verify(this.servicioMercadoPago).crearCheckout(this.reserva, this.usuario);
+  }
+
+  private void thenNoSeSolicitaElCheckout() {
+    verify(this.servicioMercadoPago, never()).crearCheckout(this.reserva, this.usuario);
   }
 
   private void thenSeLimpiaElItinerarioDeLaSesion() {
@@ -284,8 +340,20 @@ public class ControladorReservaTest {
     verify(this.redirectAttributes).addFlashAttribute("error", "Selección inválida");
   }
 
+  private void thenSeMuestraElErrorDeCheckout() {
+    verify(this.redirectAttributes)
+      .addFlashAttribute(
+        "error",
+        "La reserva se creó, pero falló el inicio del pago: Error al crear el checkout"
+      );
+  }
+
   private void thenNoSeConsultaElServicio() {
     verifyNoInteractions(this.servicioReserva);
+  }
+
+  private void thenNoSeConsultaNingunServicio() {
+    verifyNoInteractions(this.servicioReserva, this.servicioMercadoPago);
   }
 
   private void thenNoSeEliminaLaPlanificacionDeLaSesion() {
