@@ -8,12 +8,15 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.tallerwebi.dominio.ServicioLogin;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.UsuarioExistente;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.web.servlet.ModelAndView;
 
 public class ControladorLoginTest {
@@ -22,11 +25,14 @@ public class ControladorLoginTest {
   private ServicioLogin servicioLoginMock;
   private DatosLogin datosLogin;
   private ModelAndView resultado;
+  private MockHttpServletRequest request;
+  private MockHttpSession sesionIniciada;
 
   @BeforeEach
   public void inicializar() {
     this.servicioLoginMock = mock(ServicioLogin.class);
     this.controladorLogin = new ControladorLogin(this.servicioLoginMock);
+    this.request = new MockHttpServletRequest();
   }
 
   @Test
@@ -48,6 +54,54 @@ public class ControladorLoginTest {
     whenIngresoAlHome();
 
     thenSeMuestraLaVistaHome();
+  }
+
+  @Test
+  public void validarLoginConCredencialesCorrectasDeberiaGuardarElNombreDelUsuarioEnLaSesion() {
+    givenExisteUnUsuarioRegistrado();
+
+    whenInicioSesionConCredencialesCorrectas();
+
+    thenSeRedirigeAlHome();
+    thenLaSesionTieneAlUsuarioLogueado();
+    thenLaSesionTieneElNombreDeUsuario("usuarioPrueba");
+  }
+
+  @Test
+  public void validarLoginConCredencialesIncorrectasDeberiaMostrarErrorYNoGuardarNadaEnLaSesion() {
+    givenNoExisteElUsuario();
+
+    whenInicioSesionConCredencialesIncorrectas();
+
+    thenSeMuestraElErrorDeLogin();
+    thenLaSesionNoTieneNombreDeUsuario();
+  }
+
+  @Test
+  public void validarLoginDeberiaLimpiarElItinerarioDeUnaSesionAnterior() {
+    givenExisteUnUsuarioRegistrado();
+    givenLaSesionTieneUnItinerarioDeOtroUsuario();
+
+    whenInicioSesionConCredencialesCorrectas();
+
+    thenLaSesionNoTieneItinerarioPrevio();
+  }
+
+  @Test
+  public void cerrarSesionDeberiaInvalidarLaSesionYRedirigirAlHome() {
+    givenHayUnaSesionIniciada();
+
+    whenCierroSesion();
+
+    thenLaSesionEstaInvalidada();
+    thenSeRedirigeAlHome();
+  }
+
+  @Test
+  public void cerrarSesionSinSesionActivaDeberiaRedirigirAlHome() {
+    whenCierroSesion();
+
+    thenSeRedirigeAlHome();
   }
 
   @Test
@@ -127,6 +181,32 @@ public class ControladorLoginTest {
     thenSeIntentaRegistrarElUsuario();
   }
 
+  private void givenExisteUnUsuarioRegistrado() {
+    Usuario usuario = new Usuario();
+    usuario.setNombreUsuario("usuarioPrueba");
+    usuario.setEmail("usuario@test.com");
+    usuario.setPassword("123456");
+    when(this.servicioLoginMock.consultarUsuario("usuario@test.com", "123456")).thenReturn(usuario);
+    this.datosLogin = new DatosLogin("usuario@test.com", "123456");
+  }
+
+  private void givenNoExisteElUsuario() {
+    when(this.servicioLoginMock.consultarUsuario("nadie@test.com", "incorrecta")).thenReturn(null);
+    this.datosLogin = new DatosLogin("nadie@test.com", "incorrecta");
+  }
+
+  private void givenLaSesionTieneUnItinerarioDeOtroUsuario() {
+    this.request.getSession().setAttribute("planificacion", new Object());
+    this.request.getSession().setAttribute("seleccionItinerario", new Object());
+    this.request.getSession().setAttribute("resumenItinerario", new Object());
+  }
+
+  private void givenHayUnaSesionIniciada() {
+    givenExisteUnUsuarioRegistrado();
+    whenInicioSesionConCredencialesCorrectas();
+    this.sesionIniciada = (MockHttpSession) this.request.getSession();
+  }
+
   private void givenTengoDatosDeRegistroValidos() {
     this.datosLogin = new DatosLogin();
     this.datosLogin.setNombreUsuario("usuarioPrueba");
@@ -171,6 +251,18 @@ public class ControladorLoginTest {
     this.resultado = this.controladorLogin.irAHome();
   }
 
+  private void whenInicioSesionConCredencialesCorrectas() {
+    this.resultado = this.controladorLogin.validarLogin(this.datosLogin, this.request);
+  }
+
+  private void whenInicioSesionConCredencialesIncorrectas() {
+    this.resultado = this.controladorLogin.validarLogin(this.datosLogin, this.request);
+  }
+
+  private void whenCierroSesion() {
+    this.resultado = this.controladorLogin.cerrarSesion(this.request);
+  }
+
   private void whenRegistroElUsuario() throws UsuarioExistente {
     this.resultado = this.controladorLogin.registrarUsuario(this.datosLogin);
   }
@@ -189,6 +281,47 @@ public class ControladorLoginTest {
 
   private void thenSeRedirigeAlLogin() {
     assertThat(this.resultado.getViewName(), is(equalTo("redirect:/login")));
+  }
+
+  private void thenLaSesionNoTieneItinerarioPrevio() {
+    assertThat(this.request.getSession().getAttribute("planificacion") == null, is(true));
+    assertThat(this.request.getSession().getAttribute("seleccionItinerario") == null, is(true));
+    assertThat(this.request.getSession().getAttribute("resumenItinerario") == null, is(true));
+  }
+
+  private void thenLaSesionEstaInvalidada() {
+    assertThat(this.sesionIniciada.isInvalid(), is(true));
+  }
+
+  private void thenSeRedirigeAlHome() {
+    assertThat(this.resultado.getViewName(), is(equalTo("redirect:/home")));
+  }
+
+  private void thenLaSesionTieneAlUsuarioLogueado() {
+    assertThat(
+      this.request.getSession().getAttribute("usuarioLogueado") instanceof Usuario,
+      is(true)
+    );
+  }
+
+  private void thenLaSesionTieneElNombreDeUsuario(String nombreEsperado) {
+    assertThat(
+      this.request.getSession().getAttribute("nombreUsuario"),
+      is(equalTo(nombreEsperado))
+    );
+  }
+
+  private void thenSeMuestraElErrorDeLogin() {
+    assertThat(this.resultado.getViewName(), is(equalTo("login")));
+    assertThat(
+      this.resultado.getModel().get("mensajeError"),
+      is(equalTo("El email o la contraseña son incorrectos."))
+    );
+  }
+
+  private void thenLaSesionNoTieneNombreDeUsuario() {
+    assertThat(this.request.getSession().getAttribute("nombreUsuario") == null, is(true));
+    assertThat(this.request.getSession().getAttribute("usuarioLogueado") == null, is(true));
   }
 
   private void thenSeRegistraElUsuario() throws UsuarioExistente {

@@ -22,6 +22,14 @@ public class ControladorLogin {
   private static final String VISTA_HOME = "home";
   private static final String CLAVE_MENSAJE_ERROR = "mensajeError";
   private static final String CLAVE_DATOS_LOGIN = "datosLogin";
+  private static final String CLAVE_USUARIO_LOGUEADO = "usuarioLogueado";
+  private static final String CLAVE_NOMBRE_USUARIO = "nombreUsuario";
+  private static final String[] CLAVES_ITINERARIO = {
+    "planificacion",
+    "seleccionItinerario",
+    "resumenItinerario",
+  };
+  private static final String REDIRECT_HOME = "redirect:/home";
 
   private ServicioLogin servicioLogin;
 
@@ -52,9 +60,26 @@ public class ControladorLogin {
     }
 
     HttpSession sesion = request.getSession();
-    sesion.setAttribute("usuarioLogueado", usuario);
+    sesion.setAttribute(CLAVE_USUARIO_LOGUEADO, usuario);
+    sesion.setAttribute(CLAVE_NOMBRE_USUARIO, usuario.getNombreUsuario());
+    limpiarItinerarioDeLaSesion(sesion);
 
-    return new ModelAndView("redirect:/home");
+    return new ModelAndView(REDIRECT_HOME);
+  }
+
+  @PostMapping("/logout")
+  public ModelAndView cerrarSesion(HttpServletRequest request) {
+    HttpSession sesion = request.getSession(false);
+    if (sesion != null) {
+      sesion.invalidate();
+    }
+    return new ModelAndView(REDIRECT_HOME);
+  }
+
+  private void limpiarItinerarioDeLaSesion(HttpSession sesion) {
+    for (String clave : CLAVES_ITINERARIO) {
+      sesion.removeAttribute(clave);
+    }
   }
 
   @GetMapping("/registro")

@@ -34,7 +34,7 @@ public class VistaReservas extends VistaWeb {
   }
 
   public void darClickEnVerResumenDelItinerario() {
-    this.darClickEnElElemento("form button[type='submit']");
+    this.darClickEnElElemento("main form button[type='submit']");
   }
 
   public void darClickEnContinuarConLaCompra() {
@@ -63,6 +63,14 @@ public class VistaReservas extends VistaWeb {
 
   public String obtenerMensajeDeError() {
     return this.obtenerTextoDelElemento("p.mensaje-error");
+  }
+
+  public void irAMisReservas() {
+    page.navigate(BASE + "/mis-reservas");
+  }
+
+  public int contarReservas() {
+    return page.locator("article.reserva").count();
   }
 
   public String obtenerEstadoDeLaPrimeraReserva() {

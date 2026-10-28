@@ -42,6 +42,14 @@ public class RepositorioUsuarioImpl implements RepositorioUsuario {
   }
 
   @Override
+  public Usuario buscarPorId(Long id) {
+    if (id == null) {
+      return null;
+    }
+    return sessionFactory.getCurrentSession().get(Usuario.class, id);
+  }
+
+  @Override
   public void modificar(Usuario usuario) {
     Usuario existente = sessionFactory
       .getCurrentSession()

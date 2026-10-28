@@ -1,43 +1,45 @@
+/* Inicio de sesión y registro */
 .main-login {
-    width: 60%;
+    width: 90%;
+    max-width: 32rem;
+    margin-top: 3rem;
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-    padding: 1rem 0;
-    align-items: center;
-    justify-items: center;
-    gap: 2.5vh;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
 }
 
-label {
-    justify-content: flex-start;
-    font-size: 120%;
-    font-weight: bold;
+.login-form label {
+    margin-top: 0.5rem;
+    font-size: 1rem;
 }
 
-input {
-    box-sizing: border-box;
-    width: 30rem;
-    height: 5vh;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 0.8vh;
-    transition: border-color 0.2s;
+.login-form input {
+    width: 100%;
 }
 
-input:focus {
-    border-color: rgb(1, 1, 141);
-    outline: none;
+.login-form .botones {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.login-form .botones .boton {
+    flex: 1;
 }
 
 .registro-container {
     display: flex;
     justify-content: center;
-    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--azul-borde);
 }
 
 .registro-container p {
-    font-size: 1.6vh;
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--texto-suave);
 }

@@ -24,10 +24,12 @@ public class ServicioReservaTest {
   private static final Long ID_USUARIO = 7L;
 
   private RepositorioReserva repositorioReserva;
+  private RepositorioUsuario repositorioUsuario;
   private ServicioResumenItinerario servicioResumenItinerario;
   private ServicioReserva servicioReserva;
 
   private Usuario usuario;
+  private Long idUsuarioAConfirmar = ID_USUARIO;
   private Planificacion planificacion;
   private SeleccionItinerario seleccion;
   private ResumenItinerario resumen;
@@ -161,7 +163,39 @@ public class ServicioReservaTest {
 
   private void givenNoTengoUnUsuario() {
     givenTengoDatosValidosParaLaReserva();
-    usuario = null;
+    idUsuarioAConfirmar = null;
+  }
+
+  private void givenElUsuarioYaNoExisteEnLaBaseDeDatos() {
+    givenTengoDatosValidosParaLaReserva();
+    when(repositorioUsuario.buscarPorId(ID_USUARIO)).thenReturn(null);
+  }
+
+  @Test
+  public void noDeberiaGuardarLaReservaSiElUsuarioNoExisteEnLaBaseDeDatos() {
+    givenElUsuarioYaNoExisteEnLaBaseDeDatos();
+
+    whenIntentoConfirmarLaReservaSinDatosValidos();
+
+    thenLaConfirmacionFallaConElMensaje("Debés iniciar sesión para confirmar la reserva.");
+  }
+
+  @Test
+  public void deberiaAsociarLaReservaAlUsuarioBuscadoPorId() {
+    givenTengoDatosValidosParaLaReserva();
+
+    whenConfirmoLaReserva();
+
+    thenSeBuscoElUsuarioPorId();
+    thenLaReservaPerteneceAlUsuarioEncontrado();
+  }
+
+  private void thenSeBuscoElUsuarioPorId() {
+    verify(repositorioUsuario).buscarPorId(ID_USUARIO);
+  }
+
+  private void thenLaReservaPerteneceAlUsuarioEncontrado() {
+    assertThat(entoncesSeGuardoUnaReserva().getUsuario(), is(sameInstance(usuario)));
   }
 
   @Test
@@ -359,7 +393,7 @@ public class ServicioReservaTest {
   }
 
   private void whenConsultoLasReservasDelUsuario() {
-    reservasObtenidas = servicioReserva.obtenerReservasDelUsuario(usuario);
+    reservasObtenidas = servicioReserva.obtenerReservasDelUsuario(ID_USUARIO);
   }
 
   private void thenObtengoLasReservasEsperadas() {
@@ -382,6 +416,56 @@ public class ServicioReservaTest {
     );
   }
 
+  @Test
+  public void noDeberiaObtenerReservasSiElUsuarioNoExisteEnLaBaseDeDatos() {
+    givenElUsuarioYaNoExisteEnLaBaseDeDatos();
+
+    whenIntentoObtenerReservasDeUnUsuarioInexistente();
+
+    thenNoSeConsultaElRepositorioDeReservas();
+  }
+
+  @Test
+  public void cadaUsuarioDeberiaObtenerSoloSusReservas() {
+    givenHayDosUsuariosConReservasDistintas();
+
+    whenConsultoLasReservasDeCadaUsuario();
+
+    thenCadaUsuarioObtieneSoloLasSuyas();
+  }
+
+  private static final Long ID_OTRO_USUARIO = 8L;
+  private List<Reserva> reservasDelOtroUsuario;
+
+  private void givenHayDosUsuariosConReservasDistintas() {
+    givenTengoUnUsuarioConReservas();
+    Usuario otro = new Usuario();
+    otro.setId(ID_OTRO_USUARIO);
+    reservasDelOtroUsuario = List.of(new Reserva());
+
+    when(repositorioUsuario.buscarPorId(ID_OTRO_USUARIO)).thenReturn(otro);
+    when(repositorioReserva.buscarPorUsuario(ID_OTRO_USUARIO)).thenReturn(reservasDelOtroUsuario);
+  }
+
+  private void whenConsultoLasReservasDeCadaUsuario() {
+    reservasObtenidas = servicioReserva.obtenerReservasDelUsuario(ID_USUARIO);
+    reservasObtenidasPorElOtro = servicioReserva.obtenerReservasDelUsuario(ID_OTRO_USUARIO);
+  }
+
+  private List<Reserva> reservasObtenidasPorElOtro;
+
+  private void thenCadaUsuarioObtieneSoloLasSuyas() {
+    assertThat(reservasObtenidas, is(equalTo(reservasEsperadas)));
+    assertThat(reservasObtenidasPorElOtro, is(equalTo(reservasDelOtroUsuario)));
+  }
+
+  private void whenIntentoObtenerReservasDeUnUsuarioInexistente() {
+    assertThrows(
+      ReservaInvalidaException.class,
+      () -> servicioReserva.obtenerReservasDelUsuario(ID_USUARIO)
+    );
+  }
+
   private void thenNoSeConsultaElRepositorioDeReservas() {
     verifyNoInteractions(repositorioReserva);
   }
@@ -389,10 +473,13 @@ public class ServicioReservaTest {
   private void givenTengoDatosValidosParaLaReserva() {
     repositorioReserva = mock(RepositorioReserva.class);
     servicioResumenItinerario = mock(ServicioResumenItinerario.class);
-    servicioReserva = new ServicioReservaImpl(repositorioReserva, servicioResumenItinerario);
+    repositorioUsuario = mock(RepositorioUsuario.class);
+    servicioReserva =
+      new ServicioReservaImpl(repositorioReserva, repositorioUsuario, servicioResumenItinerario);
 
     usuario = new Usuario();
     usuario.setId(ID_USUARIO);
+    when(repositorioUsuario.buscarPorId(ID_USUARIO)).thenReturn(usuario);
     planificacion = dadoQueTengoUnaPlanificacion();
     seleccion = new SeleccionItinerario();
     resumen = dadoQueTengoUnResumen();
@@ -401,7 +488,8 @@ public class ServicioReservaTest {
   }
 
   private void whenConfirmoLaReserva() {
-    reservaResultado = servicioReserva.confirmarReserva(usuario, planificacion, seleccion);
+    reservaResultado =
+      servicioReserva.confirmarReserva(idUsuarioAConfirmar, planificacion, seleccion);
   }
 
   private void whenPreparoLaConfirmacion() {
@@ -412,7 +500,7 @@ public class ServicioReservaTest {
     excepcion =
       assertThrows(
         ReservaInvalidaException.class,
-        () -> servicioReserva.confirmarReserva(usuario, planificacion, seleccion)
+        () -> servicioReserva.confirmarReserva(idUsuarioAConfirmar, planificacion, seleccion)
       );
   }
 

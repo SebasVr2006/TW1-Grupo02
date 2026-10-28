@@ -9,12 +9,12 @@ public class VistaLogin extends VistaWeb {
     page.navigate("localhost:8080/spring/login");
   }
 
-  public String obtenerTextoDeLaBarraDeNavegacion() {
-    return this.obtenerTextoDelElemento("nav a.navbar-brand");
+  public String obtenerTextoDelEncabezado() {
+    return this.obtenerTextoDelElemento("nav.menu .lista_header");
   }
 
   public String obtenerMensajeDeError() {
-    return this.obtenerTextoDelElemento("p.alert.alert-danger");
+    return this.obtenerTextoDelElemento("p.mensaje-error");
   }
 
   public void escribirEMAIL(String email) {
@@ -22,14 +22,23 @@ public class VistaLogin extends VistaWeb {
   }
 
   public void escribirClave(String clave) {
-    this.escribirEnElElemento("#password", clave);
+    this.escribirEnElElemento("#contrasena", clave);
   }
 
   public void darClickEnIniciarSesion() {
-    this.darClickEnElElemento("#btn-login");
+    this.darClickEnElElemento("#login-form button[type='submit']");
+  }
+
+  public void darClickEnCerrarSesion() {
+    this.darClickEnElElemento(".boton-cerrar-sesion");
+    this.page.locator("nav.menu a[href*='/login']").waitFor();
+  }
+
+  public void esperarAlHome() {
+    this.page.waitForURL("**/home**");
   }
 
   public void darClickEnRegistrarse() {
-    this.darClickEnElElemento("#btn-register");
+    this.darClickEnElElemento("a[href*='/registro']");
   }
 }

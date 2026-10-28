@@ -1,57 +1,85 @@
+/* Página de inicio */
 .inicio-info {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5rem;
-    padding: 5%;
-}
-
-.texto-home .boton {
-    display: flex;
-    margin-top: 2vh;
-    justify-content: center;
-    min-width: 15vh;
-    width: fit-content;
-    color: white;
-}
-
-.texto-home p {
-    margin: 1.5vh 0;
+    gap: 3rem;
+    padding: 1rem 0 2rem;
 }
 
 .texto-home {
-    font-size: 90%;
+    flex: 1;
+    max-width: 30rem;
+}
+
+.texto-home h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.texto-home p {
+    margin: 1rem 0;
+    color: var(--texto-suave);
+    font-size: 1.05rem;
+}
+
+.texto-home .boton {
+    margin-top: 1rem;
+    min-width: 12rem;
+    padding: 0.8rem 1.6rem;
+    font-size: 1.05rem;
 }
 
 .imagen_home {
-    border-radius: 1vh;
+    flex: 1;
+    max-width: 100%;
+    border-radius: var(--radio);
 }
 
-.por-que-elegiros {
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    padding: 5%;
+img.imagen_home {
+    width: 100%;
+    max-width: 32rem;
+    height: auto;
+    box-shadow: var(--sombra);
+}
 
+.por-que-elegirnos {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem 0 0;
+    border-top: 1px solid var(--azul-borde);
 }
 
 .por-que-elegirnos h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: center;
+    font-size: 1.6rem;
 }
 
 .razones {
     display: flex;
-    gap: 20px;
-    margin: 3%;
+    gap: 1.5rem;
 }
 
-.icon {
-    width: 30px;
-    height: 30px;
-    color: rgb(1, 1, 141);
+.beneficio {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--azul-borde);
+    border-radius: var(--radio);
+    background-color: #fafbff;
+}
+
+.beneficio h3 {
+    margin-top: 0.2rem;
+    margin-bottom: 0.4rem;
+    font-size: 1.1rem;
+}
+
+.beneficio p {
+    color: var(--texto-suave);
+    font-size: 0.95rem;
 }
 
 .contenedor_iconos {
@@ -65,15 +93,21 @@
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
-
 }
 
-.beneficio {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
+.icon {
+    width: 30px;
+    height: 30px;
+    color: var(--azul-boton);
 }
 
-.beneficio h3 {
-    margin-top: 0.2rem;
+@media (max-width: 56rem) {
+    .inicio-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .razones {
+        flex-direction: column;
+    }
 }

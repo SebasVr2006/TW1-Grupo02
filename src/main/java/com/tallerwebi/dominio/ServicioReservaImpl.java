@@ -19,24 +19,27 @@ public class ServicioReservaImpl implements ServicioReserva {
     "El itinerario no coincide con la planificación.";
 
   private final RepositorioReserva repositorioReserva;
+  private final RepositorioUsuario repositorioUsuario;
   private final ServicioResumenItinerario servicioResumenItinerario;
 
   @Autowired
   public ServicioReservaImpl(
     RepositorioReserva repositorioReserva,
+    RepositorioUsuario repositorioUsuario,
     ServicioResumenItinerario servicioResumenItinerario
   ) {
     this.repositorioReserva = repositorioReserva;
+    this.repositorioUsuario = repositorioUsuario;
     this.servicioResumenItinerario = servicioResumenItinerario;
   }
 
   @Override
   public Reserva confirmarReserva(
-    Usuario usuario,
+    Long idUsuario,
     Planificacion planificacion,
     SeleccionItinerario seleccion
   ) {
-    validarUsuario(usuario);
+    Usuario usuario = buscarUsuario(idUsuario);
     validarItinerario(planificacion, seleccion);
 
     ResumenItinerario resumen = generarResumen(seleccion, planificacion);
@@ -61,15 +64,17 @@ public class ServicioReservaImpl implements ServicioReserva {
   }
 
   @Override
-  public List<Reserva> obtenerReservasDelUsuario(Usuario usuario) {
-    validarUsuario(usuario);
+  public List<Reserva> obtenerReservasDelUsuario(Long idUsuario) {
+    Usuario usuario = buscarUsuario(idUsuario);
     return this.repositorioReserva.buscarPorUsuario(usuario.getId());
   }
 
-  private void validarUsuario(Usuario usuario) {
+  private Usuario buscarUsuario(Long idUsuario) {
+    Usuario usuario = this.repositorioUsuario.buscarPorId(idUsuario);
     if (usuario == null) {
       throw new ReservaInvalidaException(MENSAJE_SIN_USUARIO);
     }
+    return usuario;
   }
 
   private void validarItinerario(Planificacion planificacion, SeleccionItinerario seleccion) {

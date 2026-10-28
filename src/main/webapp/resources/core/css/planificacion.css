@@ -1,148 +1,114 @@
-main {
-    min-height: 70vh;
-    width: 80%;
-    margin: 3rem auto;
-    padding: 2rem;
-
-    background-color: #fff;
-    border-radius: 12px;
-    border: 0.1vh solid rgb(230, 230, 230);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-
+/* Planificación del viaje */
+#formPlanificacion {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.25rem;
 }
 
-main h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-.destinos {
+.destinos,
+.viajeros,
+.preferencias {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-
+    gap: 0.9rem;
     padding: 1.5rem;
-    border: 1px solid rgb(220, 220, 220);
-    border-radius: 10px;
-    background-color: rgb(250, 250, 250);
+    border: 1px solid var(--azul-borde);
+    border-radius: var(--radio);
+    background-color: #fafbff;
 }
 
-.destinos h3 {
-    margin-bottom: 0.5rem;
+.destinos h3,
+.viajeros h3,
+.preferencias h3 {
+    margin-bottom: 0.25rem;
 }
 
 .destino {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.8rem;
-
+    gap: 0.6rem 0.8rem;
     padding: 1rem;
-    border: 1px solid rgb(225, 225, 225);
-    border-radius: 8px;
+    border: 1px solid #dfe2f0;
+    border-radius: 10px;
     background-color: white;
+}
+
+.destino input[type="text"] {
+    flex: 1 1 10rem;
+}
+
+.destino input[type="number"] {
+    width: 6rem;
 }
 
 .destino h4 {
     margin-right: 1rem;
 }
 
-.destino input {
-    padding: 0.5rem;
-    border: 1px solid rgb(200, 200, 200);
-    border-radius: 5px;
+.destino-invalido {
+    border-color: var(--error);
+}
+
+.error-destino {
+    flex-basis: 100%;
+    color: var(--error);
+    font-size: 0.9rem;
+}
+
+.error-formulario {
+    padding: 0.6rem 0.9rem;
+    border-left: 4px solid var(--error);
+    border-radius: 6px;
+    background-color: #fdecee;
+    color: var(--error);
+    font-weight: bold;
 }
 
 #agregarDestino {
     width: fit-content;
     padding: 0.6rem 1rem;
-
-    border: none;
-    border-radius: 5px;
-
-    background-color: rgb(1, 1, 141);
-    color: white;
-
+    border: 1px dashed var(--azul-boton);
+    border-radius: 8px;
+    background-color: white;
+    color: var(--azul-boton);
+    font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 #agregarDestino:hover {
-    opacity: 0.85;
-}
-
-footer {
-    position: static;
-    margin-top: 2rem;
-}
-
-.viajeros {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    padding: 1.5rem;
-    border: 1px solid rgb(220, 220, 220);
-    border-radius: 10px;
-    background-color: rgb(250, 250, 250);
-}
-
-.viajeros h3 {
-    margin-bottom: 0.5rem;
-}
-
-.viajeros label {
-    font-weight: bold;
+    background-color: var(--azul-claro);
 }
 
 .viajeros input {
-    width: 80px;
-    padding: 0.5rem;
-
-    border: 1px solid rgb(200, 200, 200);
-    border-radius: 5px;
-}
-
-.preferencias {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-
-    padding: 1.5rem;
-    border: 1px solid rgb(220, 220, 220);
-    border-radius: 10px;
-    background-color: rgb(250, 250, 250);
-}
-
-.preferencias h3 {
-    margin-bottom: 0.5rem;
-}
-
-.preferencias label {
-    cursor: pointer;
+    width: 6rem;
 }
 
 .preferencias select {
     width: fit-content;
-    padding: 0.5rem;
+    min-width: 12rem;
+}
 
-    border: 1px solid rgb(200, 200, 200);
-    border-radius: 5px;
-    background-color: white;
+.preferencias label:has(input[type="checkbox"]) {
+    font-weight: normal;
+    cursor: pointer;
 }
 
 .preferencias input[type="checkbox"] {
     margin-right: 0.4rem;
 }
 
+#continuar {
+    align-self: flex-start;
+    padding: 0.8rem 2rem;
+}
+
 #resumenPlanificacion {
     padding: 1.5rem;
-
-    border: 1px solid rgb(220, 220, 220);
-    border-radius: 10px;
-
-    background-color: rgb(250, 250, 250);
+    border: 1px solid var(--azul-borde);
+    border-radius: var(--radio);
+    background-color: #fafbff;
 }
 
 #resumenPlanificacion h3 {
@@ -150,41 +116,16 @@ footer {
 }
 
 #resumenPlanificacion h4 {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+    margin: 1rem 0 0.5rem;
 }
 
-#resumenPlanificacion ul {
-    padding-left: 1.5rem;
-}
+@media (max-width: 48rem) {
+    .destino {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-#resumenPlanificacion li {
-    margin-bottom: 0.5rem;
-}
-
-#resumenPlanificacion p {
-    margin-bottom: 0.3rem;
-}
-
-.destino {
-    flex-wrap: wrap;
-}
-
-.destino-invalido {
-    border-color: rgb(200, 30, 30);
-}
-
-.error-destino {
-    flex-basis: 100%;
-    margin: 0;
-
-    color: rgb(200, 30, 30);
-    font-size: 0.9rem;
-}
-
-.error-formulario {
-    margin-bottom: 1rem;
-
-    color: rgb(200, 30, 30);
-    font-weight: bold;
+    .destino h4 {
+        margin-right: 0;
+    }
 }
