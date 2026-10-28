@@ -109,7 +109,7 @@ public class ControladorReserva {
 
     Reserva reserva;
     try {
-      reserva = this.servicioReserva.confirmarReserva(usuario, planificacion, seleccion);
+      reserva = this.servicioReserva.confirmarReserva(usuario.getId(), planificacion, seleccion);
     } catch (ReservaInvalidaException e) {
       redirectAttributes.addFlashAttribute(CLAVE_ERROR, e.getMessage());
       return REDIRECT_RESUMEN_ITINERARIO;
@@ -139,7 +139,10 @@ public class ControladorReserva {
       return REDIRECT_LOGIN;
     }
 
-    modelo.addAttribute(CLAVE_RESERVAS, this.servicioReserva.obtenerReservasDelUsuario(usuario));
+    modelo.addAttribute(
+      CLAVE_RESERVAS,
+      this.servicioReserva.obtenerReservasDelUsuario(usuario.getId())
+    );
     return VISTA_MIS_RESERVAS;
   }
 }

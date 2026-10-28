@@ -268,7 +268,7 @@ public class ControladorReservaTest {
   }
 
   private void givenLaReservaSeConfirma() {
-    when(this.servicioReserva.confirmarReserva(this.usuario, this.planificacion, this.seleccion))
+    when(this.servicioReserva.confirmarReserva(ID_USUARIO, this.planificacion, this.seleccion))
       .thenReturn(this.reserva);
   }
 
