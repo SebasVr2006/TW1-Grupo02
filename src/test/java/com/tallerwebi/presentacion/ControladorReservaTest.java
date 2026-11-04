@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.tallerwebi.dominio.ConfirmacionCompraDto;
+import com.tallerwebi.dominio.EstadoReserva;
 import com.tallerwebi.dominio.Planificacion;
 import com.tallerwebi.dominio.Reserva;
 import com.tallerwebi.dominio.SeleccionItinerario;
@@ -30,6 +31,7 @@ public class ControladorReservaTest {
 
   private static final Long ID_USUARIO = 5L;
   private static final Long ID_OTRO_USUARIO = 6L;
+  private static final Long ID_RESERVA = 7L;
 
   private ServicioReserva servicioReserva;
   private ServicioMercadoPago servicioMercadoPago;
@@ -189,6 +191,7 @@ public class ControladorReservaTest {
     thenSeRedirigeAMisReservas();
     thenSeMuestraElErrorDeCheckout();
     thenSeConfirmaLaReserva();
+    thenSeSolicitaElCheckout();
   }
 
   @Test
@@ -231,6 +234,65 @@ public class ControladorReservaTest {
     thenSeRedirigeAlLogin();
     thenElModeloPermaneceVacio();
     thenNoSeConsultaElServicio();
+  }
+
+  @Test
+  public void deberiaRedirigirAlCheckoutAlPagarUnaReservaPendiente() {
+    givenHayUnUsuarioLogueado();
+    givenElUsuarioTieneUnaReservaConEstado(EstadoReserva.PENDIENTE_DE_PAGO);
+    givenMercadoPagoCreaElCheckout();
+
+    whenPagoLaReserva();
+
+    thenSeRedirigeAlCheckout();
+    thenSeConsultanLasReservasPorElIdDelUsuario();
+    thenSeSolicitaElCheckout();
+  }
+
+  @Test
+  public void deberiaRedirigirALoginAlPagarSinUsuarioLogueado() {
+    whenPagoLaReserva();
+
+    thenSeRedirigeAlLogin();
+    thenNoSeConsultaNingunServicio();
+  }
+
+  @Test
+  public void noDeberiaPagarUnaReservaQueNoEsDelUsuario() {
+    givenHayUnUsuarioLogueado();
+    givenElUsuarioNoTieneReservas();
+
+    whenPagoLaReserva();
+
+    thenSeRedirigeAMisReservas();
+    thenSeMuestraElErrorDeReservaNoPagable();
+    thenSeConsultanLasReservasPorElIdDelUsuario();
+    thenNoSeSolicitaElCheckout();
+  }
+
+  @Test
+  public void noDeberiaPagarUnaReservaQueYaEstaPagada() {
+    givenHayUnUsuarioLogueado();
+    givenElUsuarioTieneUnaReservaConEstado(EstadoReserva.PAGADA);
+
+    whenPagoLaReserva();
+
+    thenSeRedirigeAMisReservas();
+    thenSeMuestraElErrorDeReservaNoPagable();
+    thenNoSeSolicitaElCheckout();
+  }
+
+  @Test
+  public void deberiaVolverAMisReservasSiFallaElCheckoutAlPagar() {
+    givenHayUnUsuarioLogueado();
+    givenElUsuarioTieneUnaReservaConEstado(EstadoReserva.PENDIENTE_DE_PAGO);
+    givenMercadoPagoFalla();
+
+    whenPagoLaReserva();
+
+    thenSeRedirigeAMisReservas();
+    thenSeMuestraElErrorAlReintentarElPago();
+    thenSeSolicitaElCheckout();
   }
 
   private void givenLaSesionTieneTodo() {
@@ -294,6 +356,20 @@ public class ControladorReservaTest {
     when(this.servicioReserva.obtenerReservasDelUsuario(ID_USUARIO)).thenReturn(this.reservas);
   }
 
+  private void givenElUsuarioTieneUnaReservaConEstado(EstadoReserva estado) {
+    this.reserva = mock(Reserva.class);
+
+    when(this.reserva.getId()).thenReturn(ID_RESERVA);
+    when(this.reserva.getEstado()).thenReturn(estado);
+
+    when(this.servicioReserva.obtenerReservasDelUsuario(ID_USUARIO))
+      .thenReturn(List.of(this.reserva));
+  }
+
+  private void givenElUsuarioNoTieneReservas() {
+    when(this.servicioReserva.obtenerReservasDelUsuario(ID_USUARIO)).thenReturn(List.of());
+  }
+
   private void whenConsultoLaConfirmacionDeCompra() {
     this.resultado =
       this.controladorReserva.verConfirmacionCompra(
@@ -315,6 +391,11 @@ public class ControladorReservaTest {
 
   private void whenConsultoMisReservas() {
     this.resultado = this.controladorReserva.verMisReservas(this.sesion, this.modelo);
+  }
+
+  private void whenPagoLaReserva() {
+    this.resultado =
+      this.controladorReserva.pagarReserva(ID_RESERVA, this.sesion, this.redirectAttributes);
   }
 
   private void thenSeMuestraLaConfirmacionDeCompra() {
@@ -379,6 +460,16 @@ public class ControladorReservaTest {
         "error",
         "La reserva se creó, pero falló el inicio del pago: Error al crear el checkout"
       );
+  }
+
+  private void thenSeMuestraElErrorDeReservaNoPagable() {
+    verify(this.redirectAttributes)
+      .addFlashAttribute("error", "No encontramos una reserva pendiente de pago con ese número.");
+  }
+
+  private void thenSeMuestraElErrorAlReintentarElPago() {
+    verify(this.redirectAttributes)
+      .addFlashAttribute("error", "No pudimos iniciar el pago: Error al crear el checkout");
   }
 
   private void thenNoSeConsultaElServicio() {

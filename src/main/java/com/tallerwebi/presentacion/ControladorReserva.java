@@ -1,6 +1,7 @@
 package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.ConfirmacionCompraDto;
+import com.tallerwebi.dominio.EstadoReserva;
 import com.tallerwebi.dominio.Planificacion;
 import com.tallerwebi.dominio.Reserva;
 import com.tallerwebi.dominio.SeleccionItinerario;
@@ -9,12 +10,14 @@ import com.tallerwebi.dominio.ServicioReserva;
 import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.ReservaInvalidaException;
 import jakarta.servlet.http.HttpSession;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -31,6 +34,11 @@ public class ControladorReserva {
   private static final String CLAVE_CONFIRMACION = "confirmacion";
   private static final String MENSAJE_TERMINOS =
     "Tenés que aceptar los términos y condiciones para continuar.";
+  private static final String MENSAJE_RESERVA_CREADA_SIN_PAGO =
+    "La reserva se creó, pero falló el inicio del pago: ";
+  private static final String MENSAJE_FALLO_PAGO = "No pudimos iniciar el pago: ";
+  private static final String MENSAJE_RESERVA_NO_PAGABLE =
+    "No encontramos una reserva pendiente de pago con ese número.";
   private static final String VISTA_CONFIRMACION_COMPRA = "confirmacion-compra";
   private static final String VISTA_MIS_RESERVAS = "mis-reservas";
   private static final String REDIRECT_LOGIN = "redirect:/login";
@@ -119,15 +127,54 @@ public class ControladorReserva {
     sesion.removeAttribute(CLAVE_SELECCION_ITINERARIO);
     sesion.removeAttribute(CLAVE_RESUMEN_ITINERARIO);
 
+    return redirigirAlCheckout(
+      reserva,
+      usuario,
+      redirectAttributes,
+      MENSAJE_RESERVA_CREADA_SIN_PAGO
+    );
+  }
+
+  @PostMapping("/reservas/{id}/pagar")
+  public String pagarReserva(
+    @PathVariable("id") Long idReserva,
+    HttpSession sesion,
+    RedirectAttributes redirectAttributes
+  ) {
+    Usuario usuario = (Usuario) sesion.getAttribute(CLAVE_USUARIO);
+    if (usuario == null) {
+      return REDIRECT_LOGIN;
+    }
+
+    Optional<Reserva> reserva = buscarReservaPendienteDePago(usuario, idReserva);
+    if (reserva.isEmpty()) {
+      redirectAttributes.addFlashAttribute(CLAVE_ERROR, MENSAJE_RESERVA_NO_PAGABLE);
+      return REDIRECT_MIS_RESERVAS;
+    }
+
+    return redirigirAlCheckout(reserva.get(), usuario, redirectAttributes, MENSAJE_FALLO_PAGO);
+  }
+
+  private Optional<Reserva> buscarReservaPendienteDePago(Usuario usuario, Long idReserva) {
+    return this.servicioReserva.obtenerReservasDelUsuario(usuario.getId())
+      .stream()
+      .filter(reserva -> idReserva.equals(reserva.getId()))
+      .filter(reserva -> reserva.getEstado() == EstadoReserva.PENDIENTE_DE_PAGO)
+      .findFirst();
+  }
+
+  private String redirigirAlCheckout(
+    Reserva reserva,
+    Usuario usuario,
+    RedirectAttributes redirectAttributes,
+    String mensajeError
+  ) {
     try {
       String checkoutUrl = this.servicioMercadoPago.crearCheckout(reserva, usuario);
       return "redirect:" + checkoutUrl;
     } catch (RuntimeException e) {
       LOGGER.error("Error al iniciar el checkout de Mercado Pago", e);
-      redirectAttributes.addFlashAttribute(
-        CLAVE_ERROR,
-        "La reserva se creó, pero falló el inicio del pago: " + e.getMessage()
-      );
+      redirectAttributes.addFlashAttribute(CLAVE_ERROR, mensajeError + e.getMessage());
       return REDIRECT_MIS_RESERVAS;
     }
   }

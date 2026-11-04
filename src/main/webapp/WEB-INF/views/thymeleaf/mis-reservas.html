@@ -56,6 +56,10 @@
         </section>
 
         <p><strong>Total: <span th:text="${reserva.total}"></span></strong></p>
+        <form th:if="${reserva.estado.name() == 'PENDIENTE_DE_PAGO'}"
+              th:action="@{/reservas/{id}/pagar(id=${reserva.id})}" method="post">
+            <button type="submit" class="boton-confirmar">Pagar</button>
+        </form>
     </article>
 
     <a th:href="@{/planificacion}">Planificar otro viaje</a>
