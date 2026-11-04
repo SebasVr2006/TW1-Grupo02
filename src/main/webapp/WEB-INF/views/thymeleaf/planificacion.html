@@ -30,7 +30,9 @@
     <h2>Planificá tu viaje</h2>
     <p class="error-formulario" role="alert" th:if="${error}" th:text="${error}"></p>
     
-    <form th:action="@{/planificacion}" method="post" id="formPlanificacion">
+    <form th:action="@{/planificacion}" method="post" id="formPlanificacion"
+          th:attr="data-url-ciudades=@{/ciudades}">
+        <datalist id="ciudades-sugeridas"></datalist>
         <section class="destinos">
 
             <h3>Destinos</h3>
@@ -39,7 +41,8 @@
                 <h4>Destino 1</h4>
 
                 <label for="destino-0">Destino:</label>
-                <input type="text" id="destino-0" name="destinos[0].nombre" required>
+                <input type="text" id="destino-0" name="destinos[0].nombre"
+                       list="ciudades-sugeridas" autocomplete="off" required>
 
                 <label for="fechaInicio-0">Fecha de inicio:</label>
                 <input type="date" id="fechaInicio-0" name="destinos[0].fechaInicio" required>

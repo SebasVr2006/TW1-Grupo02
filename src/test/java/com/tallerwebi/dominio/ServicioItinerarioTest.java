@@ -137,4 +137,53 @@ class ServicioItinerarioTest {
   private void whenGeneroElItinerarioDeCordoba() {
     resultado = servicioItinerario.generarItinerario("Córdoba");
   }
+
+  @Test
+  void deberiaAceptarDestinoConElPaisIndicado() {
+    givenTengoBuenosAiresDeArgentinaEnElRepositorio();
+
+    whenGeneroElItinerarioDe("Buenos Aires, Argentina");
+
+    thenElItinerarioEsDeBuenosAiresArgentina();
+  }
+
+  @Test
+  void deberiaRetornarNullSiElPaisIndicadoNoCoincide() {
+    givenTengoBuenosAiresDeArgentinaEnElRepositorio();
+
+    whenGeneroElItinerarioDe("Buenos Aires, Nicaragua");
+
+    thenElResultadoEsNulo();
+  }
+
+  @Test
+  void deberiaIgnorarAcentosYMayusculasEnElPaisIndicado() {
+    givenTengoUnDestinoParisSinHotelesNiActividades();
+
+    whenGeneroElItinerarioDe("PARÍS, francia");
+
+    thenElItinerarioContieneLaCiudadParis();
+  }
+
+  private void givenTengoBuenosAiresDeArgentinaEnElRepositorio() {
+    repositorioItinerario = mock(RepositorioItinerario.class);
+    servicioItinerario = new ServicioItinerarioImpl(repositorioItinerario);
+
+    DestinoDisponible buenosAires = new DestinoDisponible("Buenos Aires", "Argentina");
+    buenosAires.setId(1L);
+
+    when(repositorioItinerario.buscarDestinoPorCiudad("buenos aires")).thenReturn(buenosAires);
+    when(repositorioItinerario.buscarHotelesPorDestino(1L)).thenReturn(List.of());
+    when(repositorioItinerario.buscarActividadesPorDestino(1L)).thenReturn(List.of());
+  }
+
+  private void whenGeneroElItinerarioDe(String destino) {
+    resultado = servicioItinerario.generarItinerario(destino);
+  }
+
+  private void thenElItinerarioEsDeBuenosAiresArgentina() {
+    assertNotNull(resultado);
+    assertEquals("Buenos Aires", resultado.getCiudad());
+    assertEquals("Argentina", resultado.getPais());
+  }
 }

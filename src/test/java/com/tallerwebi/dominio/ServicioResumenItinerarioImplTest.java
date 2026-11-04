@@ -58,6 +58,17 @@ public class ServicioResumenItinerarioImplTest {
   }
 
   @Test
+  public void generarResumenCuandoElDestinoIndicaElPais() {
+    givenTengoUnaPlanificacionDeBuenosAiresConPaisYCincoDias();
+    givenHayOpcionesParaBuenosAiresConPais();
+    givenSeleccionoHotelYDosActividades();
+
+    whenGeneroElResumen();
+
+    thenElResumenIncluyeLosCostosDelHotelYLasActividades();
+  }
+
+  @Test
   public void rechazarSeleccionNula() {
     givenTengoUnaPlanificacionDeBuenosAiresConDosDias();
     givenLaSeleccionEsNula();
@@ -121,6 +132,16 @@ public class ServicioResumenItinerarioImplTest {
 
   private void givenTengoUnaPlanificacionDeBuenosAiresConCincoDias() {
     this.planificacion = crearPlanificacion(new Destino("Buenos Aires", "2026-12-10", 5));
+  }
+
+  private void givenTengoUnaPlanificacionDeBuenosAiresConPaisYCincoDias() {
+    this.planificacion =
+      crearPlanificacion(new Destino("Buenos Aires, Argentina", "2026-12-10", 5));
+  }
+
+  private void givenHayOpcionesParaBuenosAiresConPais() {
+    when(this.servicioItinerario.generarItinerario("Buenos Aires, Argentina"))
+      .thenReturn(crearOpcionBuenosAires());
   }
 
   private void givenTengoUnaPlanificacionDeBuenosAiresConTresDias() {

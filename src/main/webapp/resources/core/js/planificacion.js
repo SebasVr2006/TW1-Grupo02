@@ -1,8 +1,46 @@
+import {
+  armarOpciones,
+  debeBuscarCiudades,
+  mostrarOpciones,
+  pedirCiudades,
+} from "./ciudades_funciones.js";
 import { validarDestinos } from "./planificacion_funciones.js";
 
 const botonAgregar = document.getElementById("agregarDestino");
 const seccionDestinos = document.querySelector(".destinos");
 const formulario = document.getElementById("formPlanificacion");
+const listaCiudades = document.getElementById("ciudades-sugeridas");
+const urlCiudades = formulario.dataset.urlCiudades;
+const ESPERA_MS = 300;
+
+let temporizador = null;
+
+function sugerirCiudades(campo) {
+  clearTimeout(temporizador);
+
+  if (!debeBuscarCiudades(campo.value)) {
+    mostrarOpciones(listaCiudades, []);
+    return;
+  }
+
+  temporizador = setTimeout(async function () {
+    const textoBuscado = campo.value;
+    try {
+      const ciudades = await pedirCiudades(urlCiudades, textoBuscado);
+      if (campo.value === textoBuscado) {
+        mostrarOpciones(listaCiudades, armarOpciones(ciudades));
+      }
+    } catch {
+      mostrarOpciones(listaCiudades, []);
+    }
+  }, ESPERA_MS);
+}
+
+seccionDestinos.addEventListener("input", function (evento) {
+  if (evento.target.matches("input[name$='.nombre']")) {
+    sugerirCiudades(evento.target);
+  }
+});
 
 let numeroDestino = 1;
 
@@ -21,6 +59,8 @@ botonAgregar.addEventListener("click", function () {
             type="text"
             id="destino-${indiceDestino}"
             name="destinos[${indiceDestino}].nombre"
+            list="ciudades-sugeridas"
+            autocomplete="off"
             required
         >
 
@@ -52,7 +92,7 @@ function leerDestinos() {
   return Array.from(seccionDestinos.querySelectorAll(".destino")).map(function (destino) {
     return {
       fechaInicio: destino.querySelector("input[type=date]").value,
-      duracion: destino.querySelector("input[type=number]").value
+      duracion: destino.querySelector("input[type=number]").value,
     };
   });
 }
@@ -96,6 +136,8 @@ seccionDestinos.addEventListener("input", mostrarErrores);
 formulario.addEventListener("submit", function (evento) {
   if (!mostrarErrores()) {
     evento.preventDefault();
-    seccionDestinos.querySelector(".error-destino").scrollIntoView({ behavior: "smooth", block: "center" });
+    seccionDestinos
+      .querySelector(".error-destino")
+      .scrollIntoView({ behavior: "smooth", block: "center" });
   }
 });

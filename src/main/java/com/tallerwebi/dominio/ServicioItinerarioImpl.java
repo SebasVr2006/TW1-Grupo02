@@ -24,14 +24,13 @@ public class ServicioItinerarioImpl implements ServicioItinerario {
       return null;
     }
 
-    String ciudad = Normalizer
-      .normalize(nombreDestino.trim(), Normalizer.Form.NFD)
-      .replaceAll("\\p{M}", "")
-      .toLowerCase(Locale.ROOT);
+    String[] partes = nombreDestino.split(",", 2);
+    String ciudad = normalizar(partes[0]);
+    String pais = partes.length > 1 ? normalizar(partes[1]) : "";
 
     DestinoDisponible destino = this.repositorioItinerario.buscarDestinoPorCiudad(ciudad);
 
-    if (destino == null) {
+    if (destino == null || !coincidePais(destino, pais)) {
       return null;
     }
 
@@ -41,5 +40,16 @@ public class ServicioItinerarioImpl implements ServicioItinerario {
       this.repositorioItinerario.buscarActividadesPorDestino(destino.getId());
 
     return new OpcionDestino(destino.getCiudad(), destino.getPais(), hoteles, actividades);
+  }
+
+  private boolean coincidePais(DestinoDisponible destino, String paisIndicado) {
+    return paisIndicado.isEmpty() || normalizar(destino.getPais()).equals(paisIndicado);
+  }
+
+  private String normalizar(String texto) {
+    return Normalizer
+      .normalize(texto.trim(), Normalizer.Form.NFD)
+      .replaceAll("\\p{M}", "")
+      .toLowerCase(Locale.ROOT);
   }
 }

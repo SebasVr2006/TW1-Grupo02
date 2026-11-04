@@ -145,8 +145,10 @@ public class ServicioResumenItinerarioImpl implements ServicioResumenItinerario 
   }
 
   private String normalizarCiudad(String ciudad) {
+    String soloCiudad = ciudad.split(",", 2)[0];
+
     return Normalizer
-      .normalize(ciudad.trim(), Normalizer.Form.NFD)
+      .normalize(soloCiudad.trim(), Normalizer.Form.NFD)
       .replaceAll("\\p{M}", "")
       .toLowerCase(Locale.ROOT);
   }
