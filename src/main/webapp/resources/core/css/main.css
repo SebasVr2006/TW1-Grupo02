@@ -81,6 +81,11 @@ header h1 {
     justify-content: flex-end;
 }
 
+h1 a {
+    color: white;
+    text-decoration: none;
+}
+
 .lista_header {
     display: flex;
     flex-direction: row;
@@ -183,11 +188,11 @@ main h4 {
     font-size: 1.05rem;
 }
 
-main > p {
+main>p {
     color: var(--texto-suave);
 }
 
-main > h2 + p {
+main>h2+p {
     text-align: center;
 }
 
@@ -206,8 +211,8 @@ main hr {
 }
 
 /* Bloques sin clase propia (itinerario, resúmenes): se ven como tarjetas */
-main > section:not([class]),
-main form > section:not([class]) {
+main>section:not([class]),
+main form>section:not([class]) {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -217,15 +222,15 @@ main form > section:not([class]) {
     background-color: #fafbff;
 }
 
-main section > section:not([class]) {
+main section>section:not([class]) {
     padding-top: 0.5rem;
 }
 
-main form > section:not([class]) {
+main form>section:not([class]) {
     margin-bottom: 1rem;
 }
 
-main form > section > hr {
+main form>section>hr {
     display: none;
 }
 
@@ -235,7 +240,7 @@ main ul:has(> li > label) {
     padding-left: 0;
 }
 
-main li > label {
+main li>label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -247,13 +252,13 @@ main li > label {
     cursor: pointer;
 }
 
-main li > label:hover {
+main li>label:hover {
     border-color: var(--azul-boton);
 }
 
 /* Enlaces sueltos al final de las páginas (volver, planificar otro viaje) */
-main > a:not([class]),
-main > p > a:not([class]) {
+main>a:not([class]),
+main>p>a:not([class]) {
     width: fit-content;
     font-weight: bold;
 }
@@ -473,12 +478,12 @@ footer {
     z-index: 10;
 }
 
-.toggle-barra:checked ~ .barra-lateral {
+.toggle-barra:checked~.barra-lateral {
     transform: translateX(0);
     box-shadow: 4px 0 16px rgba(0, 0, 0, 0.25);
 }
 
-.toggle-barra:checked ~ .fondo-barra {
+.toggle-barra:checked~.fondo-barra {
     display: block;
 }
 
