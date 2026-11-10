@@ -5,6 +5,7 @@
     gap: 1.25rem;
 }
 
+.origen,
 .destinos,
 .viajeros,
 .preferencias {
@@ -17,6 +18,7 @@
     background-color: #fafbff;
 }
 
+.origen h3,
 .destinos h3,
 .viajeros h3,
 .preferencias h3 {
@@ -32,6 +34,10 @@
     border: 1px solid #dfe2f0;
     border-radius: 10px;
     background-color: white;
+}
+
+.origen input[type="text"] {
+    max-width: 24rem;
 }
 
 .destino input[type="text"] {

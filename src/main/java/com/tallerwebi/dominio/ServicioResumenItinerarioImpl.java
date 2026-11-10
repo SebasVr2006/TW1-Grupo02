@@ -39,8 +39,12 @@ public class ServicioResumenItinerarioImpl implements ServicioResumenItinerario 
       totalGeneral += detalle.getSubtotal();
     }
 
+    double costoVuelos = calcularCostoVuelos(planificacion.getVuelosSeleccionados());
+
     resumen.setDestinos(detalles);
-    resumen.setTotal(totalGeneral);
+    resumen.setVuelos(vuelosDe(planificacion));
+    resumen.setCostoVuelos(costoVuelos);
+    resumen.setTotal(totalGeneral + costoVuelos);
 
     return resumen;
   }
@@ -110,6 +114,30 @@ public class ServicioResumenItinerarioImpl implements ServicioResumenItinerario 
     detalle.setSubtotal(costoHotel + costoActividades);
 
     return detalle;
+  }
+
+  private List<Vuelo> vuelosDe(Planificacion planificacion) {
+    if (planificacion.getVuelosSeleccionados() == null) {
+      return new ArrayList<>();
+    }
+    return planificacion.getVuelosSeleccionados();
+  }
+
+  // El precio de cada vuelo es el total del grupo (ya incluye a todos los pasajeros).
+  private double calcularCostoVuelos(List<Vuelo> vuelos) {
+    double total = 0.0;
+
+    if (vuelos == null) {
+      return total;
+    }
+
+    for (Vuelo vuelo : vuelos) {
+      if (vuelo != null && vuelo.getPrecio() != null) {
+        total += vuelo.getPrecio();
+      }
+    }
+
+    return total;
   }
 
   private double calcularCostoActividades(List<Actividad> actividades) {

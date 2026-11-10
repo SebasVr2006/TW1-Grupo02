@@ -17,6 +17,11 @@
 <main>
     <h2>Resumen de tu viaje</h2>
 
+    <section th:if="${planificacion.origen != null}">
+        <h3>Origen</h3>
+        <p th:text="${planificacion.origen}"></p>
+    </section>
+
     <section>
         <h3>Destinos</h3>
 
@@ -28,6 +33,24 @@
                 -
                 <span th:text="${destino.duracion}"></span>
                 días
+            </li>
+        </ul>
+    </section>
+
+    <section th:if="${!#lists.isEmpty(planificacion.vuelosSeleccionados)}">
+        <h3>Vuelos</h3>
+
+        <ul>
+            <li th:each="vuelo : ${planificacion.vuelosSeleccionados}">
+                <strong th:text="${vuelo.aerolinea}"></strong>:
+                <span th:text="${vuelo.aeropuertoOrigen}"></span>
+                &rarr;
+                <span th:text="${vuelo.aeropuertoDestino}"></span>
+                (<span th:text="${vuelo.salida}"></span>
+                &rarr;
+                <span th:text="${vuelo.llegada}"></span>)
+                -
+                <span th:text="${vuelo.precio != null} ? 'USD ' + ${vuelo.precio} : 'Precio a consultar'"></span>
             </li>
         </ul>
     </section>
@@ -67,6 +90,7 @@
         Ver itinerario
     </a>
 
+    <a th:href="@{/seleccion-vuelo}">Cambiar vuelos</a>
     <a th:href="@{/planificacion}">Volver a planificar</a>
 </main>
 

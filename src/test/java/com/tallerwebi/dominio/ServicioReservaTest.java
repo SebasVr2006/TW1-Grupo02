@@ -273,6 +273,26 @@ public class ServicioReservaTest {
   }
 
   @Test
+  public void deberiaGuardarElTotalConLosVuelosIncluidos() {
+    givenTengoDatosValidosParaLaReserva();
+    givenElResumenIncluyeVuelosPor(200.0);
+
+    whenConfirmoLaReserva();
+
+    assertThat(entoncesSeGuardoUnaReserva().getTotal(), is(equalTo(1200.0)));
+  }
+
+  @Test
+  public void deberiaPrepararLaConfirmacionConElCostoDeLosVuelos() {
+    givenTengoDatosValidosParaLaReserva();
+    givenElResumenIncluyeVuelosPor(200.0);
+
+    whenPreparoLaConfirmacion();
+
+    thenLaConfirmacionIncluyeElCostoDeLosVuelosEnElTotal();
+  }
+
+  @Test
   public void deberiaPrepararLaConfirmacionConElDesgloseDeCostos() {
     givenTengoDatosValidosParaLaReserva();
 
@@ -281,7 +301,18 @@ public class ServicioReservaTest {
     thenLaConfirmacionContieneElDesgloseDeCostos();
   }
 
+  private void givenElResumenIncluyeVuelosPor(double costoVuelos) {
+    resumen.setCostoVuelos(costoVuelos);
+    resumen.setTotal(resumen.getTotal() + costoVuelos);
+  }
+
+  private void thenLaConfirmacionIncluyeElCostoDeLosVuelosEnElTotal() {
+    assertThat(confirmacion.getTotalVuelos(), is(equalTo(200.0)));
+    assertThat(confirmacion.getTotal(), is(equalTo(1200.0)));
+  }
+
   private void thenLaConfirmacionContieneElDesgloseDeCostos() {
+    assertThat(confirmacion.getTotalVuelos(), is(equalTo(0.0)));
     assertThat(confirmacion.getTotalAlojamiento(), is(equalTo(930.0)));
     assertThat(confirmacion.getTotalActividades(), is(equalTo(70.0)));
     assertThat(confirmacion.getTotal(), is(equalTo(1000.0)));

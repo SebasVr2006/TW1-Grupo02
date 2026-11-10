@@ -6,6 +6,8 @@ import java.util.List;
 public class ResumenItinerario {
 
   private List<DetalleDestinoItinerario> destinos = new ArrayList<>();
+  private List<Vuelo> vuelos = new ArrayList<>();
+  private Double costoVuelos = 0.0;
   private Double total = 0.0;
 
   public List<DetalleDestinoItinerario> getDestinos() {
@@ -14,6 +16,22 @@ public class ResumenItinerario {
 
   public void setDestinos(List<DetalleDestinoItinerario> destinos) {
     this.destinos = destinos;
+  }
+
+  public List<Vuelo> getVuelos() {
+    return vuelos;
+  }
+
+  public void setVuelos(List<Vuelo> vuelos) {
+    this.vuelos = vuelos;
+  }
+
+  public Double getCostoVuelos() {
+    return costoVuelos;
+  }
+
+  public void setCostoVuelos(Double costoVuelos) {
+    this.costoVuelos = costoVuelos;
   }
 
   public Double getTotal() {

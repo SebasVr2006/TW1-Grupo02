@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Elegí tus vuelos | FlyNow</title>
+
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/seleccion-vuelo.css}">
+</head>
+
+<body>
+
+<header th:replace="~{fragments/layout :: header}"></header>
+
+<main>
+
+    <h2>Elegí tus vuelos</h2>
+    <p>Estos son los vuelos disponibles para cada tramo de tu viaje. Elegí uno por tramo.</p>
+
+    <p class="error-formulario" role="alert" th:if="${error}" th:text="${error}"></p>
+
+    <section th:if="${tramos == null}">
+        <p>No pudimos cargar los vuelos en este momento.</p>
+        <a th:href="@{/seleccion-vuelo}" class="boton">Reintentar</a>
+        <p><a th:href="@{/planificacion}">Volver a planificar</a></p>
+    </section>
+
+    <form th:if="${tramos != null}"
+          th:action="@{/seleccion-vuelo}"
+          method="post"
+          id="formSeleccionVuelo"
+          accept-charset="UTF-8">
+
+        <section class="tramo-vuelo" th:each="tramo, iteracionTramo : ${tramos}">
+
+            <h3>
+                <span th:text="${iteracionTramo.count}"></span>.
+                <span th:text="${tramo.origen}"></span>
+                &rarr;
+                <span th:text="${tramo.destino}"></span>
+            </h3>
+            <p class="fecha-tramo">Fecha de salida: <span th:text="${tramo.fecha}"></span></p>
+
+            <p class="sin-vuelos" th:if="${#lists.isEmpty(tramo.vuelos)}">
+                No encontramos vuelos disponibles para este tramo y esta fecha.
+            </p>
+
+            <ul class="lista-vuelos" th:unless="${#lists.isEmpty(tramo.vuelos)}">
+                <li class="vuelo" th:each="vuelo, iteracionVuelo : ${tramo.vuelos}">
+                    <label>
+                        <input type="radio"
+                               th:name="|indicesVuelos[${iteracionTramo.index}]|"
+                               th:value="${iteracionVuelo.index}"
+                               required>
+
+                        <span class="vuelo-aerolinea">
+                            <img th:if="${!#strings.isEmpty(vuelo.logoAerolinea)}"
+                                 th:src="${vuelo.logoAerolinea}"
+                                 th:alt="${vuelo.aerolinea}"
+                                 width="32" height="32">
+                            <strong th:text="${vuelo.aerolinea}"></strong>
+                        </span>
+
+                        <span class="vuelo-horarios">
+                            <span th:text="${vuelo.salida}"></span>
+                            &rarr;
+                            <span th:text="${vuelo.llegada}"></span>
+                        </span>
+
+                        <span class="vuelo-aeropuertos">
+                            <span th:text="${vuelo.aeropuertoOrigen}"></span>
+                            &rarr;
+                            <span th:text="${vuelo.aeropuertoDestino}"></span>
+                        </span>
+
+                        <span class="vuelo-detalle">
+                            <span th:text="${vuelo.duracionFormateada}"></span> &middot;
+                            <span th:text="${vuelo.escalasTexto}"></span>
+                        </span>
+
+                        <span class="vuelo-precio"
+                              th:text="${vuelo.precio != null} ? 'USD ' + ${vuelo.precio} : 'Consultar precio'">
+                        </span>
+                    </label>
+                </li>
+            </ul>
+        </section>
+
+        <button type="submit" class="boton">Continuar</button>
+    </form>
+
+    <p>
+        <a th:href="@{/planificacion}">Volver a planificar</a>
+    </p>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

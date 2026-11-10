@@ -118,7 +118,7 @@ public class ServicioReservaImpl implements ServicioReserva {
       totalActividades += detalle.getCostoActividades();
     }
 
-    return new ConfirmacionCompraDto(
+    ConfirmacionCompraDto confirmacion = new ConfirmacionCompraDto(
       planificacion.getAdultos(),
       planificacion.getNinos(),
       planificacion.getAlojamiento(),
@@ -127,6 +127,8 @@ public class ServicioReservaImpl implements ServicioReserva {
       totalActividades,
       resumen.getTotal()
     );
+    confirmacion.setTotalVuelos(resumen.getCostoVuelos());
+    return confirmacion;
   }
 
   private ResumenItinerario generarResumen(

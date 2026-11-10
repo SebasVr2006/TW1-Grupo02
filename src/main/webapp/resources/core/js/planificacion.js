@@ -36,6 +36,12 @@ function sugerirCiudades(campo) {
   }, ESPERA_MS);
 }
 
+const campoOrigen = document.getElementById("origen");
+
+campoOrigen.addEventListener("input", function () {
+  sugerirCiudades(campoOrigen);
+});
+
 seccionDestinos.addEventListener("input", function (evento) {
   if (evento.target.matches("input[name$='.nombre']")) {
     sugerirCiudades(evento.target);

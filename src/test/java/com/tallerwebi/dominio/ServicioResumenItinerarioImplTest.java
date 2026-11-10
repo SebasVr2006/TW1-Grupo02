@@ -36,6 +36,41 @@ public class ServicioResumenItinerarioImplTest {
   }
 
   @Test
+  public void generarResumenDeberiaSumarElPrecioDeLosVuelosAlTotal() {
+    givenTengoUnaPlanificacionDeBuenosAiresConCincoDias();
+    givenLaPlanificacionTieneVuelosPorPrecios(300, 150);
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+    givenSeleccionoHotelYDosActividades();
+
+    whenGeneroElResumen();
+
+    thenElResumenSumaLosVuelosAlTotal();
+  }
+
+  @Test
+  public void generarResumenDeberiaIgnorarLosVuelosSinPrecio() {
+    givenTengoUnaPlanificacionDeBuenosAiresConCincoDias();
+    givenLaPlanificacionTieneUnVueloSinPrecioYOtroDe(200);
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+    givenSeleccionoHotelYDosActividades();
+
+    whenGeneroElResumen();
+
+    thenElResumenSoloSumaElVueloConPrecio();
+  }
+
+  @Test
+  public void generarResumenSinVuelosNoDeberiaCambiarElTotal() {
+    givenTengoUnaPlanificacionDeBuenosAiresConCincoDias();
+    givenHayOpcionesDeHotelYActividadesParaBuenosAires();
+    givenSeleccionoHotelYDosActividades();
+
+    whenGeneroElResumen();
+
+    thenElResumenNoTieneCostoDeVuelos();
+  }
+
+  @Test
   public void generarResumenSinActividadesSeleccionadas() {
     givenTengoUnaPlanificacionDeBuenosAiresConTresDias();
     givenHayOpcionesDeHotelYActividadesParaBuenosAires();
@@ -142,6 +177,14 @@ public class ServicioResumenItinerarioImplTest {
   private void givenHayOpcionesParaBuenosAiresConPais() {
     when(this.servicioItinerario.generarItinerario("Buenos Aires, Argentina"))
       .thenReturn(crearOpcionBuenosAires());
+  }
+
+  private void givenLaPlanificacionTieneVuelosPorPrecios(int primero, int segundo) {
+    this.planificacion.setVuelosSeleccionados(List.of(crearVuelo(primero), crearVuelo(segundo)));
+  }
+
+  private void givenLaPlanificacionTieneUnVueloSinPrecioYOtroDe(int precio) {
+    this.planificacion.setVuelosSeleccionados(List.of(crearVuelo(null), crearVuelo(precio)));
   }
 
   private void givenTengoUnaPlanificacionDeBuenosAiresConTresDias() {
@@ -270,6 +313,30 @@ public class ServicioResumenItinerarioImplTest {
     assertEquals(105.0, detalle.getCostoActividades());
     assertEquals(555.0, detalle.getSubtotal());
     assertEquals(2, detalle.getActividadesSeleccionadas().size());
+  }
+
+  private void thenElResumenSumaLosVuelosAlTotal() {
+    assertEquals(450.0, this.resumen.getCostoVuelos());
+    assertEquals(2, this.resumen.getVuelos().size());
+    assertEquals(555.0 + 450.0, this.resumen.getTotal());
+    assertEquals(555.0, this.resumen.getDestinos().get(0).getSubtotal());
+  }
+
+  private void thenElResumenSoloSumaElVueloConPrecio() {
+    assertEquals(200.0, this.resumen.getCostoVuelos());
+    assertEquals(555.0 + 200.0, this.resumen.getTotal());
+  }
+
+  private void thenElResumenNoTieneCostoDeVuelos() {
+    assertEquals(0.0, this.resumen.getCostoVuelos());
+    assertTrue(this.resumen.getVuelos().isEmpty());
+    assertEquals(555.0, this.resumen.getTotal());
+  }
+
+  private Vuelo crearVuelo(Integer precio) {
+    Vuelo vuelo = new Vuelo();
+    vuelo.setPrecio(precio);
+    return vuelo;
   }
 
   private void thenElResumenIncluyeSoloElCostoDelHotel() {

@@ -20,6 +20,7 @@ public class ControladorPlanificacion {
 
   private static final String VISTA_PLANIFICACION = "planificacion";
   private static final String CLAVE_PLANIFICACION = "planificacion";
+  private static final String CLAVE_TRAMOS_VUELO = "tramosVuelo";
 
   private ServicioPlanificacion servicioPlanificacion;
 
@@ -59,7 +60,8 @@ public class ControladorPlanificacion {
 
     HttpSession sesion = request.getSession();
     sesion.setAttribute(CLAVE_PLANIFICACION, planificacionValidada);
+    sesion.removeAttribute(CLAVE_TRAMOS_VUELO);
 
-    return new ModelAndView("redirect:/resumen-planificacion");
+    return new ModelAndView("redirect:/seleccion-vuelo");
   }
 }

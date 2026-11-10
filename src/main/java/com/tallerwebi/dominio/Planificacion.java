@@ -5,15 +5,26 @@ import java.util.List;
 
 public class Planificacion {
 
+  private String origen;
   private List<Destino> destinos;
   private int adultos;
   private int ninos;
   private String alojamiento;
   private List<String> intereses;
+  private List<Vuelo> vuelosSeleccionados;
 
   public Planificacion() {
     this.destinos = new ArrayList<>();
     this.intereses = new ArrayList<>();
+    this.vuelosSeleccionados = new ArrayList<>();
+  }
+
+  public String getOrigen() {
+    return origen;
+  }
+
+  public void setOrigen(String origen) {
+    this.origen = origen;
   }
 
   public void agregarDestino(Destino destino) {
@@ -58,5 +69,13 @@ public class Planificacion {
 
   public void setIntereses(List<String> intereses) {
     this.intereses = intereses;
+  }
+
+  public List<Vuelo> getVuelosSeleccionados() {
+    return vuelosSeleccionados;
+  }
+
+  public void setVuelosSeleccionados(List<Vuelo> vuelosSeleccionados) {
+    this.vuelosSeleccionados = vuelosSeleccionados;
   }
 }

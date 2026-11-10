@@ -41,16 +41,27 @@ public class ControladorPlanificacionTest {
   }
 
   @Test
-  public void recibirPlanificacionDeberiaGuardarEnSesionYRedireccionarAlResumen() {
+  public void recibirPlanificacionDeberiaGuardarEnSesionYRedireccionarALaSeleccionDeVuelo() {
     givenTengoUnaPlanificacionValida();
     givenLaSesionEstaDisponible();
     givenElServicioGuardaLaPlanificacion();
 
     whenReciboLaPlanificacion();
 
-    thenSeRedirigeAlResumen();
+    thenSeRedirigeALaSeleccionDeVuelo();
     thenSeGuardaLaPlanificacionEnElServicio();
     thenSeGuardaLaPlanificacionEnLaSesion();
+  }
+
+  @Test
+  public void recibirPlanificacionDeberiaDescartarLosTramosDeVueloAnteriores() {
+    givenTengoUnaPlanificacionValida();
+    givenLaSesionEstaDisponible();
+    givenElServicioGuardaLaPlanificacion();
+
+    whenReciboLaPlanificacion();
+
+    thenSeDescartanLosTramosDeVueloAnterioresDeLaSesion();
   }
 
   @Test
@@ -68,6 +79,7 @@ public class ControladorPlanificacionTest {
 
   private void givenTengoUnaPlanificacionValida() {
     this.planificacion = new Planificacion();
+    this.planificacion.setOrigen("Buenos Aires");
     this.planificacion.agregarDestino(new Destino("Bariloche", "2026-12-10", 5));
     this.planificacion.setAdultos(1);
     this.planificacion.setNinos(0);
@@ -104,8 +116,12 @@ public class ControladorPlanificacionTest {
     assertThat(this.resultado.getViewName(), equalTo("planificacion"));
   }
 
-  private void thenSeRedirigeAlResumen() {
-    assertThat(this.resultado.getViewName(), equalTo("redirect:/resumen-planificacion"));
+  private void thenSeRedirigeALaSeleccionDeVuelo() {
+    assertThat(this.resultado.getViewName(), equalTo("redirect:/seleccion-vuelo"));
+  }
+
+  private void thenSeDescartanLosTramosDeVueloAnterioresDeLaSesion() {
+    verify(this.sesion, times(1)).removeAttribute("tramosVuelo");
   }
 
   private void thenSeGuardaLaPlanificacionEnElServicio() {

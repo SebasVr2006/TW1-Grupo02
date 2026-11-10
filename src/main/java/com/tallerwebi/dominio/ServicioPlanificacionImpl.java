@@ -6,6 +6,7 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,8 @@ public class ServicioPlanificacionImpl implements ServicioPlanificacion {
   @Override
   public Planificacion guardarPlanificacion(Planificacion planificacion) {
     validarPlanificacion(planificacion);
+    // Los vuelos solo se eligen en la selección de vuelo; lo que llegue del formulario se ignora.
+    planificacion.setVuelosSeleccionados(new ArrayList<>());
     return planificacion;
   }
 
@@ -36,10 +39,17 @@ public class ServicioPlanificacionImpl implements ServicioPlanificacion {
       throw new PlanificacionInvalidaException("La planificación es obligatoria");
     }
 
+    validarOrigen(planificacion);
     validarDestinos(planificacion);
     validarAdultos(planificacion);
     validarNinos(planificacion);
     validarAlojamiento(planificacion);
+  }
+
+  private void validarOrigen(Planificacion planificacion) {
+    if (planificacion.getOrigen() == null || planificacion.getOrigen().isBlank()) {
+      throw new PlanificacionInvalidaException("Debe ingresar la ciudad de origen");
+    }
   }
 
   private void validarDestinos(Planificacion planificacion) {
