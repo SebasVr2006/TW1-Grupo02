@@ -38,6 +38,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       MERCADOPAGO_ACCESS_TOKEN: ${MERCADOPAGO_ACCESS_TOKEN}
+      SERPAPI_API_KEY: ${SERPAPI_API_KEY}
 
 volumes:
   mysql_data:

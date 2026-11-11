@@ -1,0 +1,91 @@
+/* Selección de vuelo */
+#formSeleccionVuelo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.tramo-vuelo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1.5rem;
+    border: 1px solid var(--azul-borde);
+    border-radius: var(--radio);
+    background-color: #fafbff;
+}
+
+.fecha-tramo,
+.sin-vuelos {
+    color: var(--texto-suave);
+}
+
+.lista-vuelos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    list-style: none;
+    padding: 0;
+}
+
+.vuelo label {
+    display: grid;
+    grid-template-columns: auto 1.2fr 1.4fr 1.4fr 1fr auto;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid #dfe2f0;
+    border-radius: 10px;
+    background-color: var(--fondo-tarjeta);
+    font-weight: normal;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+.vuelo label:hover,
+.vuelo label:has(input:checked) {
+    border-color: var(--azul-boton);
+    background-color: var(--azul-claro);
+}
+
+.vuelo-aerolinea {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.vuelo-aerolinea img {
+    object-fit: contain;
+}
+
+.vuelo-aeropuertos,
+.vuelo-detalle {
+    color: var(--texto-suave);
+    font-size: 0.9rem;
+}
+
+.vuelo-precio {
+    color: var(--azul-oscuro);
+    font-size: 1.1rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#formSeleccionVuelo .boton {
+    align-self: flex-start;
+    padding: 0.8rem 2rem;
+}
+
+@media (max-width: 48rem) {
+    .vuelo label {
+        grid-template-columns: auto 1fr;
+    }
+
+    .vuelo-aerolinea,
+    .vuelo-horarios,
+    .vuelo-aeropuertos,
+    .vuelo-detalle,
+    .vuelo-precio {
+        grid-column: 2;
+    }
+}

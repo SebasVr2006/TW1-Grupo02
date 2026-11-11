@@ -50,6 +50,26 @@
         <hr>
     </section>
 
+    <section th:if="${!#lists.isEmpty(resumenItinerario.vuelos)}">
+        <h3>Vuelos</h3>
+        <ul>
+            <li th:each="vuelo : ${resumenItinerario.vuelos}">
+                <strong th:text="${vuelo.aerolinea}"></strong>:
+                <span th:text="${vuelo.aeropuertoOrigen}"></span>
+                &rarr;
+                <span th:text="${vuelo.aeropuertoDestino}"></span>
+                (<span th:text="${vuelo.salida}"></span>)
+                -
+                <span th:text="${vuelo.precio != null} ? ${vuelo.precio} : 'Precio a consultar'"></span>
+            </li>
+        </ul>
+        <p>
+            <strong>Costo de vuelos:</strong>
+            <span th:text="${resumenItinerario.costoVuelos}"></span>
+        </p>
+        <hr>
+    </section>
+
     <section>
         <h3>Total del itinerario</h3>
         <p>

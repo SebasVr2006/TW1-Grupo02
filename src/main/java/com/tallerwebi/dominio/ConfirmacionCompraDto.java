@@ -11,6 +11,7 @@ public class ConfirmacionCompraDto {
   private final double totalAlojamiento;
   private final double totalActividades;
   private final double total;
+  private double totalVuelos;
 
   public ConfirmacionCompraDto(
     int adultos,
@@ -52,6 +53,14 @@ public class ConfirmacionCompraDto {
 
   public double getTotalActividades() {
     return totalActividades;
+  }
+
+  public double getTotalVuelos() {
+    return totalVuelos;
+  }
+
+  public void setTotalVuelos(double totalVuelos) {
+    this.totalVuelos = totalVuelos;
   }
 
   public double getTotal() {

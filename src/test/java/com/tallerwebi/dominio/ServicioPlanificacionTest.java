@@ -1,11 +1,15 @@
 package com.tallerwebi.dominio;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.tallerwebi.dominio.excepcion.DestinoInvalidoException;
 import com.tallerwebi.dominio.excepcion.PlanificacionInvalidaException;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,6 +55,20 @@ public class ServicioPlanificacionTest {
   }
 
   @Test
+  public void guardarPlanificacionSinOrigenDeberiaLanzarExcepcion() {
+    givenTengoUnaPlanificacionSinOrigen();
+
+    whenIntentoGuardarLaPlanificacionInvalida();
+  }
+
+  @Test
+  public void guardarPlanificacionConOrigenEnBlancoDeberiaLanzarExcepcion() {
+    givenTengoUnaPlanificacionConOrigenEnBlanco();
+
+    whenIntentoGuardarLaPlanificacionInvalida();
+  }
+
+  @Test
   public void guardarPlanificacionSinAdultosDeberiaLanzarExcepcion() {
     givenTengoUnaPlanificacionSinAdultos();
 
@@ -86,6 +104,15 @@ public class ServicioPlanificacionTest {
   }
 
   @Test
+  public void guardarPlanificacionDeberiaDescartarLosVuelosQueVengan() {
+    givenTengoUnaPlanificacionConVuelosYaCargados();
+
+    whenGuardoLaPlanificacion();
+
+    thenLaPlanificacionGuardadaNoTieneVuelos();
+  }
+
+  @Test
   public void guardarPlanificacionSinInteresesDeberiaSerValida() {
     givenTengoUnaPlanificacionValida();
 
@@ -96,6 +123,13 @@ public class ServicioPlanificacionTest {
 
   private void givenTengoUnaPlanificacionValida() {
     planificacion = crearPlanificacionValida();
+  }
+
+  private void givenTengoUnaPlanificacionConVuelosYaCargados() {
+    givenTengoUnaPlanificacionValida();
+    Vuelo vuelo = new Vuelo();
+    vuelo.setPrecio(1);
+    planificacion.setVuelosSeleccionados(new ArrayList<>(List.of(vuelo)));
   }
 
   private void givenTengoUnaPlanificacionConNombreDestinoVacio() {
@@ -111,6 +145,16 @@ public class ServicioPlanificacionTest {
   private void givenTengoUnaPlanificacionConDuracionCero() {
     givenTengoUnaPlanificacionValida();
     planificacion.getDestinos().get(0).setDuracion(0);
+  }
+
+  private void givenTengoUnaPlanificacionSinOrigen() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.setOrigen(null);
+  }
+
+  private void givenTengoUnaPlanificacionConOrigenEnBlanco() {
+    givenTengoUnaPlanificacionValida();
+    planificacion.setOrigen("   ");
   }
 
   private void givenTengoUnaPlanificacionSinAdultos() {
@@ -160,8 +204,13 @@ public class ServicioPlanificacionTest {
     assertThat(resultado, equalTo(planificacion));
   }
 
+  private void thenLaPlanificacionGuardadaNoTieneVuelos() {
+    assertThat(resultado.getVuelosSeleccionados(), is(empty()));
+  }
+
   private Planificacion crearPlanificacionValida() {
     Planificacion planificacion = new Planificacion();
+    planificacion.setOrigen("Buenos Aires");
 
     Destino destino = new Destino("Bariloche", "2026-12-10", 5);
     planificacion.agregarDestino(destino);

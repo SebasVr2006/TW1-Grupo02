@@ -54,6 +54,10 @@
                 <td>Actividades</td>
                 <td th:text="'$ ' + ${#numbers.formatDecimal(confirmacion.totalActividades, 1, 'POINT', 2, 'COMMA')}"></td>
             </tr>
+            <tr th:if="${confirmacion.totalVuelos > 0}">
+                <td>Vuelos</td>
+                <td th:text="'$ ' + ${#numbers.formatDecimal(confirmacion.totalVuelos, 1, 'POINT', 2, 'COMMA')}"></td>
+            </tr>
             <tr class="total-a-pagar">
                 <td>Total a pagar</td>
                 <td th:text="'$ ' + ${#numbers.formatDecimal(confirmacion.total, 1, 'POINT', 2, 'COMMA')}"></td>

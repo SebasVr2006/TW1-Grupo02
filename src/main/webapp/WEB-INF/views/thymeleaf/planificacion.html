@@ -33,6 +33,17 @@
     <form th:action="@{/planificacion}" method="post" id="formPlanificacion"
           th:attr="data-url-ciudades=@{/ciudades}">
         <datalist id="ciudades-sugeridas"></datalist>
+
+        <section class="origen">
+
+            <h3>Origen</h3>
+
+            <label for="origen">Ciudad de salida:</label>
+            <input type="text" id="origen" name="origen"
+                   list="ciudades-sugeridas" autocomplete="off" required>
+
+        </section>
+
         <section class="destinos">
 
             <h3>Destinos</h3>
