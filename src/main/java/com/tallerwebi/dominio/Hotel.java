@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "hotel")
@@ -22,6 +23,16 @@ public class Hotel {
   @ManyToOne
   @JoinColumn(name = "destino_id")
   private DestinoDisponible destino;
+
+  // Datos que solo trae la API de hoteles: no se guardan en la base.
+  @Transient
+  private String imagenUrl;
+
+  @Transient
+  private Integer estrellas;
+
+  @Transient
+  private Double puntaje;
 
   public Hotel() {}
 
@@ -60,5 +71,29 @@ public class Hotel {
 
   public void setDestino(DestinoDisponible destino) {
     this.destino = destino;
+  }
+
+  public String getImagenUrl() {
+    return imagenUrl;
+  }
+
+  public void setImagenUrl(String imagenUrl) {
+    this.imagenUrl = imagenUrl;
+  }
+
+  public Integer getEstrellas() {
+    return estrellas;
+  }
+
+  public void setEstrellas(Integer estrellas) {
+    this.estrellas = estrellas;
+  }
+
+  public Double getPuntaje() {
+    return puntaje;
+  }
+
+  public void setPuntaje(Double puntaje) {
+    this.puntaje = puntaje;
   }
 }

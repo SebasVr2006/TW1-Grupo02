@@ -72,7 +72,7 @@ public class ServicioResumenItinerarioImpl implements ServicioResumenItinerario 
       );
     }
 
-    OpcionDestino opcion = this.servicioItinerario.generarItinerario(destino.getNombre());
+    OpcionDestino opcion = this.servicioItinerario.generarItinerario(destino);
 
     if (opcion == null) {
       throw new IllegalArgumentException("No hay opciones disponibles para " + destino.getNombre());

@@ -3,6 +3,7 @@ package com.tallerwebi.presentacion;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -64,7 +65,7 @@ public class ControladorItinerarioTest {
   private void givenElServicioGeneraUnaOpcionParaBuenosAires() {
     OpcionDestino opcion = new OpcionDestino("Buenos Aires", "Argentina", List.of(), List.of());
 
-    when(this.servicioItinerario.generarItinerario("Buenos Aires")).thenReturn(opcion);
+    when(this.servicioItinerario.generarItinerario(any(Destino.class))).thenReturn(opcion);
   }
 
   private void givenNoExisteUnaPlanificacionEnLaSesion() {
@@ -82,7 +83,7 @@ public class ControladorItinerarioTest {
   }
 
   private void thenSeSolicitaElItinerarioAlServicio() {
-    verify(this.servicioItinerario).generarItinerario("Buenos Aires");
+    verify(this.servicioItinerario).generarItinerario(this.planificacion.getDestinos().get(0));
   }
 
   private void thenSeRedirigeALaPlanificacion() {

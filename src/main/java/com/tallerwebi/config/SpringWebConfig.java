@@ -44,6 +44,8 @@ public class SpringWebConfig implements WebMvcConfigurer {
     templateResolver.setApplicationContext(this.applicationContext);
     templateResolver.setPrefix("/WEB-INF/views/thymeleaf/");
     templateResolver.setSuffix(".html");
+    // Las plantillas se leen siempre como UTF-8 (tildes, eñes y símbolos).
+    templateResolver.setCharacterEncoding("UTF-8");
     // HTML is the default value, added here for the sake of clarity.
     templateResolver.setTemplateMode(TemplateMode.HTML);
     // Template cache is true by default. Set to false if you want
@@ -74,6 +76,10 @@ public class SpringWebConfig implements WebMvcConfigurer {
   public ThymeleafViewResolver viewResolver() {
     ThymeleafViewResolver viewResolver = new ThymeleafViewResolver();
     viewResolver.setTemplateEngine(templateEngine());
+    // Sin esto Thymeleaf responde en ISO-8859-1 y los formularios se envían en esa codificación,
+    // lo que rompe con textos como "Cancún, México" (HTTP 400: Invalid UTF-8).
+    viewResolver.setCharacterEncoding("UTF-8");
+    viewResolver.setContentType("text/html;charset=UTF-8");
     return viewResolver;
   }
 

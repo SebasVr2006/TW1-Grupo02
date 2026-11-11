@@ -3,6 +3,7 @@ package com.tallerwebi.dominio;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -175,7 +176,7 @@ public class ServicioResumenItinerarioImplTest {
   }
 
   private void givenHayOpcionesParaBuenosAiresConPais() {
-    when(this.servicioItinerario.generarItinerario("Buenos Aires, Argentina"))
+    when(this.servicioItinerario.generarItinerario(destinoLlamado("Buenos Aires, Argentina")))
       .thenReturn(crearOpcionBuenosAires());
   }
 
@@ -208,14 +209,14 @@ public class ServicioResumenItinerarioImplTest {
   }
 
   private void givenHayOpcionesDeHotelYActividadesParaBuenosAires() {
-    when(this.servicioItinerario.generarItinerario("Buenos Aires"))
+    when(this.servicioItinerario.generarItinerario(destinoLlamado("Buenos Aires")))
       .thenReturn(crearOpcionBuenosAires());
   }
 
   private void givenHayOpcionesParaBuenosAiresYParis() {
     givenHayOpcionesDeHotelYActividadesParaBuenosAires();
 
-    when(this.servicioItinerario.generarItinerario("Paris"))
+    when(this.servicioItinerario.generarItinerario(destinoLlamado("Paris")))
       .thenReturn(
         new OpcionDestino(
           "Paris",
@@ -270,7 +271,7 @@ public class ServicioResumenItinerarioImplTest {
   }
 
   private void givenLondresNoTieneOpcionesDisponibles() {
-    when(this.servicioItinerario.generarItinerario("Londres")).thenReturn(null);
+    when(this.servicioItinerario.generarItinerario(destinoLlamado("Londres"))).thenReturn(null);
   }
 
   private void givenSeleccionoUnHotelInexistente() {
@@ -402,5 +403,9 @@ public class ServicioResumenItinerarioImplTest {
     seleccion.setHotelSeleccionado(hotel);
     seleccion.setActividadesSeleccionadas(actividades);
     return seleccion;
+  }
+
+  private Destino destinoLlamado(String nombre) {
+    return argThat(destino -> destino != null && nombre.equals(destino.getNombre()));
   }
 }

@@ -53,7 +53,7 @@ public class ControladorItinerario {
         continue;
       }
 
-      OpcionDestino opcion = this.servicioItinerario.generarItinerario(destino.getNombre());
+      OpcionDestino opcion = this.servicioItinerario.generarItinerario(destino);
 
       if (opcion != null) {
         opcionesItinerario.add(opcion);

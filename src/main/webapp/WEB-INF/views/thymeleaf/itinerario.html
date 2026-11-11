@@ -36,22 +36,46 @@
 
             <h3>
                 <span th:text="${iteracion.count}"></span>.
-                <span th:text="${opcion.ciudad}"></span> -
-                <span th:text="${opcion.pais}"></span>
+                <span th:text="${opcion.ciudad}"></span>
+                <span th:if="${!#strings.isEmpty(opcion.pais)}"> -
+                    <span th:text="${opcion.pais}"></span>
+                </span>
             </h3>
 
             <section>
                 <h4>Elegí un hotel</h4>
                 <ul>
-                    <li th:each="hotel : ${opcion.hoteles}">
+                    <li th:each="hotel : ${opcion.hoteles}" class="hotel-opcion">
                         <label>
                             <input type="radio"
                                    th:name="|destinosSeleccionados[${iteracion.index}].hotelSeleccionado|"
                                    th:value="${hotel.nombre}"
                                    required>
-                            <strong th:text="${hotel.nombre}"></strong> -
-                            Precio por noche:
-                            <span th:text="${hotel.precioPorNoche}"></span>
+                            <span class="hotel-foto">
+                                <img th:if="${hotel.imagenUrl != null}"
+                                     th:src="${hotel.imagenUrl}"
+                                     alt=""
+                                     loading="lazy"
+                                     referrerpolicy="no-referrer"
+                                     onerror="this.remove()">
+                            </span>
+                            <span class="hotel-datos">
+                                <strong class="hotel-nombre" th:text="${hotel.nombre}"></strong>
+                                <span class="hotel-detalles">
+                                    <span class="hotel-estrellas"
+                                          th:if="${hotel.estrellas != null and hotel.estrellas > 0}"
+                                          th:title="|${hotel.estrellas} estrellas|">
+                                        <span th:each="n : ${#numbers.sequence(1, hotel.estrellas)}">&#9733;</span>
+                                    </span>
+                                    <span class="hotel-puntaje"
+                                          th:if="${hotel.puntaje != null}"
+                                          th:text="|Puntaje ${#numbers.formatDecimal(hotel.puntaje, 1, 1)}|"></span>
+                                </span>
+                            </span>
+                            <span class="hotel-precio">
+                                <strong th:text="|US$ ${#numbers.formatDecimal(hotel.precioPorNoche, 1, 0)}|"></strong>
+                                <small>por noche</small>
+                            </span>
                         </label>
                     </li>
                 </ul>
@@ -59,6 +83,9 @@
 
             <section>
                 <h4>Elegí las actividades que te interesen</h4>
+                <p th:if="${#lists.isEmpty(opcion.actividades)}">
+                    Todavía no hay actividades cargadas para este destino.
+                </p>
                 <ul>
                     <li th:each="actividad : ${opcion.actividades}">
                         <label>
