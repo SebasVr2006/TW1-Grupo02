@@ -5,6 +5,8 @@ import java.util.List;
 public interface RepositorioItinerario {
   DestinoDisponible buscarDestinoPorCiudad(String ciudad);
 
+  List<DestinoDisponible> buscarTodosLosDestinos();
+
   List<Hotel> buscarHotelesPorDestino(Long destinoId);
 
   List<Actividad> buscarActividadesPorDestino(Long destinoId);

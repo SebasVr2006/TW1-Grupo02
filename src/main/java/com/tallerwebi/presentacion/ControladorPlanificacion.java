@@ -2,6 +2,8 @@ package com.tallerwebi.presentacion;
 
 import com.tallerwebi.dominio.Planificacion;
 import com.tallerwebi.dominio.ServicioPlanificacion;
+import com.tallerwebi.dominio.ServicioRecomendaciones;
+import com.tallerwebi.dominio.Usuario;
 import com.tallerwebi.dominio.excepcion.DestinoInvalidoException;
 import com.tallerwebi.dominio.excepcion.PlanificacionInvalidaException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,17 +23,31 @@ public class ControladorPlanificacion {
   private static final String VISTA_PLANIFICACION = "planificacion";
   private static final String CLAVE_PLANIFICACION = "planificacion";
   private static final String CLAVE_TRAMOS_VUELO = "tramosVuelo";
+  private static final String CLAVE_USUARIO_LOGUEADO = "usuarioLogueado";
 
   private ServicioPlanificacion servicioPlanificacion;
+  private ServicioRecomendaciones servicioRecomendaciones;
 
   @Autowired
-  public ControladorPlanificacion(ServicioPlanificacion servicioPlanificacion) {
+  public ControladorPlanificacion(
+    ServicioPlanificacion servicioPlanificacion,
+    ServicioRecomendaciones servicioRecomendaciones
+  ) {
     this.servicioPlanificacion = servicioPlanificacion;
+    this.servicioRecomendaciones = servicioRecomendaciones;
   }
 
   @GetMapping("/planificacion")
-  public ModelAndView mostrarPlanificacion() {
-    return new ModelAndView(VISTA_PLANIFICACION);
+  public ModelAndView mostrarPlanificacion(HttpSession session) {
+    Usuario usuario = (Usuario) session.getAttribute(CLAVE_USUARIO_LOGUEADO);
+    Planificacion planificacionActual = (Planificacion) session.getAttribute(CLAVE_PLANIFICACION);
+    Long idUsuario = usuario == null ? null : usuario.getId();
+
+    return new ModelAndView(
+      VISTA_PLANIFICACION,
+      "recomendaciones",
+      this.servicioRecomendaciones.recomendarDestinos(idUsuario, planificacionActual)
+    );
   }
 
   @GetMapping("/resumen-planificacion")

@@ -9,9 +9,13 @@ import static org.mockito.Mockito.when;
 
 import com.tallerwebi.dominio.Destino;
 import com.tallerwebi.dominio.Planificacion;
+import com.tallerwebi.dominio.RecomendacionDestino;
 import com.tallerwebi.dominio.ServicioPlanificacion;
+import com.tallerwebi.dominio.ServicioRecomendaciones;
+import com.tallerwebi.dominio.Usuario;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +24,7 @@ public class ControladorPlanificacionTest {
 
   private ControladorPlanificacion controladorPlanificacion;
   private ServicioPlanificacion servicioPlanificacionMock;
+  private ServicioRecomendaciones servicioRecomendacionesMock;
   private HttpServletRequest request;
   private HttpSession sesion;
   private Planificacion planificacion;
@@ -28,7 +33,12 @@ public class ControladorPlanificacionTest {
   @BeforeEach
   public void inicializar() {
     this.servicioPlanificacionMock = mock(ServicioPlanificacion.class);
-    this.controladorPlanificacion = new ControladorPlanificacion(this.servicioPlanificacionMock);
+    this.servicioRecomendacionesMock = mock(ServicioRecomendaciones.class);
+    this.controladorPlanificacion =
+      new ControladorPlanificacion(
+        this.servicioPlanificacionMock,
+        this.servicioRecomendacionesMock
+      );
     this.request = mock(HttpServletRequest.class);
     this.sesion = mock(HttpSession.class);
   }
@@ -38,6 +48,35 @@ public class ControladorPlanificacionTest {
     whenMuestroLaPlanificacion();
 
     thenSeMuestraLaVistaPlanificacion();
+  }
+
+  @Test
+  public void mostrarPlanificacionDeberiaIncluirLasRecomendacionesDelUsuarioLogueado() {
+    Usuario usuario = new Usuario();
+    usuario.setId(7L);
+    this.planificacion = new Planificacion();
+    List<RecomendacionDestino> recomendaciones = List.of(
+      new RecomendacionDestino(
+        "Barcelona",
+        "España",
+        "Porque ya viajaste a Madrid, también en España"
+      )
+    );
+    when(this.sesion.getAttribute("usuarioLogueado")).thenReturn(usuario);
+    when(this.sesion.getAttribute("planificacion")).thenReturn(this.planificacion);
+    when(this.servicioRecomendacionesMock.recomendarDestinos(7L, this.planificacion))
+      .thenReturn(recomendaciones);
+
+    whenMuestroLaPlanificacion();
+
+    assertThat(this.resultado.getModel().get("recomendaciones"), equalTo(recomendaciones));
+  }
+
+  @Test
+  public void mostrarPlanificacionSinUsuarioDeberiaPedirRecomendacionesSinIdDeUsuario() {
+    whenMuestroLaPlanificacion();
+
+    verify(this.servicioRecomendacionesMock, times(1)).recomendarDestinos(null, null);
   }
 
   @Test
@@ -100,7 +139,7 @@ public class ControladorPlanificacionTest {
   }
 
   private void whenMuestroLaPlanificacion() {
-    this.resultado = this.controladorPlanificacion.mostrarPlanificacion();
+    this.resultado = this.controladorPlanificacion.mostrarPlanificacion(this.sesion);
   }
 
   private void whenReciboLaPlanificacion() {

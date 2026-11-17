@@ -35,6 +35,14 @@ public class RepositorioItinerarioImpl implements RepositorioItinerario {
       .orElse(null);
   }
 
+  @Override
+  public List<DestinoDisponible> buscarTodosLosDestinos() {
+    return sessionFactory
+      .getCurrentSession()
+      .createQuery("from DestinoDisponible d order by d.ciudad", DestinoDisponible.class)
+      .getResultList();
+  }
+
   private String normalizarCiudad(String ciudad) {
     return java.text.Normalizer
       .normalize(ciudad.trim(), java.text.Normalizer.Form.NFD)
