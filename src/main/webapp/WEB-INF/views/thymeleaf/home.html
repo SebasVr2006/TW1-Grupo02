@@ -1,106 +1,189 @@
+
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <title>FlyNow | Tu próxima aventura</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
-    <!--- link rel="stylesheet" th:href="@{/css/main.css}" --->
+    <link rel="stylesheet" th:href="@{/css/home.css}">
 </head>
-
 
 <body>
 
 <header th:replace="~{fragments/layout :: header}"></header>
 
-<main>
+<main class="home-main">
 
-    <section class="inicio-info">
+    <!-- PORTADA PRINCIPAL -->
+    <section class="home-hero">
 
-        <div class="texto-home">
+        <div class="home-hero__contenido">
+            <span class="home-etiqueta">✈ TU PRÓXIMA AVENTURA COMIENZA ACÁ</span>
 
-            <h1>Armá tu paquete de viaje a medida</h1>
+            <h1>El mundo es enorme. <span>Salí a descubrirlo.</span></h1>
 
-            <p>Ingresá tus destinos, fechas y preferencias para generar un itinerario completo con vuelo, alojamiento y
-                actividades.</p>
+            <p>
+                Diseñá un viaje a tu manera. Elegí tus destinos,
+                descubrí nuevas experiencias y armá un itinerario
+                pensado para vos.
+            </p>
 
-            <a class="boton" th:href="@{/planificacion}">Armar mi viaje</a>
+            <a class="home-boton" th:href="@{/planificacion}">
+                Planificar mi aventura
+                <span aria-hidden="true">→</span>
+            </a>
 
+            <div class="home-hero__detalle">
+                <span>🌎 Múltiples destinos</span>
+                <span>✦ A tu propio ritmo</span>
+            </div>
         </div>
 
-        <figure class="imagen_home">
-            <img th:src="@{/assets/images/imagen-home.jpg}"
-                 alt="imagen-home" class="imagen_home">
-        </figure>
+        <div class="home-hero__imagen">
+            <img th:src="@{/assets/images/imagen-hero.png}"
+                 alt="Vista de una ciudad costera desde la ventanilla de un avión">
+        </div>
+
+        <div class="home-hero__decoracion" aria-hidden="true">✈</div>
 
     </section>
 
-    <section class="por-que-elegirnos">
+
+    <!-- INTRODUCCIÓN A LOS DESTINOS -->
+    <section class="home-destinos">
+
+        <div class="home-seccion-encabezado">
+                <span class="home-etiqueta">INSPIRACIÓN PARA VIAJAR</span>
+                <h2>Hay un mundo esperándote</h2>
+        </div>
+
+        <div class="home-destinos__grid">
+
+            <article class="home-destino home-destino--buenos-aires">
+                <div class="home-destino__contenido">
+                    <img th:src="@{/assets/images/buenos aires.webp}"
+                         alt="Buenos Aires">
+                    <span>🇦🇷 ARGENTINA</span>
+                    <h3>Buenos Aires</h3>
+                    <p>Una ciudad llena de cultura y movimiento.</p>
+                </div>
+            </article>
+
+            <article class="home-destino home-destino--sao-paulo">
+                <div class="home-destino__contenido">
+                    <img th:src="@{/assets/images/sao paulo.jpg}"
+                         alt="São Paulo">
+                    <span>🇧🇷 BRASIL</span>
+                    <h3>São Paulo</h3>
+                    <p>Una metrópolis que nunca deja de sorprender.</p>
+                </div>
+            </article>
+
+            <article class="home-destino home-destino--paris">
+                <div class="home-destino__contenido">
+                    <img th:src="@{/assets/images/paris.jpg}"
+                         alt="París">
+                    <span>🇫🇷 FRANCIA</span>
+                    <h3>París</h3>
+                    <p>Historia, arte y rincones inolvidables.</p>
+                </div>
+            </article>
+
+        </div>
+
+        <p class="home-aclaracion">
+            Estos destinos son solo una fuente de inspiración.
+            Descubrí las opciones disponibles al planificar tu viaje.
+        </p>
+
+    </section>
+
+
+    <!-- BENEFICIOS -->
+    <section class="home-beneficios">
+
+        <div class="home-seccion-encabezado home-seccion-encabezado--centrado">
+            <span class="home-etiqueta">VIAJAR, MÁS SIMPLE</span>
+            <h2>Todo lo que necesitás para tu aventura</h2>
+            <p>
+                Organizá cada parte de tu experiencia desde un solo lugar.
+            </p>
+        </div>
+
+        <div class="home-beneficios__grid">
+
+            <article class="home-beneficio">
+                <div class="home-beneficio__icono">
+                    <img th:src="@{/assets/icons/ticket-outline.svg}" alt="">
+                </div>
+                <h3>Todo en un solo lugar</h3>
+                <p>
+                    Combinamos vuelos, alojamientos y actividades
+                    para que puedas organizar tu viaje fácilmente.
+                </p>
+            </article>
+
+            <article class="home-beneficio">
+                <div class="home-beneficio__icono">
+                    <img th:src="@{/assets/icons/world.svg}" alt="">
+                </div>
+                <h3>Itinerarios a tu medida</h3>
+                <p>
+                    Elegí tus destinos, indicá tus preferencias
+                    y prepará una experiencia personalizada.
+                </p>
+            </article>
+
+            <article class="home-beneficio">
+                <div class="home-beneficio__icono">
+                    <img th:src="@{/assets/icons/security.svg}" alt="">
+                </div>
+                <h3>Reserva clara y sencilla</h3>
+                <p>
+                    Consultá el precio de tu viaje y avanzá
+                    con el proceso de reserva.
+                </p>
+            </article>
+
+            <article class="home-beneficio">
+                <div class="home-beneficio__icono">
+                    <img th:src="@{/assets/icons/headphones.svg}" alt="">
+                </div>
+                <h3>Todo bajo control</h3>
+                <p>
+                    Accedé a tus reservas e itinerarios
+                    para consultar tu información cuando quieras.
+                </p>
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- LLAMADA A LA ACCIÓN FINAL -->
+    <section class="home-llamada">
 
         <div>
-            <h2 class="subtitulo">¿Por qué planificar tu viaje con nosotros?</h2>
+            <span>🌎 EL PRÓXIMO DESTINO TE ESTÁ ESPERANDO</span>
+            <h2>¿Listo para vivir algo nuevo?</h2>
+            <p>
+                Tu próxima aventura está a un paso.
+                Empezá a planificarla hoy.
+            </p>
         </div>
 
-        <div class="razones">
-
-            <div class="beneficio">
-                <figure class="contenedor_iconos">
-                    <img th:src="@{/assets/icons/ticket-outline.svg}" alt="icono" class="icon">
-                </figure>
-
-                <div>
-                    <h3>Todo en un solo lugar</h3>
-                    <p>Combinamos vuelos, alojamientos y actividades en un único paquete para que no pierdas tiempo.</p>
-                </div>
-
-            </div>
-
-            <div class="beneficio">
-                <figure class="contenedor_iconos">
-                    <img th:src="@{/assets/icons/world.svg}" alt="icono" class="icon">
-                </figure>
-
-                <div>
-                    <h3>Itinerarios a tu medida</h3>
-                    <p>Seleccioná uno o más destinos, indicá la duración y adaptamos el viaje a tus preferencias.</p>
-                </div>
-
-            </div>
-
-            <div class="beneficio">
-
-                <figure class="contenedor_iconos">
-                    <img th:src="@{/assets/icons/security.svg}" alt="icono" class="icon">
-                </figure>
-
-                <div>
-                    <h3>Reserva rápida y clara</h3>
-                    <p>Consultá el precio total en tiempo real y confirmá tu pre-reserva al instante.</p>
-                </div>
-
-            </div>
-
-            <div class="beneficio">
-                <figure class="contenedor_iconos">
-                    <img th:src="@{/assets/icons/headphones.svg}" alt="icono" class="icon">
-                </figure>
-
-                <div>
-                    <h3>Control de tu itinerario</h3>
-                    <p>Accedé y consultá tus reservas e itinerarios guardados en cualquier momento.</p>
-                </div>
-            </div>
-
-        </div>
+        <a class="home-boton home-boton--claro" th:href="@{/planificacion}">
+            Empezar mi viaje →
+        </a>
 
     </section>
 
 </main>
 
-
 <footer th:replace="~{fragments/layout :: footer}"></footer>
-</body>
 
+</body>
 </html>

@@ -1,0 +1,525 @@
+/* ---------- Pantalla Mis reservas ---------- */
+
+.mis-reservas {
+    max-width: 60rem;
+    padding: 1.5rem;
+    gap: 0.85rem;
+}
+
+/* ---------- Encabezado ---------- */
+
+.encabezado-reservas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--borde);
+}
+
+.etiqueta-resumen {
+    color: var(--turquesa-oscuro);
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 0.12em;
+}
+
+.encabezado-reservas h2 {
+    margin-top: 0.15rem;
+    font-size: 1.55rem;
+    text-align: left;
+}
+
+.encabezado-reservas p {
+    color: var(--texto-suave);
+    font-size: 0.88rem;
+}
+
+.icono-reservas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    background: var(--turquesa-claro);
+    color: var(--turquesa-oscuro);
+    font-size: 1.4rem;
+}
+
+/* ---------- Tarjeta desplegable ---------- */
+
+.reserva {
+    width: 100%;
+    padding: 0;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 2px 9px rgba(7, 59, 80, 0.05);
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.reserva:hover {
+    border-color: var(--turquesa-borde);
+    box-shadow: var(--sombra);
+}
+
+.reserva[open] {
+    border-color: var(--turquesa);
+    box-shadow: var(--sombra);
+}
+
+/* ---------- Cabecera siempre visible ---------- */
+
+.reserva-cabecera {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) minmax(10rem, 1.5fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.reserva-cabecera::-webkit-details-marker {
+    display: none;
+}
+
+.reserva-cabecera::marker {
+    content: "";
+}
+
+.reserva-identificacion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.numero-reserva {
+    color: var(--azul-profundo);
+    font-size: 0.95rem;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+}
+
+.fecha-reserva {
+    color: var(--texto-suave);
+    font-size: 0.72rem;
+}
+
+.reserva-destinos {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+}
+
+.icono-destino {
+    color: var(--turquesa-oscuro);
+    font-size: 1rem;
+}
+
+.lista-destinos-resumen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.destino-chip {
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: var(--turquesa-claro);
+    color: var(--turquesa-oscuro);
+    font-size: 0.72rem;
+    font-weight: bold;
+}
+
+.reserva-estado {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.estado {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.estado-pendiente {
+    background: var(--aviso-fondo);
+    color: var(--aviso-texto);
+}
+
+.estado-pagada {
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.flecha-desplegable {
+    display: inline-block;
+    color: var(--texto-suave);
+    font-size: 1.25rem;
+    transition: transform 0.2s;
+}
+
+.reserva[open] .flecha-desplegable {
+    transform: rotate(180deg);
+}
+
+/* ---------- Contenido desplegado ---------- */
+
+.reserva-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 0.9rem 1rem 1rem;
+    border-top: 1px solid var(--borde);
+    background: var(--fondo-suave);
+}
+
+/* ---------- Datos generales ---------- */
+
+.reserva-datos-generales {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+}
+
+.dato-general {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid var(--borde);
+    border-radius: 9px;
+    background: white;
+}
+
+.dato-icono {
+    font-size: 1.1rem;
+}
+
+.dato-general div {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.dato-general small {
+    color: var(--texto-suave);
+    font-size: 0.68rem;
+}
+
+.dato-general strong {
+    overflow-wrap: anywhere;
+    color: var(--azul-profundo);
+    font-size: 0.78rem;
+}
+
+/* ---------- Destinos ---------- */
+
+.titulo-destinos h4 {
+    color: var(--azul-profundo);
+    font-size: 0.95rem;
+}
+
+.destino-reserva {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--borde);
+    border-left: 3px solid var(--turquesa);
+    border-radius: 9px;
+    background: white;
+}
+
+.destino-encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.numero-destino {
+    color: var(--turquesa-oscuro);
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+}
+
+.destino-encabezado h4 {
+    margin-top: 0.1rem;
+    font-size: 1rem;
+}
+
+.duracion-destino {
+    color: var(--texto-suave);
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.fecha-destino {
+    color: var(--texto-suave);
+    font-size: 0.78rem;
+}
+
+.fecha-destino strong {
+    color: var(--texto);
+}
+
+.servicio-reserva {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 8px;
+    background: var(--fondo-suave);
+}
+
+.servicio-icono {
+    font-size: 1.15rem;
+}
+
+.servicio-datos {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.servicio-datos small {
+    color: var(--texto-suave);
+    font-size: 0.68rem;
+}
+
+.servicio-datos strong {
+    color: var(--azul-profundo);
+    font-size: 0.82rem;
+}
+
+.servicio-precio {
+    color: var(--azul-profundo);
+    font-size: 0.82rem;
+}
+
+/* ---------- Actividades ---------- */
+
+.actividades-reserva {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.titulo-actividades {
+    color: var(--texto-suave);
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.actividad-reserva {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    border-bottom: 1px solid var(--borde);
+    font-size: 0.78rem;
+}
+
+.nombre-actividad {
+    flex: 1;
+}
+
+.actividad-reserva strong {
+    color: var(--azul-profundo);
+    white-space: nowrap;
+}
+
+.subtotal-destino {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed var(--borde);
+    color: var(--texto-suave);
+    font-size: 0.8rem;
+}
+
+.subtotal-destino strong {
+    color: var(--azul-profundo);
+}
+
+/* ---------- Total y pago ---------- */
+
+.reserva-pie {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--borde);
+}
+
+.total-reserva {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+}
+
+.total-reserva span {
+    color: var(--texto-suave);
+    font-size: 0.75rem;
+}
+
+.total-reserva strong {
+    color: var(--azul-profundo);
+    font-size: 1.3rem;
+}
+
+.reserva-pie form {
+    margin: 0;
+}
+
+.reserva-pie .boton-confirmar {
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+}
+
+/* ---------- Sin reservas ---------- */
+
+.sin-reservas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 2rem 1rem;
+    border: 1px dashed var(--turquesa-borde);
+    border-radius: 12px;
+    background: var(--fondo-suave);
+    text-align: center;
+}
+
+.sin-reservas > span {
+    font-size: 2rem;
+}
+
+.sin-reservas h3 {
+    font-size: 1.05rem;
+}
+
+.sin-reservas p {
+    color: var(--texto-suave);
+    font-size: 0.85rem;
+}
+
+.sin-reservas .boton {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+}
+
+/* ---------- Mensajes y enlaces ---------- */
+
+.mis-reservas .mensaje-exito,
+.mis-reservas .mensaje-error {
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.mis-reservas .mensaje-exito {
+    border-left: 4px solid var(--exito);
+    background: var(--exito-fondo);
+    color: var(--exito);
+}
+
+.mis-reservas .mensaje-error {
+    border-left: 4px solid var(--error);
+    background: var(--error-fondo);
+    color: var(--error);
+}
+
+.enlace-planificar {
+    width: fit-content;
+    margin-top: 0.1rem;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 48rem) {
+    .mis-reservas {
+        padding: 1.1rem;
+    }
+
+    .reserva-cabecera {
+        grid-template-columns: 1fr auto;
+        gap: 0.55rem;
+    }
+
+    .reserva-destinos {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .reserva-estado {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
+
+    .reserva-datos-generales {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 30rem) {
+    .mis-reservas {
+        padding: 0.85rem;
+    }
+
+    .reserva-cabecera {
+        padding: 0.75rem;
+    }
+
+    .reserva-contenido {
+        padding: 0.75rem;
+    }
+
+    .reserva-datos-generales {
+        grid-template-columns: 1fr;
+    }
+
+    .destino-encabezado {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .reserva-pie {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .reserva-pie .boton-confirmar {
+        width: 100%;
+    }
+
+    .encabezado-reservas h2 {
+        font-size: 1.35rem;
+    }
+}
+
+/* Evita que los estilos anteriores de main.css afecten las tarjetas */
+.reserva {
+    display: block;
+}
+
+.reserva .destino-reserva {
+    margin-top: 0;
+    padding-top: 0.8rem;
+}

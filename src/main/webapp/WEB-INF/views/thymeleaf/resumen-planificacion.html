@@ -8,90 +8,181 @@
     <title>Resumen de tu viaje</title>
 
     <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/resumen-viaje.css}">
 </head>
 
 <body>
 
 <header th:replace="~{fragments/layout :: header}"></header>
 
-<main>
-    <h2>Resumen de tu viaje</h2>
+<main class="resumen-viaje">
 
-    <section th:if="${planificacion.origen != null}">
-        <h3>Origen</h3>
-        <p th:text="${planificacion.origen}"></p>
+    <div class="titulo-resumen">
+        <div>
+            <span class="etiqueta-resumen">TU AVENTURA</span>
+            <h2>Resumen de tu viaje</h2>
+        </div>
+        <span class="icono-viaje">✈</span>
+    </div>
+
+    <!-- ORIGEN Y DESTINOS -->
+    <section class="bloque-resumen recorrido">
+
+        <div class="titulo-bloque">
+            <span class="icono-bloque">📍</span>
+            <h3>Tu recorrido</h3>
+        </div>
+
+        <div class="linea-recorrido">
+
+            <div class="parada-recorrido origen-recorrido"
+                 th:if="${planificacion.origen != null}">
+                <span class="marcador-recorrido"></span>
+                <div class="datos-parada">
+                    <span class="tipo-parada">PUNTO DE PARTIDA</span>
+                    <strong th:text="${planificacion.origen}"></strong>
+                </div>
+                <span class="etiqueta-parada">Origen</span>
+            </div>
+
+            <div class="parada-recorrido"
+                 th:each="destino, iterStat : ${planificacion.destinos}">
+                <span class="marcador-recorrido marcador-destino"></span>
+
+                <div class="datos-parada">
+                    <span class="tipo-parada"
+                          th:text="'DESTINO ' + (iterStat.index + 1)"></span>
+
+                    <strong th:text="${destino.nombre}"></strong>
+
+                    <div class="detalles-parada">
+                        <span>
+                            <span>📅</span>
+                            <span th:text="${destino.fechaInicio}"></span>
+                        </span>
+                        <span>
+                            <span>🌙</span>
+                            <span th:text="${destino.duracion} + ' días'"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </section>
 
-    <section>
-        <h3>Destinos</h3>
+    <!-- VUELOS -->
+    <section class="bloque-resumen vuelos-resumen"
+             th:if="${!#lists.isEmpty(planificacion.vuelosSeleccionados)}">
 
-        <ul>
-            <li th:each="destino : ${planificacion.destinos}">
-                <span th:text="${destino.nombre}"></span>
-                -
-                <span th:text="${destino.fechaInicio}"></span>
-                -
-                <span th:text="${destino.duracion}"></span>
-                días
-            </li>
-        </ul>
+        <div class="titulo-bloque">
+            <span class="icono-bloque">✈️</span>
+            <h3>Tus vuelos</h3>
+        </div>
+
+        <div class="lista-vuelos">
+
+            <article class="tarjeta-vuelo"
+                     th:each="vuelo : ${planificacion.vuelosSeleccionados}">
+
+                <div class="vuelo-aerolinea">
+                    <span class="icono-avion">✈</span>
+                    <strong th:text="${vuelo.aerolinea}"></strong>
+                </div>
+
+                <div class="ruta-vuelo">
+
+                    <div class="dato-aeropuerto">
+                        <strong th:text="${vuelo.salida}"></strong>
+                        <span th:text="${vuelo.aeropuertoOrigen}"></span>
+                    </div>
+
+                    <div class="conector-vuelo">
+                        <span class="linea-vuelo"></span>
+                        <span class="avion-ruta">✈</span>
+                        <small>Vuelo</small>
+                    </div>
+
+                    <div class="dato-aeropuerto destino-aeropuerto">
+                        <strong th:text="${vuelo.llegada}"></strong>
+                        <span th:text="${vuelo.aeropuertoDestino}"></span>
+                    </div>
+
+                </div>
+
+                <div class="precio-vuelo"
+                     th:text="${vuelo.precio != null ? 'USD ' + vuelo.precio : 'Precio a consultar'}">
+                </div>
+
+            </article>
+
+        </div>
     </section>
 
-    <section th:if="${!#lists.isEmpty(planificacion.vuelosSeleccionados)}">
-        <h3>Vuelos</h3>
+    <!-- VIAJEROS Y PREFERENCIAS -->
+    <section class="bloque-resumen detalles-viaje">
 
-        <ul>
-            <li th:each="vuelo : ${planificacion.vuelosSeleccionados}">
-                <strong th:text="${vuelo.aerolinea}"></strong>:
-                <span th:text="${vuelo.aeropuertoOrigen}"></span>
-                &rarr;
-                <span th:text="${vuelo.aeropuertoDestino}"></span>
-                (<span th:text="${vuelo.salida}"></span>
-                &rarr;
-                <span th:text="${vuelo.llegada}"></span>)
-                -
-                <span th:text="${vuelo.precio != null} ? 'USD ' + ${vuelo.precio} : 'Precio a consultar'"></span>
-            </li>
-        </ul>
+        <div class="titulo-bloque">
+            <span class="icono-bloque">⚙️</span>
+            <h3>Detalles de tu viaje</h3>
+        </div>
+
+        <div class="detalles-columnas">
+
+            <div class="detalle-grupo">
+                <h4>👥 Viajeros</h4>
+
+                <div class="dato-viajero">
+                    <span>Adultos</span>
+                    <strong th:text="${planificacion.adultos}"></strong>
+                </div>
+
+                <div class="dato-viajero">
+                    <span>Niños</span>
+                    <strong th:text="${planificacion.ninos}"></strong>
+                </div>
+            </div>
+
+            <div class="detalle-grupo">
+                <h4>🏨 Preferencias</h4>
+
+                <div class="dato-alojamiento">
+                    <span>Alojamiento</span>
+                    <strong th:text="${planificacion.alojamiento}"></strong>
+                </div>
+
+                <div class="intereses-resumen">
+                    <span class="subtitulo-intereses">Intereses</span>
+
+                    <div class="etiquetas-intereses">
+                        <span class="etiqueta-interes"
+                              th:each="interes : ${planificacion.intereses}"
+                              th:text="${interes}">
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </section>
 
-    <section>
-        <h3>Viajeros</h3>
+    <!-- ACCIONES -->
+    <div class="acciones-resumen">
 
-        <p>
-            Adultos:
-            <span th:text="${planificacion.adultos}"></span>
-        </p>
+        <a th:href="@{/seleccion-vuelo}" class="enlace-secundario">
+            Cambiar vuelos
+        </a>
 
-        <p>
-            Niños:
-            <span th:text="${planificacion.ninos}"></span>
-        </p>
-    </section>
+        <a th:href="@{/planificacion}" class="enlace-secundario">
+            Volver a planificar
+        </a>
 
-    <section>
-        <h3>Preferencias</h3>
+        <a th:href="@{/itinerario}" class="boton boton-itinerario">
+            Elegir hotel y actividades →
+        </a>
 
-        <p>
-            Alojamiento:
-            <span th:text="${planificacion.alojamiento}"></span>
-        </p>
+    </div>
 
-        <p>Intereses:</p>
-
-        <ul>
-            <li th:each="interes : ${planificacion.intereses}"
-                th:text="${interes}">
-            </li>
-        </ul>
-    </section>
-
-    <a th:href="@{/itinerario}" class="boton">
-        Ver itinerario
-    </a>
-
-    <a th:href="@{/seleccion-vuelo}">Cambiar vuelos</a>
-    <a th:href="@{/planificacion}">Volver a planificar</a>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>

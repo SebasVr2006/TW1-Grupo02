@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmación de compra | FlyNow</title>
     <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/confirmacion-compra.css}">
 </head>
 
 <body>
@@ -19,28 +20,53 @@
         <li class="paso">3. Pago</li>
     </ol>
 
-    <h2>Confirmá tu compra</h2>
+    <div class="encabezado-pagina">
+        <span class="etiqueta-pagina">ÚLTIMO PASO</span>
+        <h2>Confirmá tu compra</h2>
+        <p>Tu aventura está a un paso de hacerse realidad.</p>
+    </div>
     <p class="aviso">
-        Este es el último paso antes del pago. <strong>Todavía no se te cobró nada:</strong>
-        al confirmar, tu reserva queda <strong>pendiente de pago</strong>.
+        <strong>¡Todavía no se te cobró nada!</strong>
+        Al confirmar, tu reserva queda pendiente de pago.
     </p>
 
     <p class="mensaje-error" th:if="${error}" th:text="${error}"></p>
 
-    <section class="bloque">
-        <h3>Tu viaje</h3>
-        <ul class="lista-destinos">
-            <li th:each="destino : ${confirmacion.destinos}">
-                <strong th:text="|${destino.nombre}, ${destino.pais}|"></strong>
-                <span th:text="|Desde el ${destino.fechaInicio} · ${destino.noches} noches|"></span>
-            </li>
-        </ul>
-        <p>
-            <span th:text="|Adultos: ${confirmacion.adultos}|"></span> ·
-            <span th:text="|Niños: ${confirmacion.ninos}|"></span> ·
-            <span th:text="|Alojamiento: ${confirmacion.alojamiento}|"></span>
-        </p>
-        <a th:href="@{/itinerario}">Modificar mi itinerario</a>
+    <section class="bloque bloque-viaje">
+        <div class="seccion-titulo">
+            <span>🧳</span>
+            <h3>Tu viaje</h3>
+        </div>
+
+        <div class="lista-destinos">
+            <article class="destino-confirmacion" th:each="destino : ${confirmacion.destinos}">
+                <div class="destino-confirmacion-icono">📍</div>
+
+                <div class="destino-confirmacion-info">
+                    <strong th:text="|${destino.nombre}, ${destino.pais}|"></strong>
+                    <span th:text="|Desde el ${destino.fechaInicio} · ${destino.noches} noches|"></span>
+                </div>
+            </article>
+        </div>
+
+        <div class="datos-viajeros">
+            <div>
+                <span>Adultos</span>
+                <strong th:text="${confirmacion.adultos}"></strong>
+            </div>
+
+            <div>
+                <span>Niños</span>
+                <strong th:text="${confirmacion.ninos}"></strong>
+            </div>
+
+            <div>
+                <span>Alojamiento</span>
+                <strong th:text="${confirmacion.alojamiento}"></strong>
+            </div>
+        </div>
+
+        <a th:href="@{/itinerario}" class="enlace-modificar">Modificar mi itinerario</a>
     </section>
 
     <section class="bloque">
@@ -70,15 +96,24 @@
         <p>Vas a pagar con <strong>MercadoPago</strong> en el paso siguiente.</p>
     </section>
 
-    <form th:action="@{/reservas/confirmar}" method="post" class="formulario-confirmacion">
-        <label class="terminos">
-            <input type="checkbox" name="aceptaTerminos" value="true">
-            Acepto los términos y condiciones
-        </label>
-        <button type="submit" class="boton-confirmar">Confirmar y continuar al pago</button>
-    </form>
+    <p class="mensaje-error" th:if="${error}" th:text="${error}"></p>
 
-    <a th:href="@{/resumen-itinerario}">Volver al resumen del itinerario</a>
+    <div class="acciones-confirmacion">
+        <a th:href="@{/resumen-itinerario}" class="boton-volver">
+            ← Volver al resumen
+        </a>
+
+        <form th:action="@{/reservas/confirmar}" method="post" class="formulario-confirmacion">
+            <label class="terminos">
+                <input type="checkbox" name="aceptaTerminos" value="true">
+                Acepto los términos y condiciones
+            </label>
+
+            <button type="submit" class="boton-confirmar">
+                Confirmar y continuar al pago →
+            </button>
+        </form>
+    </div>
 </main>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>

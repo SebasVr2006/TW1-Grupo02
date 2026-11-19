@@ -1,0 +1,406 @@
+
+/* ---------- Resumen del viaje ---------- */
+
+.resumen-viaje {
+    max-width: 58rem;
+    padding: 1.4rem 1.7rem;
+    gap: 0.85rem;
+}
+
+.titulo-resumen {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--borde);
+}
+
+.etiqueta-resumen {
+    color: var(--turquesa-oscuro);
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 0.12em;
+}
+
+.titulo-resumen h2 {
+    margin-top: 0.15rem;
+    font-size: 1.5rem;
+    text-align: left;
+}
+
+.icono-viaje {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.7rem;
+    height: 2.7rem;
+    border-radius: 50%;
+    background: var(--turquesa-claro);
+    color: var(--turquesa-oscuro);
+    font-size: 1.35rem;
+}
+
+/* ---------- Bloques generales ---------- */
+
+.bloque-resumen {
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: var(--fondo-suave);
+}
+
+.titulo-bloque {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+}
+
+.titulo-bloque h3 {
+    font-size: 1rem;
+}
+
+.icono-bloque {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 8px;
+    background: var(--turquesa-claro);
+    font-size: 0.95rem;
+}
+
+/* ---------- Recorrido: origen y destinos ---------- */
+
+.linea-recorrido {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-left: 0.55rem;
+    padding-left: 1.45rem;
+}
+
+.linea-recorrido::before {
+    content: "";
+    position: absolute;
+    top: 0.55rem;
+    bottom: 0.75rem;
+    left: 0.28rem;
+    width: 2px;
+    background: linear-gradient(
+            to bottom,
+            var(--turquesa),
+            var(--azul-profundo)
+    );
+}
+
+.parada-recorrido {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    min-height: 2.6rem;
+}
+
+.marcador-recorrido {
+    position: absolute;
+    top: 0.35rem;
+    left: -1.45rem;
+    z-index: 1;
+    width: 0.65rem;
+    height: 0.65rem;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: var(--turquesa);
+    box-shadow: 0 0 0 2px var(--turquesa);
+}
+
+.marcador-destino {
+    background: var(--azul-profundo);
+    box-shadow: 0 0 0 2px var(--azul-profundo);
+}
+
+.datos-parada {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+}
+
+.tipo-parada {
+    color: var(--texto-suave);
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 0.07em;
+}
+
+.datos-parada strong {
+    color: var(--azul-profundo);
+    font-size: 0.95rem;
+}
+
+.etiqueta-parada {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--turquesa-claro);
+    color: var(--turquesa-oscuro);
+    font-size: 0.72rem;
+    font-weight: bold;
+}
+
+.detalles-parada {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.8rem;
+    color: var(--texto-suave);
+    font-size: 0.78rem;
+}
+
+.detalles-parada > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+/* ---------- Vuelos ---------- */
+
+.lista-vuelos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 0.65rem;
+}
+
+.tarjeta-vuelo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    background: white;
+}
+
+.vuelo-aerolinea {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--azul-profundo);
+    font-size: 0.85rem;
+}
+
+.icono-avion {
+    color: var(--turquesa-oscuro);
+}
+
+.ruta-vuelo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(4rem, 0.7fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dato-aeropuerto {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.dato-aeropuerto strong {
+    color: var(--azul-profundo);
+    font-size: 1.05rem;
+}
+
+.dato-aeropuerto span {
+    overflow-wrap: anywhere;
+    color: var(--texto-suave);
+    font-size: 0.75rem;
+}
+
+.destino-aeropuerto {
+    text-align: right;
+}
+
+.conector-vuelo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.05rem;
+    color: var(--turquesa-oscuro);
+}
+
+.linea-vuelo {
+    width: 100%;
+    height: 2px;
+    background: var(--turquesa-borde);
+}
+
+.avion-ruta {
+    margin-top: -0.9rem;
+    padding: 0 0.25rem;
+    background: white;
+    font-size: 0.95rem;
+}
+
+.conector-vuelo small {
+    color: var(--texto-suave);
+    font-size: 0.65rem;
+}
+
+.precio-vuelo {
+    align-self: flex-end;
+    color: var(--turquesa-oscuro);
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* ---------- Viajeros y preferencias ---------- */
+
+.detalles-columnas {
+    display: grid;
+    grid-template-columns: 0.8fr 1.5fr;
+    gap: 1rem;
+}
+
+.detalle-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.detalle-grupo + .detalle-grupo {
+    padding-left: 1rem;
+    border-left: 1px solid var(--borde);
+}
+
+.detalle-grupo h4 {
+    margin-bottom: 0.15rem;
+    color: var(--azul-profundo);
+    font-size: 0.88rem;
+}
+
+.dato-viajero,
+.dato-alojamiento {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    color: var(--texto-suave);
+    font-size: 0.83rem;
+}
+
+.dato-viajero strong,
+.dato-alojamiento strong {
+    color: var(--azul-profundo);
+}
+
+.intereses-resumen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.subtitulo-intereses {
+    color: var(--texto-suave);
+    font-size: 0.8rem;
+}
+
+.etiquetas-intereses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.etiqueta-interes {
+    padding: 0.18rem 0.55rem;
+    border: 1px solid var(--turquesa-borde);
+    border-radius: 999px;
+    background: var(--turquesa-claro);
+    color: var(--turquesa-oscuro);
+    font-size: 0.72rem;
+    font-weight: bold;
+}
+
+/* ---------- Acciones ---------- */
+
+.acciones-resumen {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    padding-top: 0.2rem;
+}
+
+.enlace-secundario {
+    color: var(--texto-suave);
+    font-size: 0.82rem;
+    font-weight: bold;
+}
+
+.enlace-secundario:hover {
+    color: var(--turquesa-oscuro);
+}
+
+.boton-itinerario {
+    margin-left: auto;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.9rem;
+}
+
+/* ---------- Adaptación a pantallas pequeñas ---------- */
+
+@media (max-width: 48rem) {
+    .resumen-viaje {
+        padding: 1rem;
+    }
+
+    .detalles-columnas {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.7rem;
+    }
+
+    .acciones-resumen {
+        gap: 0.6rem;
+    }
+
+    .boton-itinerario {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 30rem) {
+    .resumen-viaje {
+        padding: 0.85rem;
+    }
+
+    .bloque-resumen {
+        padding: 0.75rem;
+    }
+
+    .parada-recorrido {
+        align-items: flex-start;
+    }
+
+    .detalles-columnas {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-grupo + .detalle-grupo {
+        padding-top: 0.6rem;
+        padding-left: 0;
+        border-top: 1px solid var(--borde);
+        border-left: none;
+    }
+
+    .acciones-resumen {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .boton-itinerario {
+        width: 100%;
+        margin-left: 0;
+    }
+}

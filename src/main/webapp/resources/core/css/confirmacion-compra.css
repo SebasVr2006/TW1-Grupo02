@@ -1,0 +1,203 @@
+.confirmacion {
+    gap: 1.2rem;
+}
+
+.encabezado-pagina {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.etiqueta-pagina {
+    color: var(--turquesa-oscuro);
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+
+.encabezado-pagina h2 {
+    margin: 0;
+    color: var(--azul-profundo);
+}
+
+.encabezado-pagina p {
+    color: var(--texto-suave);
+}
+
+.aviso {
+    padding: 1rem 1.2rem;
+    border-left: 4px solid var(--turquesa);
+    border-radius: 8px;
+    background-color: var(--turquesa-claro);
+    color: var(--azul-profundo);
+}
+
+.bloque {
+    padding: 1.2rem;
+    border: 1px solid var(--azul-borde);
+    border-radius: var(--radio);
+    background-color: white;
+    box-shadow: var(--sombra);
+}
+
+.seccion-titulo {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: 1rem;
+}
+
+.seccion-titulo span {
+    font-size: 1.3rem;
+}
+
+.seccion-titulo h3 {
+    margin: 0;
+    color: var(--azul-profundo);
+}
+
+.lista-destinos {
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+    padding: 0;
+    margin: 0;
+}
+
+.destino-confirmacion {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: 1rem;
+    border: 1px solid var(--turquesa-borde);
+    border-radius: 10px;
+    background-color: var(--fondo-suave);
+}
+
+.destino-confirmacion-icono {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: var(--turquesa-claro);
+    font-size: 1.2rem;
+}
+
+.destino-confirmacion-info {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+.destino-confirmacion-info strong {
+    color: var(--azul-profundo);
+}
+
+.destino-confirmacion-info span {
+    color: var(--texto-suave);
+    font-size: .85rem;
+}
+
+.datos-viajeros {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .8rem;
+    margin-top: 1rem;
+}
+
+.datos-viajeros div {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    padding: .8rem;
+    border-radius: 8px;
+    background-color: var(--turquesa-claro);
+}
+
+.datos-viajeros span {
+    color: var(--texto-suave);
+    font-size: .8rem;
+}
+
+.datos-viajeros strong {
+    color: var(--azul-profundo);
+}
+
+.enlace-modificar {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: .9rem;
+    font-weight: bold;
+}
+
+.desglose {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.desglose th,
+.desglose td {
+    padding: .8rem;
+    border-bottom: 1px solid var(--azul-borde);
+    text-align: left;
+}
+
+.desglose th {
+    color: var(--azul-profundo);
+    background-color: var(--turquesa-claro);
+}
+
+.desglose tr:last-child td {
+    font-weight: bold;
+}
+
+.formulario-confirmacion {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.terminos {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .9rem;
+}
+
+.terminos input {
+    width: auto;
+    min-height: auto;
+}
+
+.acciones-confirmacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+@media (max-width: 40rem) {
+    .datos-viajeros {
+        grid-template-columns: 1fr;
+    }
+
+    .acciones-confirmacion {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .formulario-confirmacion {
+        align-items: stretch;
+    }
+
+    .boton-confirmar {
+        width: 100%;
+    }
+
+    .desglose {
+        font-size: .85rem;
+    }
+}
